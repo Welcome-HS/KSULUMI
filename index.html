@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>루미(LUMI) - 복지업무 지원 AI 서비스</title>
+    <!-- Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Noto Sans KR 폰트 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Noto Sans KR', Arial, sans-serif; }
+        .bg-gradient-mint { background: linear-gradient(135deg, #E0F7FA 0%, #FFFFFF 100%); }
+    </style>
+</head>
+<body class="bg-gradient-mint min-h-screen text-gray-800">
+    
+    <!-- Header -->
+    <header class="container mx-auto px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-2 text-teal-600 font-bold text-2xl tracking-tighter">
+            <i data-lucide="heart-handshake"></i>
+            LUMI
+        </div>
+        <nav class="hidden md:flex gap-8 text-gray-600 font-medium">
+            <a href="#" class="hover:text-teal-600 transition">서비스 소개</a>
+            <a href="#" class="hover:text-teal-600 transition">주요 기능</a>
+            <a href="#" class="hover:text-teal-600 transition">도입 사례</a>
+        </nav>
+        <button class="bg-teal-600 hover:bg-teal-700 text-white px-6 py-2 rounded-full font-medium transition shadow-sm">
+            도입 문의하기
+        </button>
+    </header>
+
+    <!-- Hero Section -->
+    <main class="container mx-auto px-6 pt-24 pb-20 text-center">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-teal-50 text-teal-700 font-medium text-sm mb-8 border border-teal-100">
+            <i data-lucide="sparkles" class="w-4 h-4"></i>
+            복지기관 안부 확인 담당자를 위한 스마트 업무관리 도구
+        </div>
+        
+        <h1 class="text-4xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+            안부 확인 후속 조치,<br/>
+            <span class="text-teal-600">루미(LUMI)</span>로 누락 없이 완벽하게
+        </h1>
+        
+        <p class="text-lg md:text-xl text-gray-600 mb-12 max-w-2xl mx-auto leading-relaxed">
+            독거노인 안부 전화 후 미응답, 도움 요청 건을 시스템이 자동 분류합니다.<br/>
+            담당자의 기록·보고 시간을 20% 이상 단축하고 위급 상황을 빠르게 조치하세요.
+        </p>
+        
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
+            <button class="bg-teal-600 hover:bg-teal-700 text-white px-8 py-4 rounded-full font-bold text-lg shadow-lg hover:shadow-xl transition transform hover:-translate-y-1 flex items-center justify-center gap-2">
+                무료 도입 상담받기
+                <i data-lucide="arrow-right" class="w-5 h-5"></i>
+            </button>
+            
+            <!-- 대시보드(lumi.html)로 연결되는 링크 버튼 -->
+            <a href="lumi.html" class="bg-white hover:bg-gray-50 text-teal-600 border border-teal-200 px-8 py-4 rounded-full font-bold text-lg shadow-sm transition flex items-center justify-center gap-2">
+                <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                대시보드 데모 체험하기
+            </a>
+        </div>
+    </main>
+
+    <!-- Features Section -->
+    <section class="bg-white py-20">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">복지 현장에 꼭 필요한 3가지 핵심 기능</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                
+                <!-- Feature 1 -->
+                <div class="p-8 rounded-2xl bg-gray-50 border border-gray-100 hover:shadow-md transition">
+                    <div class="w-14 h-14 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center mb-6">
+                        <i data-lucide="layout-dashboard" class="w-7 h-7"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">한눈에 보는 대시보드</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        오늘 확인할 대상자부터 미처리된 위급 건까지, 대시보드에서 모든 현황을 즉시 파악하고 우선순위를 결정하세요.
+                    </p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="p-8 rounded-2xl bg-gray-50 border border-gray-100 hover:shadow-md transition">
+                    <div class="w-14 h-14 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center mb-6">
+                        <i data-lucide="check-square" class="w-7 h-7"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">쉬운 결과 입력</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        통화 후 응답, 미응답, 도움 요청 등 결과를 클릭 한 번으로 기록합니다. 불필요한 수기 메모 시간을 획기적으로 줄여줍니다.
+                    </p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="p-8 rounded-2xl bg-gray-50 border border-gray-100 hover:shadow-md transition">
+                    <div class="w-14 h-14 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center mb-6">
+                        <i data-lucide="clipboard-list" class="w-7 h-7"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">누락 없는 후속 조치</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        미응답이나 도움 요청 건은 담당자와 처리 기한이 자동 배정되어, 재연락이나 방문 조치가 누락되는 것을 완벽히 방지합니다.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-50 border-t border-gray-200 py-10 text-center text-gray-500 text-sm">
+        <p>© 2026 LUMI. 복지업무 지원 AI 서비스. All rights reserved.</p>
+    </footer>
+
+    <!-- Initialize Icons -->
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>
