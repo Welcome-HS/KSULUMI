@@ -17,6 +17,74 @@
         #main-container { contain: layout style; will-change: max-width, height; }
         main { contain: content; }
         .card { contain: layout style; }
+        /* iOS 스타일 휠 타임 피커 */
+        .ios-wheel-container {
+            position: relative;
+            height: 132px;
+            overflow: hidden;
+            user-select: none;
+            background: #F9FAFB;
+            border-radius: 14px;
+            border: 1px solid #E5E7EB;
+        }
+        .ios-wheel-highlight {
+            position: absolute;
+            top: 44px;
+            left: 8px;
+            right: 8px;
+            height: 44px;
+            background: rgba(217, 119, 6, 0.12);
+            border-top: 1.5px solid rgba(217, 119, 6, 0.45);
+            border-bottom: 1.5px solid rgba(217, 119, 6, 0.45);
+            border-radius: 10px;
+            pointer-events: none;
+            z-index: 2;
+        }
+        .ios-wheel-fade-top {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 40px;
+            background: linear-gradient(to bottom, rgba(249,250,251,0.95), rgba(249,250,251,0));
+            pointer-events: none;
+            z-index: 3;
+        }
+        .ios-wheel-fade-bottom {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 40px;
+            background: linear-gradient(to top, rgba(249,250,251,0.95), rgba(249,250,251,0));
+            pointer-events: none;
+            z-index: 3;
+        }
+        .ios-wheel-col {
+            height: 132px;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            padding-top: 44px;
+            padding-bottom: 44px;
+        }
+        .ios-wheel-col::-webkit-scrollbar {
+            display: none;
+        }
+        .ios-wheel-item {
+            height: 44px;
+            line-height: 44px;
+            text-align: center;
+            scroll-snap-align: center;
+            font-size: 15px;
+            font-weight: 500;
+            color: #9CA3AF;
+            cursor: pointer;
+            transition: color 0.12s ease, transform 0.12s ease, font-weight 0.12s ease;
+        }
+        .ios-wheel-item.active {
+            color: #111827;
+            font-weight: 700;
+            font-size: 17px;
+            transform: scale(1.04);
+        }
     </style>
 </head>
 <body class="bg-gradient-mint min-h-screen text-gray-800">
@@ -569,29 +637,60 @@
 
             <!-- 탭 A: 인원 추가 -->
             <div id="manage-panel-add" class="py-5 space-y-4 text-base">
-                <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-3 gap-2.5">
                     <div>
-                        <label class="block font-bold mb-1.5 text-gray-700 text-sm">관리번호 <span class="text-gray-400 font-normal">(예: L-0006)</span></label>
-                        <input id="new-target-id" type="text" placeholder="예: L-0006" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 text-base focus:outline-none focus:border-amber-500">
+                        <label class="block font-bold mb-1.5 text-gray-700 text-xs">관리번호 <span class="text-gray-400 font-normal">(L-0006)</span></label>
+                        <input id="new-target-id" type="text" placeholder="L-0006" class="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-amber-500">
                     </div>
                     <div>
-                        <label class="block font-bold mb-1.5 text-gray-700 text-sm">성명 <span class="text-gray-400 font-normal">(2자 이상)</span></label>
-                        <input id="new-target-name" type="text" placeholder="예: 홍길동" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 text-base focus:outline-none focus:border-amber-500">
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block font-bold mb-1.5 text-gray-700 text-sm">정기 연락 일정</label>
-                        <input id="new-target-schedule" type="text" value="매주 월·수·금 오전 10:00" placeholder="예: 월·수 09:00" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 text-base focus:outline-none focus:border-amber-500">
+                        <label class="block font-bold mb-1.5 text-gray-700 text-xs">성명 <span class="text-gray-400 font-normal">(2자 이상)</span></label>
+                        <input id="new-target-name" type="text" placeholder="홍길동" class="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-amber-500">
                     </div>
                     <div>
-                        <label class="block font-bold mb-1.5 text-gray-700 text-sm">담당 관리자</label>
-                        <input id="new-target-manager" type="text" placeholder="예: 김복지" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 text-base focus:outline-none focus:border-amber-500">
+                        <label class="block font-bold mb-1.5 text-gray-700 text-xs">담당 관리자</label>
+                        <input id="new-target-manager" type="text" placeholder="김복지" class="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-amber-500">
                     </div>
                 </div>
-                <div id="manage-validation-hint" class="p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-800 leading-relaxed">
-                    • 관리번호 형식(예: <code class="font-mono font-bold">L-0006</code>)이나 성명·일정이 비정상적으로 작성된 경우 등록 상태가 <strong class="text-rose-600">'오류'</strong>로 표시됩니다.
+
+                <!-- 정기 연락 요일 및 아이폰 시계 스타일 시간대 선택기 -->
+                <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label class="font-bold text-gray-700 text-sm">정기 연락 일정 선택</label>
+                        <span id="schedule-preview-badge" class="text-xs font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2.5 py-0.5 rounded-full">
+                            매주 월·수·금 오전 10:00
+                        </span>
+                    </div>
+
+                    <!-- 요일 선택 버튼 -->
+                    <div class="flex items-center justify-between gap-1 mb-2.5" id="schedule-days-group">
+                        <button type="button" onclick="toggleScheduleDay(this, '매일')" data-day="매일" class="day-chip px-2.5 py-1.5 rounded-lg text-xs font-bold border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 transition">매일</button>
+                        <button type="button" onclick="toggleScheduleDay(this, '월')" data-day="월" class="day-chip active flex-1 py-1.5 rounded-lg text-xs font-bold border border-amber-500 bg-amber-500 text-white transition">월</button>
+                        <button type="button" onclick="toggleScheduleDay(this, '화')" data-day="화" class="day-chip flex-1 py-1.5 rounded-lg text-xs font-bold border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 transition">화</button>
+                        <button type="button" onclick="toggleScheduleDay(this, '수')" data-day="수" class="day-chip active flex-1 py-1.5 rounded-lg text-xs font-bold border border-amber-500 bg-amber-500 text-white transition">수</button>
+                        <button type="button" onclick="toggleScheduleDay(this, '목')" data-day="목" class="day-chip flex-1 py-1.5 rounded-lg text-xs font-bold border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 transition">목</button>
+                        <button type="button" onclick="toggleScheduleDay(this, '금')" data-day="금" class="day-chip active flex-1 py-1.5 rounded-lg text-xs font-bold border border-amber-500 bg-amber-500 text-white transition">금</button>
+                        <button type="button" onclick="toggleScheduleDay(this, '토')" data-day="토" class="day-chip flex-1 py-1.5 rounded-lg text-xs font-bold border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 transition">토</button>
+                        <button type="button" onclick="toggleScheduleDay(this, '일')" data-day="일" class="day-chip flex-1 py-1.5 rounded-lg text-xs font-bold border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 transition">일</button>
+                    </div>
+
+                    <!-- 아이폰 시계 휠 피커 (오전/오후 · 시 · 분) -->
+                    <div class="ios-wheel-container grid grid-cols-3">
+                        <div class="ios-wheel-highlight"></div>
+                        <div class="ios-wheel-fade-top"></div>
+                        <div class="ios-wheel-fade-bottom"></div>
+
+                        <div id="wheel-ampm" class="ios-wheel-col" onscroll="handleWheelScroll('ampm')">
+                            <div class="ios-wheel-item active" data-val="오전" onclick="scrollWheelToValue('ampm', '오전')">오전</div>
+                            <div class="ios-wheel-item" data-val="오후" onclick="scrollWheelToValue('ampm', '오후')">오후</div>
+                        </div>
+
+                        <div id="wheel-hour" class="ios-wheel-col" onscroll="handleWheelScroll('hour')"></div>
+
+                        <div id="wheel-minute" class="ios-wheel-col" onscroll="handleWheelScroll('minute')"></div>
+                    </div>
+                    <input id="new-target-schedule" type="hidden" value="매주 월·수·금 오전 10:00">
                 </div>
+
                 <div class="pt-2 border-t border-gray-100 flex justify-end gap-2">
                     <button onclick="closeModals()" class="px-4 py-2.5 rounded-xl border border-gray-200 text-sm font-medium">취소</button>
                     <button onclick="saveNewTarget()" class="px-5 py-2.5 rounded-xl bg-amber-600 text-white text-sm font-bold hover:bg-amber-700 transition">추가하기</button>
@@ -1800,14 +1899,137 @@ ${needActionList}`;
             }
         }
 
+        // ============================================================
+        // 아이폰 시계 스타일 시간대 휠 피커 & 요일 선택 로직
+        // ============================================================
+        let selectedDays = ['월', '수', '금'];
+        let isDailySchedule = false;
+        let wheelState = { ampm: '오전', hour: '10', minute: '00' };
+        let wheelScrollTimers = {};
+
+        function initIosTimeWheel() {
+            const hourCol = document.getElementById('wheel-hour');
+            const minCol = document.getElementById('wheel-minute');
+            if (!hourCol || !minCol) return;
+
+            if (hourCol.children.length === 0) {
+                const hours = ['01','02','03','04','05','06','07','08','09','10','11','12'];
+                hourCol.innerHTML = hours.map(h =>
+                    `<div class="ios-wheel-item" data-val="${h}" onclick="scrollWheelToValue('hour', '${h}')">${parseInt(h, 10)}시</div>`
+                ).join('');
+            }
+
+            if (minCol.children.length === 0) {
+                const mins = [];
+                for (let m = 0; m < 60; m += 5) {
+                    mins.push(String(m).padStart(2, '0'));
+                }
+                minCol.innerHTML = mins.map(m =>
+                    `<div class="ios-wheel-item" data-val="${m}" onclick="scrollWheelToValue('minute', '${m}')">${m}분</div>`
+                ).join('');
+            }
+        }
+
+        function scrollWheelToValue(type, val, instant = false) {
+            const col = document.getElementById(`wheel-${type}`);
+            if (!col) return;
+            const items = Array.from(col.querySelectorAll('.ios-wheel-item'));
+            const idx = items.findIndex(el => el.dataset.val === val);
+            if (idx === -1) return;
+
+            wheelState[type] = val;
+            items.forEach((el, i) => el.classList.toggle('active', i === idx));
+            col.scrollTo({ top: idx * 44, behavior: instant ? 'auto' : 'smooth' });
+            updateSchedulePreview();
+        }
+
+        function handleWheelScroll(type) {
+            const col = document.getElementById(`wheel-${type}`);
+            if (!col) return;
+
+            const items = Array.from(col.querySelectorAll('.ios-wheel-item'));
+            const idx = Math.max(0, Math.min(items.length - 1, Math.round(col.scrollTop / 44)));
+            items.forEach((el, i) => el.classList.toggle('active', i === idx));
+
+            if (items[idx]) {
+                wheelState[type] = items[idx].dataset.val;
+                updateSchedulePreview();
+            }
+
+            clearTimeout(wheelScrollTimers[type]);
+            wheelScrollTimers[type] = setTimeout(() => {
+                col.scrollTo({ top: idx * 44, behavior: 'smooth' });
+            }, 90);
+        }
+
+        function toggleScheduleDay(btn, day) {
+            const orderedDays = ['월', '화', '수', '목', '금', '토', '일'];
+            if (day === '매일') {
+                isDailySchedule = !isDailySchedule;
+                if (isDailySchedule) {
+                    selectedDays = [];
+                } else {
+                    selectedDays = ['월', '수', '금'];
+                }
+            } else {
+                isDailySchedule = false;
+                if (selectedDays.includes(day)) {
+                    if (selectedDays.length > 1) {
+                        selectedDays = selectedDays.filter(d => d !== day);
+                    }
+                } else {
+                    selectedDays.push(day);
+                    selectedDays.sort((a, b) => orderedDays.indexOf(a) - orderedDays.indexOf(b));
+                }
+            }
+            syncDayChipsUI();
+            updateSchedulePreview();
+        }
+
+        function syncDayChipsUI() {
+            document.querySelectorAll('#schedule-days-group .day-chip').forEach(chip => {
+                const d = chip.dataset.day;
+                const isSelected = (d === '매일' && isDailySchedule) || (d !== '매일' && !isDailySchedule && selectedDays.includes(d));
+                if (isSelected) {
+                    chip.className = chip.dataset.day === '매일'
+                        ? 'day-chip active px-2.5 py-1.5 rounded-lg text-xs font-bold border border-amber-500 bg-amber-500 text-white transition'
+                        : 'day-chip active flex-1 py-1.5 rounded-lg text-xs font-bold border border-amber-500 bg-amber-500 text-white transition';
+                } else {
+                    chip.className = chip.dataset.day === '매일'
+                        ? 'day-chip px-2.5 py-1.5 rounded-lg text-xs font-bold border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 transition'
+                        : 'day-chip flex-1 py-1.5 rounded-lg text-xs font-bold border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 transition';
+                }
+            });
+        }
+
+        function updateSchedulePreview() {
+            const dayPart = isDailySchedule ? '매일' : `매주 ${selectedDays.join('·')}`;
+            const formatted = `${dayPart} ${wheelState.ampm} ${wheelState.hour}:${wheelState.minute}`;
+            const hiddenInput = document.getElementById('new-target-schedule');
+            const badge = document.getElementById('schedule-preview-badge');
+            if (hiddenInput) hiddenInput.value = formatted;
+            if (badge) badge.innerText = formatted;
+        }
+
         function openManageModal() {
             const nextNum = String(currentTargets.length + 1).padStart(4, '0');
             document.getElementById('new-target-id').value = `L-${nextNum}`;
             document.getElementById('new-target-name').value = '';
-            document.getElementById('new-target-schedule').value = '매주 월·수·금 오전 10:00';
             document.getElementById('new-target-manager').value = managerProfile.name;
+
+            // 요일 및 아이폰 스타일 시간 휠 초기화 (기본: 매주 월·수·금 오전 10:00)
+            isDailySchedule = false;
+            selectedDays = ['월', '수', '금'];
+            syncDayChipsUI();
+            initIosTimeWheel();
+
             switchManageTab('add');
             document.getElementById('manage-modal').classList.remove('hidden');
+            requestAnimationFrame(() => {
+                scrollWheelToValue('ampm', '오전', true);
+                scrollWheelToValue('hour', '10', true);
+                scrollWheelToValue('minute', '00', true);
+            });
         }
         function openSettingsModal() {
             document.getElementById('profile-dropdown').classList.add('hidden');
