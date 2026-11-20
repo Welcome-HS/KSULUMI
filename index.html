@@ -360,6 +360,10 @@
                                     <i data-lucide="sliders-horizontal" class="w-5 h-5"></i>
                                     관리하기
                                 </button>
+                                <button onclick="saveTargetsExplicitly()" class="px-4 py-2.5 rounded-xl border border-[#EADBC8] bg-white/90 hover:bg-black/5 text-base font-bold transition flex items-center gap-1.5 shrink-0">
+                                    <i data-lucide="save" class="w-4 h-4"></i>
+                                    저장
+                                </button>
                             </div>
                         </div>
 
@@ -599,8 +603,8 @@
                 <p class="text-sm text-gray-600">삭제할 인원을 선택해 목록에서 제거할 수 있습니다.</p>
                 <div id="manage-delete-list" class="max-h-64 overflow-y-auto divide-y divide-gray-100 border border-gray-200 rounded-xl">
                 </div>
-                <div class="pt-2 border-t border-gray-100 flex justify-end">
-                    <button onclick="closeModals()" class="px-5 py-2.5 rounded-xl bg-gray-900 text-white text-sm font-bold">닫기</button>
+                <div class="pt-2 border-t border-gray-100 flex justify-end gap-2">
+                    <button onclick="saveTargetsExplicitly(true)" class="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-sm font-bold transition">저장하기</button>
                 </div>
             </div>
         </div>
@@ -838,6 +842,7 @@
 
         let currentLogs = JSON.parse(JSON.stringify(DEFAULT_LOGS));
         let currentTargets = JSON.parse(JSON.stringify(DEFAULT_TARGETS));
+        let deletedTargetIds = [];
         let managerProfile = {
             name: '김복지',
             role: '안부 확인 전담 사회복지사',
@@ -857,6 +862,7 @@
                 profile: managerProfile,
                 localLogs: currentLogs,
                 localTargets: currentTargets,
+                deletedTargetIds: deletedTargetIds,
                 savedAt: new Date().toISOString()
             };
             localStorage.setItem(STORAGE_PREFIX + currentUserId, JSON.stringify(stateObj));
@@ -948,8 +954,9 @@
             if (saved) {
                 // 기존에 해당 아이디로 저장된 화면·설정 복원
                 managerProfile = saved.profile || { name: userId, role: '안부 확인 전담 사회복지사', org: '부산 남구 복지관' };
-                currentLogs = saved.localLogs || JSON.parse(JSON.stringify(DEFAULT_LOGS));
-                currentTargets = saved.localTargets || JSON.parse(JSON.stringify(DEFAULT_TARGETS));
+                currentLogs = Array.isArray(saved.localLogs) ? saved.localLogs : JSON.parse(JSON.stringify(DEFAULT_LOGS));
+                currentTargets = Array.isArray(saved.localTargets) ? saved.localTargets : JSON.parse(JSON.stringify(DEFAULT_TARGETS));
+                deletedTargetIds = Array.isArray(saved.deletedTargetIds) ? saved.deletedTargetIds : [];
                 activeLogFilter = saved.lastFilter || 'ALL';
 
                 applyProfileToUI();
@@ -974,6 +981,7 @@
                 };
                 currentLogs = JSON.parse(JSON.stringify(DEFAULT_LOGS));
                 currentTargets = JSON.parse(JSON.stringify(DEFAULT_TARGETS));
+                deletedTargetIds = [];
                 activeLogFilter = 'ALL';
 
                 applyProfileToUI();
@@ -1062,21 +1070,92 @@
         // 5. Supabase 및 모든 메뉴 데이터 동기화
         // ============================================================
         async function fetchAllData() {
+            const hasSavedLocalState = Boolean(currentUserId && loadAccountState(currentUserId));
+
             if (supabaseClient) {
                 const [logsRes, targetsRes] = await Promise.all([
                     supabaseClient.from('contact_logs').select('*').order('log_id', { ascending: false }),
                     supabaseClient.from('targets').select('*').order('target_id', { ascending: true })
                 ]);
 
-                if (!logsRes.error && logsRes.data) {
-                    currentLogs = logsRes.data;
+                const deletedSet = new Set(deletedTargetIds.map(id => (id || '').toUpperCase()));
+
+                if (!targetsRes.error && Array.isArray(targetsRes.data)) {
+                    if (!hasSavedLocalState && targetsRes.data.length > 0) {
+                        currentTargets = targetsRes.data.filter(t => !deletedSet.has((t.target_id || '').toUpperCase()));
+                    } else {
+                        // 로컬 저장 상태가 있으면 삭제된 ID는 제외하고, DB에만 새로 추가된 항목만 병합
+                        const localMap = new Map(currentTargets.map(t => [(t.target_id || '').toUpperCase(), t]));
+                        targetsRes.data.forEach(dbItem => {
+                            const key = (dbItem.target_id || '').toUpperCase();
+                            if (!deletedSet.has(key) && !localMap.has(key)) {
+                                currentTargets.push(dbItem);
+                            }
+                        });
+                    }
                 }
-                if (!targetsRes.error && targetsRes.data && targetsRes.data.length > 0) {
-                    currentTargets = targetsRes.data;
+
+                if (!logsRes.error && Array.isArray(logsRes.data)) {
+                    if (!hasSavedLocalState && logsRes.data.length > 0) {
+                        currentLogs = logsRes.data.filter(l => !deletedSet.has((l.target_id || '').toUpperCase()));
+                    } else {
+                        const existingKeys = new Set(currentLogs.map(l => `${(l.target_id || '').toUpperCase()}::${l.memo || ''}`));
+                        logsRes.data.forEach(dbLog => {
+                            const tid = (dbLog.target_id || '').toUpperCase();
+                            const key = `${tid}::${dbLog.memo || ''}`;
+                            if (!deletedSet.has(tid) && !existingKeys.has(key)) {
+                                currentLogs.push(dbLog);
+                            }
+                        });
+                    }
                 }
+                syncLogsWithTargets();
                 persistAccountState();
+            } else {
+                syncLogsWithTargets();
             }
             renderAllSections();
+        }
+
+        // 인원 관리(currentTargets)와 홈페이지 안부 확인 현황(currentLogs) 양방향 동기화
+        function syncLogsWithTargets() {
+            const targetMap = new Map(
+                currentTargets.map(t => [(t.target_id || '').trim().toUpperCase(), t])
+            );
+
+            // 1. 인원 관리에서 삭제된 대상자는 홈페이지 목록에서도 제거
+            currentLogs = currentLogs.filter(log => {
+                const key = (log.target_id || '').trim().toUpperCase();
+                return targetMap.has(key);
+            });
+
+            // 2. 인원 관리에 등록된 인원 중 홈페이지 목록에 없는 인원은 자동 연동 추가
+            const existingLogTargetIds = new Set(
+                currentLogs.map(l => (l.target_id || '').trim().toUpperCase())
+            );
+
+            currentTargets.forEach(t => {
+                const key = (t.target_id || '').trim().toUpperCase();
+                if (!existingLogTargetIds.has(key)) {
+                    const isError = t.status === '오류' || !validateTargetEntry(t);
+                    currentLogs.unshift({
+                        log_id: Date.now() + Math.floor(Math.random() * 1000),
+                        target_id: t.target_id,
+                        target_name: t.name,
+                        result_status: isError ? '연결 오류' : '응답 완료',
+                        memo: isError ? (t.error_reason || '인원 등록 정보 오류 확인 필요') : `정기 일정(${t.contact_schedule || '미지정'}) 등록 완료`,
+                        manager_name: t.manager_name || managerProfile.name,
+                        followup_status: isError ? '재연락 필요' : '완료'
+                    });
+                } else {
+                    // 기존 로그의 대상자명/담당자도 인원 관리 정보와 최신화
+                    currentLogs.forEach(l => {
+                        if ((l.target_id || '').trim().toUpperCase() === key) {
+                            l.target_name = t.name;
+                        }
+                    });
+                }
+            });
         }
 
         let targetSearchTimer = null;
@@ -1391,14 +1470,46 @@ ${needActionList}`;
             if (!target) return;
             if (!confirm(`[${target.target_id}] ${target.name} 인원을 삭제하시겠습니까?`)) return;
 
+            const upperId = (target.target_id || '').trim().toUpperCase();
+            if (upperId && !deletedTargetIds.includes(upperId)) {
+                deletedTargetIds.push(upperId);
+            }
+
             if (supabaseClient && target.target_id) {
+                // 외래키 제약 조건 방지를 위해 연관 기록 먼저 삭제 후 대상자 삭제
+                await supabaseClient.from('contact_logs').delete().eq('target_id', target.target_id);
                 await supabaseClient.from('targets').delete().eq('target_id', target.target_id);
             }
 
             currentTargets.splice(idx, 1);
+            syncLogsWithTargets();
             persistAccountState();
             renderManageDeleteList();
             renderAllSections();
+        }
+
+        async function saveTargetsExplicitly(shouldCloseModal = false) {
+            syncLogsWithTargets();
+            persistAccountState();
+
+            if (supabaseClient) {
+                const validRows = currentTargets
+                    .filter(t => t.status !== '오류' && validateTargetEntry(t))
+                    .map(t => ({
+                        target_id: t.target_id,
+                        name: t.name,
+                        contact_schedule: t.contact_schedule,
+                        manager_name: t.manager_name || managerProfile.name,
+                        status: '완료'
+                    }));
+                if (validRows.length > 0) {
+                    await supabaseClient.from('targets').upsert(validRows);
+                }
+            }
+
+            if (shouldCloseModal) closeModals();
+            renderAllSections();
+            alert('인원 관리 변경사항이 저장되었으며 홈페이지 현황에도 반영되었습니다.');
         }
 
         async function saveNewTarget() {
@@ -1412,10 +1523,14 @@ ${needActionList}`;
                 return;
             }
 
+            // 이전에 삭제했던 관리번호를 다시 추가하는 경우 삭제 목록에서 해제
+            const upperId = target_id.toUpperCase();
+            deletedTargetIds = deletedTargetIds.filter(id => id !== upperId);
+
             // 이상하게 작성된 경우를 판별하여 '완료' 또는 '오류' 상태 부여
             const draft = { target_id, name, contact_schedule, manager_name };
             const isValid = validateTargetEntry(draft);
-            const isDuplicateId = currentTargets.some(t => (t.target_id || '').toUpperCase() === target_id.toUpperCase());
+            const isDuplicateId = currentTargets.some(t => (t.target_id || '').toUpperCase() === upperId);
 
             let status = '완료';
             let error_reason = '';
@@ -1453,6 +1568,7 @@ ${needActionList}`;
             }
 
             currentTargets.push(newTarget);
+            syncLogsWithTargets();
             persistAccountState();
             closeModals();
             renderAllSections();
@@ -1490,8 +1606,18 @@ ${needActionList}`;
                 await supabaseClient.from('targets').upsert({
                     target_id,
                     name: target_name,
-                    manager_name: managerProfile.name
+                    manager_name: managerProfile.name,
+                    status: '완료'
                 });
+                if (!currentTargets.some(t => (t.target_id || '').toUpperCase() === target_id.toUpperCase())) {
+                    currentTargets.push({
+                        target_id,
+                        name: target_name,
+                        contact_schedule: '매주 월·수·금 오전 10:00',
+                        manager_name: managerProfile.name,
+                        status: '완료'
+                    });
+                }
 
                 const { error } = await supabaseClient.from('contact_logs').insert([newRecord]);
                 btn.innerText = '결과 저장';
@@ -1507,6 +1633,15 @@ ${needActionList}`;
             } else {
                 newRecord.log_id = Date.now();
                 currentLogs.unshift(newRecord);
+                if (!currentTargets.some(t => (t.target_id || '').toUpperCase() === target_id.toUpperCase())) {
+                    currentTargets.push({
+                        target_id,
+                        name: target_name,
+                        contact_schedule: '매주 월·수·금 오전 10:00',
+                        manager_name: managerProfile.name,
+                        status: '완료'
+                    });
+                }
                 persistAccountState();
                 document.getElementById('input-memo').value = '';
                 closeModals();
