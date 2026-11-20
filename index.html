@@ -4,12 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>루미(LUMI) - 복지업무 지원 AI 서비스</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Supabase JS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body { font-family: 'Noto Sans KR', Arial, sans-serif; }
         .dashboard-font { font-family: Arial, 'Noto Sans KR', sans-serif; }
@@ -19,11 +18,8 @@
 </head>
 <body class="bg-gradient-mint min-h-screen text-gray-800">
 
-    <!-- ========================================== -->
-    <!-- 1. 랜딩 페이지 뷰 (Landing Page View)       -->
-    <!-- ========================================== -->
+    <!-- 1. 랜딩 페이지 뷰 -->
     <div id="landing-view" class="block">
-        <!-- Header -->
         <header class="container mx-auto px-6 py-4 flex justify-between items-center">
             <div class="flex items-center gap-2 text-teal-600 font-bold text-2xl tracking-tighter">
                 <i data-lucide="heart-handshake"></i>
@@ -39,7 +35,6 @@
             </button>
         </header>
 
-        <!-- Hero Section -->
         <main class="container mx-auto px-6 pt-24 pb-20 text-center">
             <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-teal-50 text-teal-700 font-medium text-sm mb-8 border border-teal-100">
                 <i data-lucide="sparkles" class="w-4 h-4"></i>
@@ -69,7 +64,6 @@
             </div>
         </main>
 
-        <!-- Features Section -->
         <section id="features" class="bg-white py-20">
             <div class="container mx-auto px-6">
                 <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">복지 현장에 꼭 필요한 3가지 핵심 기능</h2>
@@ -107,15 +101,12 @@
             </div>
         </section>
 
-        <!-- Footer -->
         <footer id="contact" class="bg-gray-50 border-t border-gray-200 py-10 text-center text-gray-500 text-sm">
             <p>© 2026 LUMI. 복지업무 지원 AI 서비스. All rights reserved.</p>
         </footer>
     </div>
 
-    <!-- ========================================== -->
-    <!-- 2. 대시보드 뷰 (Dashboard View)             -->
-    <!-- ========================================== -->
+    <!-- 2. 대시보드 뷰 -->
     <div id="dashboard-view" class="hidden dashboard-font bg-[#EFE9E1] min-h-screen flex items-center justify-center p-0 md:p-4 transition-theme">
         <div id="main-container" class="w-full max-w-[1920px] h-screen md:h-[94vh] bg-[#FDF8F3] text-[#433422] flex overflow-hidden shadow-2xl md:rounded-2xl border border-[#EADBC8] transition-all duration-300">
             
@@ -157,22 +148,23 @@
                     </nav>
                 </div>
                 
-                <div class="pt-6 border-t border-[#EADBC8] text-xs opacity-60" id="sidebar-footer">
-                    루미 MVP · 담당자 화면
+                <div class="pt-6 border-t border-[#EADBC8] space-y-2" id="sidebar-footer">
+                    <div id="db-status-badge" class="inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-full bg-amber-100 text-amber-800">
+                        <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                        <span>로컬 데모 모드</span>
+                    </div>
+                    <div class="text-xs opacity-60">루미 MVP · 담당자 화면</div>
                 </div>
             </aside>
 
             <!-- 메인 콘텐츠 영역 -->
             <div class="flex-1 flex flex-col overflow-hidden">
-                
-                <!-- 상단 헤더 -->
                 <header id="top-header" class="h-20 border-b border-[#EADBC8] px-8 flex items-center justify-between shrink-0 transition-theme">
                     <div>
                         <h1 class="text-xl font-bold" id="page-title">오늘의 안부 확인 현황</h1>
-                        <p class="text-xs opacity-70 mt-0.5">2026년 11월 16일 (월) · 응답 결과와 후속 조치가 필요한 건을 한눈에 확인하세요</p>
+                        <p class="text-xs opacity-70 mt-0.5">2026년 11월 20일 (금) · 응답 결과와 후속 조치가 필요한 건을 한눈에 확인하세요</p>
                     </div>
                     
-                    <!-- 담당자 프로필 및 드롭다운 -->
                     <div class="relative">
                         <button onclick="toggleProfileDropdown()" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-black/5 transition">
                             <div class="w-9 h-9 rounded-full bg-[#D97706] text-white flex items-center justify-center font-bold text-sm" id="avatar-bg">
@@ -185,7 +177,6 @@
                             <i data-lucide="chevron-down" class="w-4 h-4 opacity-60"></i>
                         </button>
                         
-                        <!-- 프로필 드롭다운 메뉴 -->
                         <div id="profile-dropdown" class="hidden absolute right-0 mt-2 w-48 rounded-xl shadow-lg border border-[#EADBC8] bg-white text-gray-800 py-2 z-30">
                             <button onclick="openInfoModal()" class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-100 flex items-center gap-2">
                                 <i data-lucide="user" class="w-4 h-4"></i>
@@ -222,8 +213,8 @@
                                     <i data-lucide="check-circle-2" class="w-5 h-5"></i>
                                 </div>
                             </div>
-                            <div class="text-3xl font-bold">17명</div>
-                            <div class="text-xs text-emerald-600 font-medium mt-2">진행률 70.8%</div>
+                            <div class="text-3xl font-bold" id="stat-total-logs">4건</div>
+                            <div class="text-xs text-emerald-600 font-medium mt-2">DB 실시간 집계 반영</div>
                         </div>
 
                         <div class="card p-6 rounded-2xl border border-[#EADBC8] bg-white/80 shadow-sm transition-theme">
@@ -233,19 +224,19 @@
                                     <i data-lucide="alert-circle" class="w-5 h-5"></i>
                                 </div>
                             </div>
-                            <div class="text-3xl font-bold text-rose-600">5건</div>
-                            <div class="text-xs opacity-60 mt-2">도움 요청 1건 · 미응답 3건 · 오류 1건</div>
+                            <div class="text-3xl font-bold text-rose-600" id="stat-need-followup">3건</div>
+                            <div class="text-xs opacity-60 mt-2">미응답 · 도움 요청 · 연결 오류</div>
                         </div>
 
                         <div class="card p-6 rounded-2xl border border-[#EADBC8] bg-white/80 shadow-sm transition-theme">
                             <div class="flex justify-between items-start mb-4">
-                                <span class="text-sm font-medium opacity-75">조치 진행 중</span>
+                                <span class="text-sm font-medium opacity-75">조치 완료 건수</span>
                                 <div class="p-2 rounded-lg bg-blue-100 text-blue-700">
-                                    <i data-lucide="loader" class="w-5 h-5"></i>
+                                    <i data-lucide="check-check" class="w-5 h-5"></i>
                                 </div>
                             </div>
-                            <div class="text-3xl font-bold">2건</div>
-                            <div class="text-xs opacity-60 mt-2">오늘 업무시간 내 처리 예정</div>
+                            <div class="text-3xl font-bold" id="stat-completed">1건</div>
+                            <div class="text-xs opacity-60 mt-2">오늘 업무시간 내 처리 기준</div>
                         </div>
                     </div>
 
@@ -256,7 +247,7 @@
                                 <h2 class="text-lg font-bold">우선 확인할 업무 (담당자 판단 필요)</h2>
                                 <p class="text-xs opacity-60 mt-0.5">미응답 및 도움 요청 건은 후속 조치 목록에 자동 등록됩니다.</p>
                             </div>
-                            <button onclick="alert('안부 확인 결과 입력 창이 준비되었습니다.')" class="px-4 py-2 rounded-xl bg-[#D97706] text-white text-sm font-bold hover:opacity-90 transition flex items-center gap-2" id="action-btn">
+                            <button onclick="openInputModal()" class="px-4 py-2 rounded-xl bg-[#D97706] text-white text-sm font-bold hover:opacity-90 transition flex items-center gap-2" id="action-btn">
                                 <i data-lucide="plus" class="w-4 h-4"></i>
                                 결과 입력하기
                             </button>
@@ -269,52 +260,13 @@
                                         <th class="py-3.5 px-6">관리번호</th>
                                         <th class="py-3.5 px-6">대상자</th>
                                         <th class="py-3.5 px-6">안부 결과</th>
-                                        <th class="py-3.5 px-6">최근 확인</th>
+                                        <th class="py-3.5 px-6">확인 메모</th>
                                         <th class="py-3.5 px-6">담당자</th>
                                         <th class="py-3.5 px-6">후속 상태</th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-[#EADBC8] text-sm">
-                                    <tr class="hover:bg-black/5 transition">
-                                        <td class="py-4 px-6 font-mono text-xs opacity-75">L-0002</td>
-                                        <td class="py-4 px-6 font-bold">대상자 B</td>
-                                        <td class="py-4 px-6">
-                                            <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-700">도움 요청</span>
-                                        </td>
-                                        <td class="py-4 px-6 opacity-75">오늘 09:25</td>
-                                        <td class="py-4 px-6">담당자 2</td>
-                                        <td class="py-4 px-6 font-bold text-rose-600">미처리 (확인 대기)</td>
-                                    </tr>
-                                    <tr class="hover:bg-black/5 transition">
-                                        <td class="py-4 px-6 font-mono text-xs opacity-75">L-0001</td>
-                                        <td class="py-4 px-6 font-bold">대상자 A</td>
-                                        <td class="py-4 px-6">
-                                            <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800">미응답</span>
-                                        </td>
-                                        <td class="py-4 px-6 opacity-75">오늘 09:10</td>
-                                        <td class="py-4 px-6">담당자 1</td>
-                                        <td class="py-4 px-6 font-medium text-amber-700">재연락 필요</td>
-                                    </tr>
-                                    <tr class="hover:bg-black/5 transition">
-                                        <td class="py-4 px-6 font-mono text-xs opacity-75">L-0004</td>
-                                        <td class="py-4 px-6 font-bold">대상자 D</td>
-                                        <td class="py-4 px-6">
-                                            <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-gray-200 text-gray-700">연결 오류</span>
-                                        </td>
-                                        <td class="py-4 px-6 opacity-75">오늘 10:00</td>
-                                        <td class="py-4 px-6">담당자 3</td>
-                                        <td class="py-4 px-6 opacity-75">재연락 필요</td>
-                                    </tr>
-                                    <tr class="hover:bg-black/5 transition">
-                                        <td class="py-4 px-6 font-mono text-xs opacity-75">L-0003</td>
-                                        <td class="py-4 px-6 font-bold">대상자 C</td>
-                                        <td class="py-4 px-6">
-                                            <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700">응답 완료</span>
-                                        </td>
-                                        <td class="py-4 px-6 opacity-75">오늘 09:50</td>
-                                        <td class="py-4 px-6">담당자 1</td>
-                                        <td class="py-4 px-6 text-emerald-600 font-medium">완료</td>
-                                    </tr>
+                                <tbody id="logs-table-body" class="divide-y divide-[#EADBC8] text-sm">
+                                    <!-- JS 동적 렌더링 영역 -->
                                 </tbody>
                             </table>
                         </div>
@@ -326,10 +278,72 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- 모달 창 영역 (설정, 개인정보, 도입상담)       -->
+    <!-- 모달 창 영역                                 -->
     <!-- ========================================== -->
 
-    <!-- 설정 모달 (테마 & 해상도) -->
+    <!-- 안부 확인 결과 입력 모달 (Supabase INSERT 연동) -->
+    <div id="input-modal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="bg-white text-gray-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-200">
+            <div class="flex justify-between items-center pb-4 border-b border-gray-100">
+                <h3 class="text-lg font-bold flex items-center gap-2">
+                    <i data-lucide="phone-call" class="w-5 h-5 text-amber-600"></i>
+                    안부 확인 결과 입력
+                </h3>
+                <button onclick="closeModals()" class="p-1 rounded-lg hover:bg-gray-100">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <div class="py-5 space-y-4 text-sm">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold mb-1 text-gray-700">관리번호</label>
+                        <input id="input-target-id" type="text" value="L-0005" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:border-amber-500">
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1 text-gray-700">대상자명</label>
+                        <input id="input-target-name" type="text" value="대상자 E" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:border-amber-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-bold mb-2 text-gray-700">연락 결과 선택</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <label class="flex items-center gap-2 p-3 rounded-xl border cursor-pointer hover:bg-gray-50">
+                            <input type="radio" name="result_status" value="응답 완료" checked>
+                            <span>응답 완료</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-3 rounded-xl border cursor-pointer hover:bg-gray-50">
+                            <input type="radio" name="result_status" value="미응답">
+                            <span>미응답</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-3 rounded-xl border cursor-pointer hover:bg-gray-50">
+                            <input type="radio" name="result_status" value="도움 요청">
+                            <span>도움 요청</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-3 rounded-xl border cursor-pointer hover:bg-gray-50">
+                            <input type="radio" name="result_status" value="연결 오류">
+                            <span>연결 오류</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-bold mb-1 text-gray-700">확인 메모</label>
+                    <textarea id="input-memo" rows="2" placeholder="통화 내용 및 특이사항을 입력하세요" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:border-amber-500"></textarea>
+                </div>
+            </div>
+
+            <div class="pt-3 border-t border-gray-100 flex justify-end gap-2">
+                <button onclick="closeModals()" class="px-4 py-2.5 rounded-xl border border-gray-200 text-sm font-medium">취소</button>
+                <button onclick="saveContactLog()" id="save-log-btn" class="px-5 py-2.5 rounded-xl bg-amber-600 text-white text-sm font-bold hover:bg-amber-700 transition">
+                    결과 저장
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 설정 모달 -->
     <div id="settings-modal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
         <div class="bg-white text-gray-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-200">
             <div class="flex justify-between items-center pb-4 border-b border-gray-100">
@@ -347,38 +361,23 @@
                     <label class="block text-sm font-bold text-gray-700 mb-3">테마 색상 (5종)</label>
                     <div class="grid grid-cols-1 gap-2.5">
                         <button onclick="applyTheme('warm')" class="flex items-center justify-between px-4 py-3 rounded-xl border hover:border-amber-500 transition text-sm font-medium">
-                            <span class="flex items-center gap-3">
-                                <span class="w-4 h-4 rounded-full bg-[#D97706]"></span>
-                                1. 웜 오렌지 (기본 따뜻한 톤)
-                            </span>
+                            <span class="flex items-center gap-3"><span class="w-4 h-4 rounded-full bg-[#D97706]"></span>1. 웜 오렌지 (기본 따뜻한 톤)</span>
                             <span class="text-xs text-gray-400">Warm</span>
                         </button>
                         <button onclick="applyTheme('blue')" class="flex items-center justify-between px-4 py-3 rounded-xl border hover:border-blue-500 transition text-sm font-medium">
-                            <span class="flex items-center gap-3">
-                                <span class="w-4 h-4 rounded-full bg-blue-600"></span>
-                                2. 트러스트 블루 (신뢰감 있는 공공 톤)
-                            </span>
+                            <span class="flex items-center gap-3"><span class="w-4 h-4 rounded-full bg-blue-600"></span>2. 트러스트 블루 (신뢰감 있는 공공 톤)</span>
                             <span class="text-xs text-gray-400">Blue</span>
                         </button>
                         <button onclick="applyTheme('green')" class="flex items-center justify-between px-4 py-3 rounded-xl border hover:border-teal-500 transition text-sm font-medium">
-                            <span class="flex items-center gap-3">
-                                <span class="w-4 h-4 rounded-full bg-teal-600"></span>
-                                3. 힐링 그린 (눈이 편안한 민트/그린)
-                            </span>
+                            <span class="flex items-center gap-3"><span class="w-4 h-4 rounded-full bg-teal-600"></span>3. 힐링 그린 (눈이 편안한 민트/그린)</span>
                             <span class="text-xs text-gray-400">Green</span>
                         </button>
                         <button onclick="applyTheme('dark')" class="flex items-center justify-between px-4 py-3 rounded-xl border hover:border-gray-700 transition text-sm font-medium">
-                            <span class="flex items-center gap-3">
-                                <span class="w-4 h-4 rounded-full bg-slate-800"></span>
-                                4. 다크 모드 (야간·저조도 근무용)
-                            </span>
+                            <span class="flex items-center gap-3"><span class="w-4 h-4 rounded-full bg-slate-800"></span>4. 다크 모드 (야간·저조도 근무용)</span>
                             <span class="text-xs text-gray-400">Dark</span>
                         </button>
                         <button onclick="applyTheme('mono')" class="flex items-center justify-between px-4 py-3 rounded-xl border hover:border-gray-500 transition text-sm font-medium">
-                            <span class="flex items-center gap-3">
-                                <span class="w-4 h-4 rounded-full bg-zinc-700"></span>
-                                5. 클린 모노 (고대비 무채색)
-                            </span>
+                            <span class="flex items-center gap-3"><span class="w-4 h-4 rounded-full bg-zinc-700"></span>5. 클린 모노 (고대비 무채색)</span>
                             <span class="text-xs text-gray-400">Mono</span>
                         </button>
                     </div>
@@ -398,9 +397,7 @@
             </div>
 
             <div class="pt-3 border-t border-gray-100 flex justify-end">
-                <button onclick="closeModals()" class="px-5 py-2.5 rounded-xl bg-gray-900 text-white text-sm font-bold hover:bg-gray-800 transition">
-                    확인
-                </button>
+                <button onclick="closeModals()" class="px-5 py-2.5 rounded-xl bg-gray-900 text-white text-sm font-bold hover:bg-gray-800 transition">확인</button>
             </div>
         </div>
     </div>
@@ -410,9 +407,7 @@
         <div class="bg-white text-gray-800 rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-gray-200">
             <div class="flex justify-between items-center pb-4 border-b border-gray-100">
                 <h3 class="text-lg font-bold">담당자 개인정보</h3>
-                <button onclick="closeModals()" class="p-1 rounded-lg hover:bg-gray-100">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
+                <button onclick="closeModals()" class="p-1 rounded-lg hover:bg-gray-100"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <div class="py-5 space-y-3 text-sm">
                 <div class="flex justify-between"><span class="text-gray-500">성명</span><span class="font-bold">김복지</span></div>
@@ -431,9 +426,7 @@
         <div class="bg-white text-gray-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-200">
             <div class="flex justify-between items-center pb-4 border-b border-gray-100">
                 <h3 class="text-lg font-bold text-teal-700">LUMI 기관 도입 문의</h3>
-                <button onclick="closeModals()" class="p-1 rounded-lg hover:bg-gray-100">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
+                <button onclick="closeModals()" class="p-1 rounded-lg hover:bg-gray-100"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <div class="py-5 space-y-4 text-sm">
                 <p class="text-gray-600">지자체 및 복지기관의 실증 도입(6~8주 시범 운영)을 지원합니다.</p>
@@ -448,7 +441,7 @@
             </div>
             <div class="pt-3 border-t border-gray-100 flex justify-end gap-2">
                 <button onclick="closeModals()" class="px-4 py-2 rounded-xl border border-gray-200 text-sm font-medium">취소</button>
-                <button onclick="alert('상담 신청이 접수되었습니다. 담당자가 곧 연락드리겠습니다.'); closeModals();" class="px-5 py-2 rounded-xl bg-teal-600 text-white text-sm font-bold hover:bg-teal-700">신청하기</button>
+                <button onclick="alert('상담 신청이 접수되었습니다.'); closeModals();" class="px-5 py-2 rounded-xl bg-teal-600 text-white text-sm font-bold hover:bg-teal-700">신청하기</button>
             </div>
         </div>
     </div>
@@ -456,12 +449,149 @@
     <script>
         lucide.createIcons();
 
+        // Supabase Project URL과 Publishable Key 연결 완료
+        const SUPABASE_URL = 'https://vjfxmorygeflqvkuwtkl.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_bQUGUnAEmtsGAEQ6-vILDQ_YJW9GH91';
+
+        let supabaseClient = null;
+        if (SUPABASE_URL && SUPABASE_ANON_KEY) {
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            const badge = document.getElementById('db-status-badge');
+            badge.className = 'inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800';
+            badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span><span>Supabase DB 연결됨</span>';
+        }
+
+        // 초기 로컬 폴백 데이터
+        let localLogs = [
+            { target_id: 'L-0002', target_name: '대상자 B', result_status: '도움 요청', memo: '허리 통증 호소, 방문 확인 요청', manager_name: '담당자 2', followup_status: '미처리 (확인 대기)' },
+            { target_id: 'L-0001', target_name: '대상자 A', result_status: '미응답', memo: '1차 연락 미응답/재연락 검토', manager_name: '담당자 1', followup_status: '재연락 필요' },
+            { target_id: 'L-0004', target_name: '대상자 D', result_status: '연결 오류', memo: '통신사 착신 전환 오류', manager_name: '담당자 3', followup_status: '재연락 필요' },
+            { target_id: 'L-0003', target_name: '대상자 C', result_status: '응답 완료', memo: '아침 식사 완료, 특이사항 없음', manager_name: '담당자 1', followup_status: '완료' }
+        ];
+
+        // 데이터 불러오기 (Supabase 또는 로컬)
+        async function fetchLogs() {
+            let logs = localLogs;
+            if (supabaseClient) {
+                const { data, error } = await supabaseClient
+                    .from('contact_logs')
+                    .select('*')
+                    .order('log_id', { ascending: false });
+                if (!error && data) {
+                    logs = data;
+                } else {
+                    console.error('Supabase 조회 오류:', error);
+                }
+            }
+            renderLogs(logs);
+        }
+
+        // 테이블 및 요약 카드 렌더링
+        function renderLogs(logs) {
+            const tbody = document.getElementById('logs-table-body');
+            tbody.innerHTML = '';
+
+            let needFollowup = 0;
+            let completed = 0;
+
+            logs.forEach(item => {
+                if (item.result_status === '응답 완료') completed++;
+                else needFollowup++;
+
+                let badgeClass = 'bg-emerald-100 text-emerald-700';
+                let statusColor = 'text-emerald-600 font-medium';
+                if (item.result_status === '도움 요청') {
+                    badgeClass = 'bg-rose-100 text-rose-700';
+                    statusColor = 'font-bold text-rose-600';
+                } else if (item.result_status === '미응답') {
+                    badgeClass = 'bg-amber-100 text-amber-800';
+                    statusColor = 'font-medium text-amber-700';
+                } else if (item.result_status === '연결 오류') {
+                    badgeClass = 'bg-gray-200 text-gray-700';
+                    statusColor = 'opacity-75';
+                }
+
+                const row = `
+                    <tr class="hover:bg-black/5 transition">
+                        <td class="py-4 px-6 font-mono text-xs opacity-75">${item.target_id}</td>
+                        <td class="py-4 px-6 font-bold">${item.target_name}</td>
+                        <td class="py-4 px-6">
+                            <span class="px-2.5 py-1 rounded-full text-xs font-bold ${badgeClass}">${item.result_status}</span>
+                        </td>
+                        <td class="py-4 px-6 opacity-80">${item.memo || '-'}</td>
+                        <td class="py-4 px-6">${item.manager_name || '김복지'}</td>
+                        <td class="py-4 px-6 ${statusColor}">${item.followup_status}</td>
+                    </tr>
+                `;
+                tbody.insertAdjacentHTML('beforeend', row);
+            });
+
+            document.getElementById('stat-total-logs').innerText = `${logs.length}건`;
+            document.getElementById('stat-need-followup').innerText = `${needFollowup}건`;
+            document.getElementById('stat-completed').innerText = `${completed}건`;
+        }
+
+        // 안부 확인 결과 저장
+        async function saveContactLog() {
+            const target_id = document.getElementById('input-target-id').value.trim();
+            const target_name = document.getElementById('input-target-name').value.trim();
+            const result_status = document.querySelector('input[name="result_status"]:checked').value;
+            const memo = document.getElementById('input-memo').value.trim();
+
+            if (!target_id || !target_name) {
+                alert('관리번호와 대상자명을 입력해 주세요.');
+                return;
+            }
+
+            let followup_status = '완료';
+            if (result_status === '도움 요청') followup_status = '미처리 (확인 대기)';
+            else if (result_status === '미응답' || result_status === '연결 오류') followup_status = '재연락 필요';
+
+            const newRecord = {
+                target_id,
+                target_name,
+                result_status,
+                memo,
+                manager_name: '김복지 담당자',
+                followup_status
+            };
+
+            if (supabaseClient) {
+                const btn = document.getElementById('save-log-btn');
+                btn.innerText = '저장 중...';
+                btn.disabled = true;
+
+                await supabaseClient.from('targets').upsert({
+                    target_id,
+                    name: target_name,
+                    manager_name: '김복지 담당자'
+                });
+
+                const { error } = await supabaseClient.from('contact_logs').insert([newRecord]);
+                btn.innerText = '결과 저장';
+                btn.disabled = false;
+
+                if (error) {
+                    alert('Supabase 저장 중 오류가 발생했습니다: ' + error.message);
+                    return;
+                }
+            } else {
+                localLogs.unshift(newRecord);
+            }
+
+            document.getElementById('input-memo').value = '';
+            closeModals();
+            fetchLogs();
+        }
+
+        // 화면 전환 및 UI 제어
         function switchView(view) {
             const landing = document.getElementById('landing-view');
             const dashboard = document.getElementById('dashboard-view');
             if (view === 'dashboard') {
                 landing.classList.add('hidden');
                 dashboard.classList.remove('hidden');
+                fetchLogs();
                 window.scrollTo(0, 0);
             } else {
                 dashboard.classList.add('hidden');
@@ -471,26 +601,11 @@
         }
 
         const themes = {
-            warm: {
-                wrapper: '#EFE9E1', mainBg: '#FDF8F3', mainText: '#433422',
-                sidebarBg: '#F5EBE0', border: '#EADBC8', accent: '#D97706', cardBg: 'rgba(255,255,255,0.85)'
-            },
-            blue: {
-                wrapper: '#E2E8F0', mainBg: '#F8FAFC', mainText: '#1E293B',
-                sidebarBg: '#EFF6FF', border: '#DBEAFE', accent: '#2563EB', cardBg: '#FFFFFF'
-            },
-            green: {
-                wrapper: '#E6F4F1', mainBg: '#F4FBF9', mainText: '#134E4A',
-                sidebarBg: '#CCFBF1', border: '#99F6E4', accent: '#0D9488', cardBg: '#FFFFFF'
-            },
-            dark: {
-                wrapper: '#090D16', mainBg: '#0F172A', mainText: '#F1F5F9',
-                sidebarBg: '#1E293B', border: '#334155', accent: '#38BDF8', cardBg: '#1E293B'
-            },
-            mono: {
-                wrapper: '#E4E4E7', mainBg: '#FFFFFF', mainText: '#18181B',
-                sidebarBg: '#F4F4F5', border: '#E4E4E7', accent: '#18181B', cardBg: '#FAFAFA'
-            }
+            warm: { wrapper: '#EFE9E1', mainBg: '#FDF8F3', mainText: '#433422', sidebarBg: '#F5EBE0', border: '#EADBC8', accent: '#D97706', cardBg: 'rgba(255,255,255,0.85)' },
+            blue: { wrapper: '#E2E8F0', mainBg: '#F8FAFC', mainText: '#1E293B', sidebarBg: '#EFF6FF', border: '#DBEAFE', accent: '#2563EB', cardBg: '#FFFFFF' },
+            green: { wrapper: '#E6F4F1', mainBg: '#F4FBF9', mainText: '#134E4A', sidebarBg: '#CCFBF1', border: '#99F6E4', accent: '#0D9488', cardBg: '#FFFFFF' },
+            dark: { wrapper: '#090D16', mainBg: '#0F172A', mainText: '#F1F5F9', sidebarBg: '#1E293B', border: '#334155', accent: '#38BDF8', cardBg: '#1E293B' },
+            mono: { wrapper: '#E4E4E7', mainBg: '#FFFFFF', mainText: '#18181B', sidebarBg: '#F4F4F5', border: '#E4E4E7', accent: '#18181B', cardBg: '#FAFAFA' }
         };
 
         let currentAccent = '#D97706';
@@ -570,25 +685,13 @@
             });
         }
 
-        function toggleProfileDropdown() {
-            document.getElementById('profile-dropdown').classList.toggle('hidden');
-        }
-
-        function openSettingsModal() {
-            document.getElementById('profile-dropdown').classList.add('hidden');
-            document.getElementById('settings-modal').classList.remove('hidden');
-        }
-
-        function openInfoModal() {
-            document.getElementById('profile-dropdown').classList.add('hidden');
-            document.getElementById('info-modal').classList.remove('hidden');
-        }
-
-        function openConsultModal() {
-            document.getElementById('consult-modal').classList.remove('hidden');
-        }
-
+        function toggleProfileDropdown() { document.getElementById('profile-dropdown').classList.toggle('hidden'); }
+        function openInputModal() { document.getElementById('input-modal').classList.remove('hidden'); }
+        function openSettingsModal() { document.getElementById('profile-dropdown').classList.add('hidden'); document.getElementById('settings-modal').classList.remove('hidden'); }
+        function openInfoModal() { document.getElementById('profile-dropdown').classList.add('hidden'); document.getElementById('info-modal').classList.remove('hidden'); }
+        function openConsultModal() { document.getElementById('consult-modal').classList.remove('hidden'); }
         function closeModals() {
+            document.getElementById('input-modal').classList.add('hidden');
             document.getElementById('settings-modal').classList.add('hidden');
             document.getElementById('info-modal').classList.add('hidden');
             document.getElementById('consult-modal').classList.add('hidden');
