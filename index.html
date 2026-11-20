@@ -1030,8 +1030,7 @@
             const needActionList = currentLogs
                 .filter(l => l.followup_status !== '완료')
                 .map(l => `- [${l.target_id}] ${l.target_name} (${l.result_status}): ${l.memo || '메모 없음'} → ${l.followup_status}`)
-                .join('
-') || '- 미처리 특이사항 없음';
+                .join('\n') || '- 미처리 특이사항 없음';
 
             const reportText = `[LUMI 일일 안부 확인 결과 보고]
 • 보고 일시: ${todayStr}
