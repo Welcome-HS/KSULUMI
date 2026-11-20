@@ -30,9 +30,14 @@
                 <a href="#features" class="hover:text-teal-600 transition">주요 기능</a>
                 <a href="#contact" class="hover:text-teal-600 transition">도입 문의</a>
             </nav>
-            <button onclick="switchView('dashboard')" class="bg-teal-600 hover:bg-teal-700 text-white px-6 py-2 rounded-full font-medium transition shadow-sm">
-                대시보드 바로가기
-            </button>
+            <div class="flex items-center gap-3">
+                <button onclick="openLoginView()" class="text-teal-700 hover:bg-teal-50 px-4 py-2 rounded-full font-medium transition text-sm">
+                    로그인
+                </button>
+                <button onclick="handleDashboardEntry()" class="bg-teal-600 hover:bg-teal-700 text-white px-6 py-2 rounded-full font-medium transition shadow-sm">
+                    대시보드 바로가기
+                </button>
+            </div>
         </header>
 
         <main class="container mx-auto px-6 pt-24 pb-20 text-center">
@@ -57,7 +62,7 @@
                     <i data-lucide="arrow-right" class="w-5 h-5"></i>
                 </button>
                 
-                <button onclick="switchView('dashboard')" class="bg-white hover:bg-gray-50 text-teal-600 border border-teal-200 px-8 py-4 rounded-full font-bold text-lg shadow-sm transition flex items-center justify-center gap-2">
+                <button onclick="handleDashboardEntry()" class="bg-white hover:bg-gray-50 text-teal-600 border border-teal-200 px-8 py-4 rounded-full font-bold text-lg shadow-sm transition flex items-center justify-center gap-2">
                     <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
                     대시보드 데모 체험하기
                 </button>
@@ -104,6 +109,56 @@
         <footer id="contact" class="bg-gray-50 border-t border-gray-200 py-10 text-center text-gray-500 text-sm">
             <p>© 2026 LUMI. 복지업무 지원 AI 서비스. All rights reserved.</p>
         </footer>
+    </div>
+
+    <!-- 1.5. 로그인 화면 뷰 -->
+    <div id="login-view" class="hidden min-h-screen flex items-center justify-center p-4 bg-gradient-mint">
+        <div class="bg-white rounded-3xl shadow-2xl border border-teal-100 max-w-md w-full p-8 md:p-10 relative">
+            <button onclick="switchView('landing')" class="absolute top-6 left-6 text-xs text-gray-500 hover:text-gray-800 flex items-center gap-1 font-medium">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                메인으로
+            </button>
+
+            <div class="text-center mt-4 mb-8">
+                <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-teal-50 text-teal-600 mb-4">
+                    <i data-lucide="heart-handshake" class="w-8 h-8"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900">LUMI 업무 시스템 로그인</h2>
+                <p class="text-xs text-gray-500 mt-2">
+                    아무 아이디나 입력해도 즉시 로그인됩니다.<br/>
+                    <span class="text-teal-600 font-medium">동일한 아이디로 다시 접속하면 마지막 화면과 설정이 복원됩니다.</span>
+                </p>
+            </div>
+
+            <form onsubmit="submitLogin(event)" class="space-y-4 text-sm">
+                <div>
+                    <label class="block font-bold text-gray-700 mb-1.5">담당자 아이디 (또는 성명)</label>
+                    <div class="relative">
+                        <i data-lucide="user" class="w-4 h-4 text-gray-400 absolute left-3.5 top-3.5"></i>
+                        <input id="login-id-input" type="text" required placeholder="예: 김복지 또는 admin01" class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:border-teal-600 transition">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-gray-700 mb-1.5">비밀번호</label>
+                    <div class="relative">
+                        <i data-lucide="lock" class="w-4 h-4 text-gray-400 absolute left-3.5 top-3.5"></i>
+                        <input id="login-pw-input" type="password" required placeholder="아무 비밀번호나 입력하세요" class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:border-teal-600 transition">
+                    </div>
+                </div>
+
+                <!-- 최근 로그인 계정 빠른 선택 영역 -->
+                <div id="recent-accounts-box" class="hidden pt-1">
+                    <div class="text-xs text-gray-400 mb-1.5">최근 로그인 계정 (클릭 시 자동 입력)</div>
+                    <div id="recent-accounts-list" class="flex flex-wrap gap-1.5"></div>
+                </div>
+
+                <button type="submit" class="w-full py-3.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-base shadow-md transition mt-2 flex items-center justify-center gap-2">
+                    <span>로그인하고 업무 시작</span>
+                    <i data-lucide="log-in" class="w-4 h-4"></i>
+                </button>
+            </form>
+        </div>
     </div>
 
     <!-- 2. 대시보드 뷰 -->
@@ -164,9 +219,14 @@
             <div class="flex-1 flex flex-col overflow-hidden">
                 <!-- 상단 헤더 -->
                 <header id="top-header" class="h-20 border-b border-[#EADBC8] px-8 flex items-center justify-between shrink-0 transition-theme">
-                    <div class="flex items-center gap-2.5">
-                        <i data-lucide="calendar" class="w-4 h-4 opacity-60"></i>
-                        <span id="realtime-date" class="text-sm font-bold tracking-tight opacity-85">날짜 불러오는 중...</span>
+                    <div class="flex items-center gap-3">
+                        <div class="flex items-center gap-2.5">
+                            <i data-lucide="calendar" class="w-4 h-4 opacity-60"></i>
+                            <span id="realtime-date" class="text-sm font-bold tracking-tight opacity-85">날짜 불러오는 중...</span>
+                        </div>
+                        <span id="session-badge" class="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-black/5 opacity-75">
+                            계정 세션 동기화됨
+                        </span>
                     </div>
                     
                     <div class="relative">
@@ -182,6 +242,9 @@
                         </button>
                         
                         <div id="profile-dropdown" class="hidden absolute right-0 mt-2 w-48 rounded-xl shadow-lg border border-[#EADBC8] bg-white text-gray-800 py-2 z-30">
+                            <div class="px-4 py-1.5 text-[11px] text-gray-400 border-b border-gray-100">
+                                ID: <span id="dropdown-account-id" class="font-mono font-bold text-gray-600">-</span>
+                            </div>
                             <button onclick="openInfoModal()" class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-100 flex items-center gap-2">
                                 <i data-lucide="user" class="w-4 h-4"></i>
                                 개인정보
@@ -190,6 +253,11 @@
                                 <i data-lucide="settings" class="w-4 h-4"></i>
                                 설정
                             </button>
+                            <div class="my-1 border-t border-gray-100"></div>
+                            <button onclick="logoutAccount()" class="w-full text-left px-4 py-2.5 text-sm text-rose-600 hover:bg-rose-50 flex items-center gap-2 font-medium">
+                                <i data-lucide="log-out" class="w-4 h-4"></i>
+                                로그아웃
+                            </button>
                         </div>
                     </div>
                 </header>
@@ -197,11 +265,8 @@
                 <!-- 본문 영역 (탭 전환 컨테이너) -->
                 <main class="flex-1 overflow-y-auto p-8">
 
-                    <!-- ========================================================= -->
-                    <!-- 탭 1: 홈페이지 (메인 대시보드)                            -->
-                    <!-- ========================================================= -->
+                    <!-- 탭 1: 홈페이지 (메인 대시보드) -->
                     <div id="section-dashboard" class="space-y-8">
-                        <!-- 요약 카드 4개 -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                             <div class="card p-6 rounded-2xl border border-[#EADBC8] bg-white/80 shadow-sm transition-theme">
                                 <div class="flex justify-between items-start mb-4">
@@ -248,7 +313,6 @@
                             </div>
                         </div>
 
-                        <!-- 우선 확인할 업무 테이블 -->
                         <div class="card rounded-2xl border border-[#EADBC8] bg-white/80 shadow-sm overflow-hidden transition-theme">
                             <div class="px-6 py-5 border-b border-[#EADBC8] flex items-center justify-between">
                                 <div>
@@ -274,16 +338,13 @@
                                         </tr>
                                     </thead>
                                     <tbody id="logs-table-body" class="divide-y divide-[#EADBC8] text-sm">
-                                        <!-- JS 렌더링 -->
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
 
-                    <!-- ========================================================= -->
-                    <!-- 탭 2: 대상자 · 일정                                       -->
-                    <!-- ========================================================= -->
+                    <!-- 탭 2: 대상자 · 일정 -->
                     <div id="section-targets" class="hidden space-y-6">
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                             <div>
@@ -313,16 +374,13 @@
                                         </tr>
                                     </thead>
                                     <tbody id="targets-table-body" class="divide-y divide-[#EADBC8] text-sm">
-                                        <!-- JS 렌더링 -->
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
 
-                    <!-- ========================================================= -->
-                    <!-- 탭 3: 안부 확인 기록                                      -->
-                    <!-- ========================================================= -->
+                    <!-- 탭 3: 안부 확인 기록 -->
                     <div id="section-logs" class="hidden space-y-6">
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                             <div>
@@ -356,16 +414,13 @@
                                         </tr>
                                     </thead>
                                     <tbody id="all-logs-table-body" class="divide-y divide-[#EADBC8] text-sm">
-                                        <!-- JS 렌더링 -->
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
 
-                    <!-- ========================================================= -->
-                    <!-- 탭 4: 후속 조치 관리                                      -->
-                    <!-- ========================================================= -->
+                    <!-- 탭 4: 후속 조치 관리 -->
                     <div id="section-followups" class="hidden space-y-6">
                         <div class="flex items-center justify-between">
                             <div>
@@ -376,13 +431,10 @@
                         </div>
 
                         <div id="followup-cards-grid" class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                            <!-- JS 동적 카드 렌더링 -->
                         </div>
                     </div>
 
-                    <!-- ========================================================= -->
-                    <!-- 탭 5: 요약 보고                                           -->
-                    <!-- ========================================================= -->
+                    <!-- 탭 5: 요약 보고 -->
                     <div id="section-reports" class="hidden space-y-6">
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                             <div>
@@ -396,15 +448,12 @@
                         </div>
 
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            <!-- 결과 유형별 분포 바 차트 -->
                             <div class="card p-6 rounded-2xl border border-[#EADBC8] bg-white/80 shadow-sm space-y-5 transition-theme">
                                 <h3 class="font-bold text-base">연락 결과 유형별 분포</h3>
                                 <div id="report-bars-container" class="space-y-4">
-                                    <!-- JS 렌더링 -->
                                 </div>
                             </div>
 
-                            <!-- 자동 생성 보고서 미리보기 -->
                             <div class="card p-6 rounded-2xl border border-[#EADBC8] bg-white/80 shadow-sm flex flex-col justify-between transition-theme">
                                 <div>
                                     <div class="flex items-center justify-between mb-4">
@@ -426,7 +475,7 @@
     <!-- 모달 창 영역                                 -->
     <!-- ========================================== -->
 
-    <!-- 안부 확인 결과 입력 모달 (Supabase INSERT 연동) -->
+    <!-- 안부 확인 결과 입력 모달 -->
     <div id="input-modal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
         <div class="bg-white text-gray-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-200">
             <div class="flex justify-between items-center pb-4 border-b border-gray-100">
@@ -521,7 +570,7 @@
         </div>
     </div>
 
-    <!-- 2단계 구조 설정 모달 (테마 / 해상도 / 개인정보 수정) -->
+    <!-- 2단계 구조 설정 모달 -->
     <div id="settings-modal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
         <div class="bg-white text-gray-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-200">
             <div class="flex justify-between items-center pb-4 border-b border-gray-100">
@@ -650,6 +699,7 @@
                 <button onclick="closeModals()" class="p-1 rounded-lg hover:bg-gray-100"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <div class="py-5 space-y-3.5 text-sm">
+                <div class="flex justify-between"><span class="text-gray-500">로그인 ID</span><span class="font-mono font-bold" id="info-modal-id">-</span></div>
                 <div class="flex justify-between"><span class="text-gray-500">성명</span><span class="font-bold" id="info-modal-name">김복지</span></div>
                 <div class="flex justify-between"><span class="text-gray-500">직책</span><span class="font-bold" id="info-modal-role">안부 확인 전담 사회복지사</span></div>
                 <div class="flex justify-between"><span class="text-gray-500">소속 기관</span><span class="font-bold" id="info-modal-org">부산 남구 복지관</span></div>
@@ -688,7 +738,9 @@
     <script>
         lucide.createIcons();
 
-        // 실시간 날짜 및 시간 자동 업데이트
+        // ============================================================
+        // 1. 실시간 날짜 및 시간 업데이트
+        // ============================================================
         function updateRealtimeClock() {
             const now = new Date();
             const days = ['일', '월', '화', '수', '목', '금', '토'];
@@ -707,7 +759,9 @@
         updateRealtimeClock();
         setInterval(updateRealtimeClock, 1000);
 
-        // Supabase 연결
+        // ============================================================
+        // 2. Supabase 클라이언트 초기화
+        // ============================================================
         const SUPABASE_URL = 'https://vjfxmorygeflqvkuwtkl.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_bQUGUnAEmtsGAEQ6-vILDQ_YJW9GH91';
 
@@ -720,29 +774,215 @@
             tooltip.innerText = 'Supabase DB 연결됨';
         }
 
-        // 전역 데이터 상태
-        let currentLogs = [
+        // ============================================================
+        // 3. 기본 데이터 및 계정별 상태(localStorage) 관리 엔진
+        // ============================================================
+        const DEFAULT_LOGS = [
             { log_id: 2, target_id: 'L-0002', target_name: '대상자 B', result_status: '도움 요청', memo: '허리 통증 호소, 방문 확인 요청', manager_name: '김복지', followup_status: '미처리 (확인 대기)' },
             { log_id: 1, target_id: 'L-0001', target_name: '대상자 A', result_status: '미응답', memo: '1차 연락 미응답/재연락 검토', manager_name: '김복지', followup_status: '재연락 필요' },
             { log_id: 4, target_id: 'L-0004', target_name: '대상자 D', result_status: '연결 오류', memo: '통신사 착신 전환 오류', manager_name: '김복지', followup_status: '재연락 필요' },
             { log_id: 3, target_id: 'L-0003', target_name: '대상자 C', result_status: '응답 완료', memo: '아침 식사 완료, 특이사항 없음', manager_name: '김복지', followup_status: '완료' }
         ];
 
-        let currentTargets = [
+        const DEFAULT_TARGETS = [
             { target_id: 'L-0001', name: '대상자 A', contact_schedule: '매주 월·수·금 오전 09:30', manager_name: '김복지', status: '정상 등록' },
             { target_id: 'L-0002', name: '대상자 B', contact_schedule: '매일 오전 10:00 (집중 관리)', manager_name: '김복지', status: '정상 등록' },
             { target_id: 'L-0003', name: '대상자 C', contact_schedule: '매주 화·목 오전 10:30', manager_name: '김복지', status: '정상 등록' },
             { target_id: 'L-0004', name: '대상자 D', contact_schedule: '매주 월·목 오후 14:00', manager_name: '김복지', status: '정상 등록' }
         ];
 
-        let activeLogFilter = 'ALL';
+        const STORAGE_PREFIX = 'lumi_account_state_';
+        const ACTIVE_USER_KEY = 'lumi_active_user_id';
+        const RECENT_USERS_KEY = 'lumi_recent_users';
 
-        // 개인정보 상태 관리
+        let currentUserId = null;
+        let activeMenuName = 'dashboard';
+        let activeLogFilter = 'ALL';
+        let currentThemeKey = 'warm';
+        let currentThemeLabel = '웜 오렌지';
+        let currentResolution = '1920x1080';
+
+        let currentLogs = JSON.parse(JSON.stringify(DEFAULT_LOGS));
+        let currentTargets = JSON.parse(JSON.stringify(DEFAULT_TARGETS));
         let managerProfile = {
             name: '김복지',
             role: '안부 확인 전담 사회복지사',
             org: '부산 남구 복지관'
         };
+
+        // 현재 로그인한 계정의 모든 상태(마지막 화면, 테마, 해상도, 개인정보, 로컬 데이터)를 저장
+        function persistAccountState() {
+            if (!currentUserId) return;
+            const stateObj = {
+                userId: currentUserId,
+                lastMenu: activeMenuName,
+                lastFilter: activeLogFilter,
+                themeKey: currentThemeKey,
+                themeLabel: currentThemeLabel,
+                resolution: currentResolution,
+                profile: managerProfile,
+                localLogs: currentLogs,
+                localTargets: currentTargets,
+                savedAt: new Date().toISOString()
+            };
+            localStorage.setItem(STORAGE_PREFIX + currentUserId, JSON.stringify(stateObj));
+        }
+
+        // 저장된 계정 상태 불러오기
+        function loadAccountState(userId) {
+            const raw = localStorage.getItem(STORAGE_PREFIX + userId);
+            if (!raw) return null;
+            try {
+                return JSON.parse(raw);
+            } catch (e) {
+                return null;
+            }
+        }
+
+        // 최근 로그인 계정 목록 저장 및 렌더링
+        function recordRecentAccount(userId) {
+            let list = [];
+            try {
+                list = JSON.parse(localStorage.getItem(RECENT_USERS_KEY) || '[]');
+            } catch (e) {
+                list = [];
+            }
+            list = [userId, ...list.filter(id => id !== userId)].slice(0, 5);
+            localStorage.setItem(RECENT_USERS_KEY, JSON.stringify(list));
+            renderRecentAccounts();
+        }
+
+        function renderRecentAccounts() {
+            let list = [];
+            try {
+                list = JSON.parse(localStorage.getItem(RECENT_USERS_KEY) || '[]');
+            } catch (e) {
+                list = [];
+            }
+            const box = document.getElementById('recent-accounts-box');
+            const container = document.getElementById('recent-accounts-list');
+            if (!box || !container) return;
+
+            if (list.length === 0) {
+                box.classList.add('hidden');
+                return;
+            }
+            box.classList.remove('hidden');
+            container.innerHTML = '';
+            list.forEach(id => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'px-2.5 py-1 rounded-lg bg-teal-50 hover:bg-teal-100 text-teal-800 text-xs font-medium border border-teal-200 transition';
+                btn.innerText = id;
+                btn.onclick = () => {
+                    document.getElementById('login-id-input').value = id;
+                    document.getElementById('login-pw-input').value = '1234';
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        // 로그인 화면 열기 / 대시보드 진입 분기
+        function openLoginView() {
+            renderRecentAccounts();
+            switchView('login');
+        }
+
+        function handleDashboardEntry() {
+            const savedActiveId = localStorage.getItem(ACTIVE_USER_KEY);
+            if (savedActiveId) {
+                completeLoginSession(savedActiveId, true);
+            } else {
+                openLoginView();
+            }
+        }
+
+        // 로그인 폼 제출 (아무거나 입력해도 로그인 가능 + 동일 아이디면 저장된 상태 복원)
+        function submitLogin(event) {
+            event.preventDefault();
+            const enteredId = document.getElementById('login-id-input').value.trim();
+            if (!enteredId) return;
+            completeLoginSession(enteredId, false);
+        }
+
+        function completeLoginSession(userId, isAutoRestore) {
+            currentUserId = userId;
+            localStorage.setItem(ACTIVE_USER_KEY, userId);
+            recordRecentAccount(userId);
+
+            const saved = loadAccountState(userId);
+            if (saved) {
+                // 기존에 해당 아이디로 저장된 화면·설정 복원
+                managerProfile = saved.profile || { name: userId, role: '안부 확인 전담 사회복지사', org: '부산 남구 복지관' };
+                currentLogs = saved.localLogs || JSON.parse(JSON.stringify(DEFAULT_LOGS));
+                currentTargets = saved.localTargets || JSON.parse(JSON.stringify(DEFAULT_TARGETS));
+                activeLogFilter = saved.lastFilter || 'ALL';
+
+                applyProfileToUI();
+                applyTheme(saved.themeKey || 'warm', saved.themeLabel || '웜 오렌지', false);
+                applyResolution(saved.resolution || '1920x1080', false);
+
+                switchView('dashboard', false);
+                selectMenu(saved.lastMenu || 'dashboard', false);
+
+                const badge = document.getElementById('session-badge');
+                if (badge) {
+                    badge.innerText = isAutoRestore
+                        ? `이전 세션 자동 복원 (${userId})`
+                        : `'${userId}' 마지막 화면 복원됨`;
+                }
+            } else {
+                // 처음 로그인하는 아이디면 초기 상태 생성 후 저장
+                managerProfile = {
+                    name: userId,
+                    role: '안부 확인 전담 사회복지사',
+                    org: '부산 남구 복지관'
+                };
+                currentLogs = JSON.parse(JSON.stringify(DEFAULT_LOGS));
+                currentTargets = JSON.parse(JSON.stringify(DEFAULT_TARGETS));
+                activeLogFilter = 'ALL';
+
+                applyProfileToUI();
+                applyTheme('warm', '웜 오렌지', false);
+                applyResolution('1920x1080', false);
+
+                switchView('dashboard', false);
+                selectMenu('dashboard', false);
+
+                const badge = document.getElementById('session-badge');
+                if (badge) badge.innerText = `신규 세션 시작 (${userId})`;
+            }
+
+            persistAccountState();
+            fetchAllData();
+        }
+
+        function logoutAccount() {
+            persistAccountState();
+            localStorage.removeItem(ACTIVE_USER_KEY);
+            currentUserId = null;
+            document.getElementById('profile-dropdown').classList.add('hidden');
+            document.getElementById('login-id-input').value = '';
+            document.getElementById('login-pw-input').value = '';
+            openLoginView();
+        }
+
+        // ============================================================
+        // 4. 개인정보 UI 반영 및 설정
+        // ============================================================
+        function applyProfileToUI() {
+            document.getElementById('avatar-bg').innerText = (managerProfile.name || '김').charAt(0);
+            document.getElementById('header-profile-name').innerText = managerProfile.name;
+            document.getElementById('header-profile-org').innerText = managerProfile.org;
+
+            document.getElementById('dropdown-account-id').innerText = currentUserId || '-';
+            document.getElementById('info-modal-id').innerText = currentUserId || '-';
+            document.getElementById('info-modal-name').innerText = managerProfile.name;
+            document.getElementById('info-modal-role').innerText = managerProfile.role;
+            document.getElementById('info-modal-org').innerText = managerProfile.org;
+
+            document.getElementById('current-profile-summary').innerText = `${managerProfile.name} · ${managerProfile.org}`;
+        }
 
         function saveProfileChanges() {
             const newName = document.getElementById('edit-profile-name').value.trim();
@@ -755,16 +995,8 @@
             }
 
             managerProfile = { name: newName, role: newRole, org: newOrg };
-
-            document.getElementById('avatar-bg').innerText = newName.charAt(0);
-            document.getElementById('header-profile-name').innerText = newName;
-            document.getElementById('header-profile-org').innerText = newOrg;
-
-            document.getElementById('info-modal-name').innerText = newName;
-            document.getElementById('info-modal-role').innerText = newRole;
-            document.getElementById('info-modal-org').innerText = newOrg;
-
-            document.getElementById('current-profile-summary').innerText = `${newName} · ${newOrg}`;
+            applyProfileToUI();
+            persistAccountState();
             showSettingsSubView('menu');
         }
 
@@ -793,7 +1025,7 @@
         }
 
         // ============================================================
-        // Supabase 및 모든 메뉴 데이터 동기화
+        // 5. Supabase 및 모든 메뉴 데이터 동기화
         // ============================================================
         async function fetchAllData() {
             if (supabaseClient) {
@@ -808,6 +1040,7 @@
                 if (!targetsRes.error && targetsRes.data && targetsRes.data.length > 0) {
                     currentTargets = targetsRes.data;
                 }
+                persistAccountState();
             }
             renderAllSections();
         }
@@ -833,7 +1066,6 @@
             return 'font-medium text-amber-700';
         }
 
-        // 1. 홈페이지(대시보드) 렌더링
         function renderDashboardLogs() {
             const tbody = document.getElementById('logs-table-body');
             tbody.innerHTML = '';
@@ -864,7 +1096,6 @@
             document.getElementById('stat-completed').innerText = `${completed}건`;
         }
 
-        // 2. 대상자 · 일정 렌더링
         function renderTargetsTable() {
             const tbody = document.getElementById('targets-table-body');
             const keyword = (document.getElementById('target-search-input')?.value || '').trim().toLowerCase();
@@ -893,7 +1124,6 @@
             });
         }
 
-        // 3. 안부 확인 기록 전체 테이블 렌더링
         function setLogFilter(filter) {
             activeLogFilter = filter;
             document.querySelectorAll('.log-filter-btn').forEach(btn => {
@@ -903,12 +1133,21 @@
                     btn.className = 'log-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium border border-[#EADBC8] bg-white/80 text-gray-700';
                 }
             });
+            persistAccountState();
             renderAllLogsTable();
         }
 
         function renderAllLogsTable() {
             const tbody = document.getElementById('all-logs-table-body');
             tbody.innerHTML = '';
+
+            document.querySelectorAll('.log-filter-btn').forEach(btn => {
+                if (btn.dataset.filter === activeLogFilter) {
+                    btn.className = 'log-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-gray-900 text-white';
+                } else {
+                    btn.className = 'log-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium border border-[#EADBC8] bg-white/80 text-gray-700';
+                }
+            });
 
             const filtered = activeLogFilter === 'ALL'
                 ? currentLogs
@@ -929,7 +1168,6 @@
             });
         }
 
-        // 4. 후속 조치 관리 렌더링 및 완료 처리
         function renderFollowupsSection() {
             const grid = document.getElementById('followup-cards-grid');
             grid.innerHTML = '';
@@ -943,7 +1181,7 @@
                 return;
             }
 
-            followupItems.forEach((item, idx) => {
+            followupItems.forEach(item => {
                 const isDone = item.followup_status === '완료';
                 const cardHtml = `
                     <div class="card p-6 rounded-2xl border border-[#EADBC8] bg-white/85 shadow-sm flex flex-col justify-between gap-4 transition-theme">
@@ -986,11 +1224,11 @@
             } else {
                 const target = currentLogs.find(l => l.log_id === logId || l.target_id === targetId);
                 if (target) target.followup_status = '완료';
+                persistAccountState();
                 renderAllSections();
             }
         }
 
-        // 5. 요약 보고 렌더링 및 복사
         function renderReportsSection() {
             const total = currentLogs.length || 1;
             const counts = {
@@ -1054,7 +1292,6 @@ ${needActionList}`;
             });
         }
 
-        // 신규 대상자 저장
         async function saveNewTarget() {
             const target_id = document.getElementById('new-target-id').value.trim();
             const name = document.getElementById('new-target-name').value.trim();
@@ -1083,12 +1320,12 @@ ${needActionList}`;
                 fetchAllData();
             } else {
                 currentTargets.push(newTarget);
+                persistAccountState();
                 closeModals();
                 renderAllSections();
             }
         }
 
-        // 안부 확인 결과 저장
         async function saveContactLog() {
             const target_id = document.getElementById('input-target-id').value.trim();
             const target_name = document.getElementById('input-target-name').value.trim();
@@ -1138,26 +1375,34 @@ ${needActionList}`;
             } else {
                 newRecord.log_id = Date.now();
                 currentLogs.unshift(newRecord);
+                persistAccountState();
                 document.getElementById('input-memo').value = '';
                 closeModals();
                 renderAllSections();
             }
         }
 
-        // 화면 전환 및 메뉴 선택
+        // ============================================================
+        // 6. 화면 전환, 테마, 해상도, 탭 메뉴 선택
+        // ============================================================
         function switchView(view) {
             const landing = document.getElementById('landing-view');
+            const login = document.getElementById('login-view');
             const dashboard = document.getElementById('dashboard-view');
+
+            landing.classList.add('hidden');
+            login.classList.add('hidden');
+            dashboard.classList.add('hidden');
+
             if (view === 'dashboard') {
-                landing.classList.add('hidden');
                 dashboard.classList.remove('hidden');
-                fetchAllData();
-                window.scrollTo(0, 0);
+            } else if (view === 'login') {
+                login.classList.remove('hidden');
             } else {
-                dashboard.classList.add('hidden');
                 landing.classList.remove('hidden');
-                window.scrollTo(0, 0);
             }
+            window.scrollTo(0, 0);
+            lucide.createIcons();
         }
 
         const themes = {
@@ -1169,12 +1414,12 @@ ${needActionList}`;
         };
 
         let currentAccent = '#D97706';
-        let currentThemeKey = 'warm';
 
-        function applyTheme(key, label) {
-            const t = themes[key];
+        function applyTheme(key, label, shouldSave = true) {
+            const t = themes[key] || themes.warm;
             currentAccent = t.accent;
             currentThemeKey = key;
+            if (label) currentThemeLabel = label;
 
             document.getElementById('dashboard-view').style.backgroundColor = t.wrapper;
             const main = document.getElementById('main-container');
@@ -1208,12 +1453,12 @@ ${needActionList}`;
                 }
             });
 
-            if (label) {
-                document.getElementById('current-theme-label').innerText = label;
-            }
+            document.getElementById('current-theme-label').innerText = currentThemeLabel;
+            if (shouldSave) persistAccountState();
         }
 
-        function applyResolution(res) {
+        function applyResolution(res, shouldSave = true) {
+            currentResolution = res;
             const main = document.getElementById('main-container');
             const btn1920 = document.getElementById('res-1920');
             const btn1280 = document.getElementById('res-1280');
@@ -1231,10 +1476,12 @@ ${needActionList}`;
                 btn1280.className = 'w-full py-4 px-4 rounded-xl border border-gray-200 text-gray-700 font-medium text-sm hover:bg-gray-50 transition flex items-center justify-between';
                 document.getElementById('current-res-label').innerText = '1920 × 1080 (FHD)';
             }
+            if (shouldSave) persistAccountState();
         }
 
-        function selectMenu(menuName) {
-            // 1. 메뉴 버튼 스타일 전환
+        function selectMenu(menuName, shouldSave = true) {
+            activeMenuName = menuName;
+
             document.querySelectorAll('.menu-btn').forEach(btn => {
                 if (btn.dataset.menu === menuName) {
                     btn.classList.add('font-bold', 'shadow-sm');
@@ -1249,13 +1496,13 @@ ${needActionList}`;
                 }
             });
 
-            // 2. 본문 섹션 전환
             const sections = ['dashboard', 'targets', 'logs', 'followups', 'reports'];
             sections.forEach(sec => {
                 document.getElementById(`section-${sec}`).classList.add('hidden');
             });
             document.getElementById(`section-${menuName}`).classList.remove('hidden');
 
+            if (shouldSave) persistAccountState();
             renderAllSections();
         }
 
@@ -1289,6 +1536,16 @@ ${needActionList}`;
             document.getElementById('info-modal').classList.add('hidden');
             document.getElementById('consult-modal').classList.add('hidden');
         }
+
+        // 페이지 로드 시 최근 로그인 계정 목록 초기화 (자동 복원은 대시보드 버튼 또는 로그인 시 실행)
+        window.addEventListener('DOMContentLoaded', () => {
+            renderRecentAccounts();
+            const savedActiveId = localStorage.getItem(ACTIVE_USER_KEY);
+            if (savedActiveId) {
+                // 이미 로그인된 상태가 남아있다면 즉시 마지막 화면으로 복원
+                completeLoginSession(savedActiveId, true);
+            }
+        });
     </script>
 </body>
 </html>
