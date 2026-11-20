@@ -125,7 +125,6 @@
                     
                     <div class="text-xs font-semibold uppercase tracking-wider opacity-50 mb-4">업무 메뉴</div>
                     <nav class="space-y-2" id="nav-menu">
-                        <!-- 수정 1: 대시보드 -> 홈페이지 -->
                         <button onclick="selectMenu('dashboard')" data-menu="dashboard" class="menu-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold bg-[#D97706] text-white shadow-sm transition">
                             <i data-lucide="home" class="w-5 h-5"></i>
                             <span>홈페이지</span>
@@ -149,9 +148,9 @@
                     </nav>
                 </div>
                 
-                <!-- 수정 2: 원형 DB 연결 상태 인디케이터 + 마우스 호버 툴팁 -->
+                <!-- 원형 DB 연결 상태 인디케이터 + 마우스 호버 툴팁 -->
                 <div class="pt-6 border-t border-[#EADBC8] flex items-center justify-between" id="sidebar-footer">
-                    <div class="text-xs opacity-60">루미 MVP · 담당자 화면</div>
+                    <div class="text-xs opacity-60">루미 MVP · 업무 화면</div>
                     <div class="relative group flex items-center justify-center">
                         <span id="db-status-dot" class="w-3 h-3 rounded-full bg-amber-500 cursor-pointer ring-4 ring-amber-500/20 transition-all"></span>
                         <div id="db-status-tooltip" class="pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-200 absolute bottom-full right-0 mb-2 px-2.5 py-1.5 rounded-lg bg-gray-900 text-white text-[11px] font-medium whitespace-nowrap shadow-lg z-40">
@@ -163,7 +162,7 @@
 
             <!-- 메인 콘텐츠 영역 -->
             <div class="flex-1 flex flex-col overflow-hidden">
-                <!-- 수정 3: 상단 헤더 타이틀 제거 및 실시간 날짜/시간만 표시 -->
+                <!-- 상단 헤더 -->
                 <header id="top-header" class="h-20 border-b border-[#EADBC8] px-8 flex items-center justify-between shrink-0 transition-theme">
                     <div class="flex items-center gap-2.5">
                         <i data-lucide="calendar" class="w-4 h-4 opacity-60"></i>
@@ -195,85 +194,226 @@
                     </div>
                 </header>
 
-                <!-- 대시보드 본문 -->
-                <main class="flex-1 overflow-y-auto p-8 space-y-8">
-                    
-                    <!-- 요약 카드 4개 -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <div class="card p-6 rounded-2xl border border-[#EADBC8] bg-white/80 shadow-sm transition-theme">
-                            <div class="flex justify-between items-start mb-4">
-                                <span class="text-sm font-medium opacity-75">금일 확인 예정</span>
-                                <div class="p-2 rounded-lg bg-amber-100 text-amber-700">
-                                    <i data-lucide="calendar-clock" class="w-5 h-5"></i>
+                <!-- 본문 영역 (탭 전환 컨테이너) -->
+                <main class="flex-1 overflow-y-auto p-8">
+
+                    <!-- ========================================================= -->
+                    <!-- 탭 1: 홈페이지 (메인 대시보드)                            -->
+                    <!-- ========================================================= -->
+                    <div id="section-dashboard" class="space-y-8">
+                        <!-- 요약 카드 4개 -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <div class="card p-6 rounded-2xl border border-[#EADBC8] bg-white/80 shadow-sm transition-theme">
+                                <div class="flex justify-between items-start mb-4">
+                                    <span class="text-sm font-medium opacity-75">금일 확인 예정</span>
+                                    <div class="p-2 rounded-lg bg-amber-100 text-amber-700">
+                                        <i data-lucide="calendar-clock" class="w-5 h-5"></i>
+                                    </div>
                                 </div>
+                                <div class="text-3xl font-bold" id="stat-total-targets">4명</div>
+                                <div class="text-xs opacity-60 mt-2">등록된 전체 대상자 기준</div>
                             </div>
-                            <div class="text-3xl font-bold">24명</div>
-                            <div class="text-xs opacity-60 mt-2">전체 배정 대상자 30명 중</div>
+
+                            <div class="card p-6 rounded-2xl border border-[#EADBC8] bg-white/80 shadow-sm transition-theme">
+                                <div class="flex justify-between items-start mb-4">
+                                    <span class="text-sm font-medium opacity-75">확인 결과 입력</span>
+                                    <div class="p-2 rounded-lg bg-emerald-100 text-emerald-700">
+                                        <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+                                    </div>
+                                </div>
+                                <div class="text-3xl font-bold" id="stat-total-logs">4건</div>
+                                <div class="text-xs text-emerald-600 font-medium mt-2">DB 실시간 집계 반영</div>
+                            </div>
+
+                            <div class="card p-6 rounded-2xl border border-[#EADBC8] bg-white/80 shadow-sm transition-theme">
+                                <div class="flex justify-between items-start mb-4">
+                                    <span class="text-sm font-medium opacity-75">추가 확인 필요</span>
+                                    <div class="p-2 rounded-lg bg-rose-100 text-rose-700">
+                                        <i data-lucide="alert-circle" class="w-5 h-5"></i>
+                                    </div>
+                                </div>
+                                <div class="text-3xl font-bold text-rose-600" id="stat-need-followup">3건</div>
+                                <div class="text-xs opacity-60 mt-2">미응답 · 도움 요청 · 연결 오류</div>
+                            </div>
+
+                            <div class="card p-6 rounded-2xl border border-[#EADBC8] bg-white/80 shadow-sm transition-theme">
+                                <div class="flex justify-between items-start mb-4">
+                                    <span class="text-sm font-medium opacity-75">조치 완료 건수</span>
+                                    <div class="p-2 rounded-lg bg-blue-100 text-blue-700">
+                                        <i data-lucide="check-check" class="w-5 h-5"></i>
+                                    </div>
+                                </div>
+                                <div class="text-3xl font-bold" id="stat-completed">1건</div>
+                                <div class="text-xs opacity-60 mt-2">완료 처리된 기록 기준</div>
+                            </div>
                         </div>
 
-                        <div class="card p-6 rounded-2xl border border-[#EADBC8] bg-white/80 shadow-sm transition-theme">
-                            <div class="flex justify-between items-start mb-4">
-                                <span class="text-sm font-medium opacity-75">확인 결과 입력</span>
-                                <div class="p-2 rounded-lg bg-emerald-100 text-emerald-700">
-                                    <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+                        <!-- 우선 확인할 업무 테이블 -->
+                        <div class="card rounded-2xl border border-[#EADBC8] bg-white/80 shadow-sm overflow-hidden transition-theme">
+                            <div class="px-6 py-5 border-b border-[#EADBC8] flex items-center justify-between">
+                                <div>
+                                    <h2 class="text-lg font-bold">우선 확인할 업무 (판단 필요)</h2>
+                                    <p class="text-xs opacity-60 mt-0.5">미응답 및 도움 요청 건은 후속 조치 관리 목록에 자동 연동됩니다.</p>
                                 </div>
+                                <button onclick="openInputModal()" class="accent-btn px-4 py-2 rounded-xl bg-[#D97706] text-white text-sm font-bold hover:opacity-90 transition flex items-center gap-2">
+                                    <i data-lucide="plus" class="w-4 h-4"></i>
+                                    결과 입력하기
+                                </button>
                             </div>
-                            <div class="text-3xl font-bold" id="stat-total-logs">4건</div>
-                            <div class="text-xs text-emerald-600 font-medium mt-2">DB 실시간 집계 반영</div>
-                        </div>
-
-                        <div class="card p-6 rounded-2xl border border-[#EADBC8] bg-white/80 shadow-sm transition-theme">
-                            <div class="flex justify-between items-start mb-4">
-                                <span class="text-sm font-medium opacity-75">추가 확인 필요</span>
-                                <div class="p-2 rounded-lg bg-rose-100 text-rose-700">
-                                    <i data-lucide="alert-circle" class="w-5 h-5"></i>
-                                </div>
+                            
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr class="border-b border-[#EADBC8] text-xs uppercase opacity-60 bg-black/5">
+                                            <th class="py-3.5 px-6">관리번호</th>
+                                            <th class="py-3.5 px-6">대상자</th>
+                                            <th class="py-3.5 px-6">안부 결과</th>
+                                            <th class="py-3.5 px-6">확인 메모</th>
+                                            <th class="py-3.5 px-6">기록자</th>
+                                            <th class="py-3.5 px-6">후속 상태</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="logs-table-body" class="divide-y divide-[#EADBC8] text-sm">
+                                        <!-- JS 렌더링 -->
+                                    </tbody>
+                                </table>
                             </div>
-                            <div class="text-3xl font-bold text-rose-600" id="stat-need-followup">3건</div>
-                            <div class="text-xs opacity-60 mt-2">미응답 · 도움 요청 · 연결 오류</div>
-                        </div>
-
-                        <div class="card p-6 rounded-2xl border border-[#EADBC8] bg-white/80 shadow-sm transition-theme">
-                            <div class="flex justify-between items-start mb-4">
-                                <span class="text-sm font-medium opacity-75">조치 완료 건수</span>
-                                <div class="p-2 rounded-lg bg-blue-100 text-blue-700">
-                                    <i data-lucide="check-check" class="w-5 h-5"></i>
-                                </div>
-                            </div>
-                            <div class="text-3xl font-bold" id="stat-completed">1건</div>
-                            <div class="text-xs opacity-60 mt-2">오늘 업무시간 내 처리 기준</div>
                         </div>
                     </div>
 
-                    <!-- 우선 확인할 업무 테이블 -->
-                    <div class="card rounded-2xl border border-[#EADBC8] bg-white/80 shadow-sm overflow-hidden transition-theme">
-                        <div class="px-6 py-5 border-b border-[#EADBC8] flex items-center justify-between">
+                    <!-- ========================================================= -->
+                    <!-- 탭 2: 대상자 · 일정                                       -->
+                    <!-- ========================================================= -->
+                    <div id="section-targets" class="hidden space-y-6">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                             <div>
-                                <h2 class="text-lg font-bold">우선 확인할 업무 (담당자 판단 필요)</h2>
-                                <p class="text-xs opacity-60 mt-0.5">미응답 및 도움 요청 건은 후속 조치 목록에 자동 등록됩니다.</p>
+                                <h2 class="text-xl font-bold">대상자 · 안부 확인 일정</h2>
+                                <p class="text-xs opacity-60 mt-1">안부 확인 대상자 명단과 정기 연락 일정을 조회하고 신규 대상자를 등록합니다.</p>
                             </div>
-                            <button onclick="openInputModal()" class="px-4 py-2 rounded-xl bg-[#D97706] text-white text-sm font-bold hover:opacity-90 transition flex items-center gap-2" id="action-btn">
-                                <i data-lucide="plus" class="w-4 h-4"></i>
-                                결과 입력하기
+                            <div class="flex items-center gap-2">
+                                <input id="target-search-input" oninput="renderTargetsTable()" type="text" placeholder="이름 또는 관리번호 검색..." class="px-3.5 py-2 rounded-xl border border-[#EADBC8] bg-white/90 text-sm text-gray-800 focus:outline-none">
+                                <button onclick="openTargetModal()" class="accent-btn px-4 py-2 rounded-xl bg-[#D97706] text-white text-sm font-bold hover:opacity-90 transition flex items-center gap-1.5 shrink-0">
+                                    <i data-lucide="user-plus" class="w-4 h-4"></i>
+                                    대상자 등록
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="card rounded-2xl border border-[#EADBC8] bg-white/80 shadow-sm overflow-hidden transition-theme">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr class="border-b border-[#EADBC8] text-xs uppercase opacity-60 bg-black/5">
+                                            <th class="py-3.5 px-6">관리번호</th>
+                                            <th class="py-3.5 px-6">성명</th>
+                                            <th class="py-3.5 px-6">정기 연락 일정</th>
+                                            <th class="py-3.5 px-6">관리자</th>
+                                            <th class="py-3.5 px-6">등록 상태</th>
+                                            <th class="py-3.5 px-6 text-right">빠른 실행</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="targets-table-body" class="divide-y divide-[#EADBC8] text-sm">
+                                        <!-- JS 렌더링 -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ========================================================= -->
+                    <!-- 탭 3: 안부 확인 기록                                      -->
+                    <!-- ========================================================= -->
+                    <div id="section-logs" class="hidden space-y-6">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div>
+                                <h2 class="text-xl font-bold">안부 확인 전체 기록</h2>
+                                <p class="text-xs opacity-60 mt-1">결과 상태별로 필터링하여 전체 통화 및 확인 이력을 조회합니다.</p>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2">
+                                <button onclick="setLogFilter('ALL')" class="log-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-gray-900 text-white" data-filter="ALL">전체</button>
+                                <button onclick="setLogFilter('응답 완료')" class="log-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium border border-[#EADBC8] bg-white/80 text-gray-700" data-filter="응답 완료">응답 완료</button>
+                                <button onclick="setLogFilter('미응답')" class="log-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium border border-[#EADBC8] bg-white/80 text-gray-700" data-filter="미응답">미응답</button>
+                                <button onclick="setLogFilter('도움 요청')" class="log-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium border border-[#EADBC8] bg-white/80 text-gray-700" data-filter="도움 요청">도움 요청</button>
+                                <button onclick="setLogFilter('연결 오류')" class="log-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium border border-[#EADBC8] bg-white/80 text-gray-700" data-filter="연결 오류">연결 오류</button>
+                                <button onclick="openInputModal()" class="accent-btn ml-2 px-4 py-1.5 rounded-lg bg-[#D97706] text-white text-xs font-bold hover:opacity-90 transition flex items-center gap-1">
+                                    <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                                    새 기록 입력
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="card rounded-2xl border border-[#EADBC8] bg-white/80 shadow-sm overflow-hidden transition-theme">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr class="border-b border-[#EADBC8] text-xs uppercase opacity-60 bg-black/5">
+                                            <th class="py-3.5 px-6">관리번호</th>
+                                            <th class="py-3.5 px-6">대상자</th>
+                                            <th class="py-3.5 px-6">안부 결과</th>
+                                            <th class="py-3.5 px-6">확인 메모</th>
+                                            <th class="py-3.5 px-6">기록자</th>
+                                            <th class="py-3.5 px-6">후속 상태</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="all-logs-table-body" class="divide-y divide-[#EADBC8] text-sm">
+                                        <!-- JS 렌더링 -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ========================================================= -->
+                    <!-- 탭 4: 후속 조치 관리                                      -->
+                    <!-- ========================================================= -->
+                    <div id="section-followups" class="hidden space-y-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h2 class="text-xl font-bold">후속 조치 관리 (미응답 · 도움 요청 · 연결 오류)</h2>
+                                <p class="text-xs opacity-60 mt-1">추적 관리가 필요한 대상자의 조치 상태를 원클릭으로 완료 처리할 수 있습니다.</p>
+                            </div>
+                            <span id="followup-pending-badge" class="px-3.5 py-1.5 rounded-full bg-rose-100 text-rose-700 text-xs font-bold">미완료 3건</span>
+                        </div>
+
+                        <div id="followup-cards-grid" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <!-- JS 동적 카드 렌더링 -->
+                        </div>
+                    </div>
+
+                    <!-- ========================================================= -->
+                    <!-- 탭 5: 요약 보고                                           -->
+                    <!-- ========================================================= -->
+                    <div id="section-reports" class="hidden space-y-6">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div>
+                                <h2 class="text-xl font-bold">안부 확인 실적 요약 보고</h2>
+                                <p class="text-xs opacity-60 mt-1">실시간 DB 데이터를 기반으로 자동 집계된 기관 보고용 요약 리포트입니다.</p>
+                            </div>
+                            <button onclick="copyReportSummary()" class="accent-btn px-4 py-2 rounded-xl bg-[#D97706] text-white text-sm font-bold hover:opacity-90 transition flex items-center gap-2 self-start">
+                                <i data-lucide="copy" class="w-4 h-4"></i>
+                                보고서 텍스트 복사
                             </button>
                         </div>
-                        
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse">
-                                <thead>
-                                    <tr class="border-b border-[#EADBC8] text-xs uppercase opacity-60 bg-black/5">
-                                        <th class="py-3.5 px-6">관리번호</th>
-                                        <th class="py-3.5 px-6">대상자</th>
-                                        <th class="py-3.5 px-6">안부 결과</th>
-                                        <th class="py-3.5 px-6">확인 메모</th>
-                                        <th class="py-3.5 px-6">담당자</th>
-                                        <th class="py-3.5 px-6">후속 상태</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="logs-table-body" class="divide-y divide-[#EADBC8] text-sm">
-                                    <!-- JS 동적 렌더링 영역 -->
-                                </tbody>
-                            </table>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <!-- 결과 유형별 분포 바 차트 -->
+                            <div class="card p-6 rounded-2xl border border-[#EADBC8] bg-white/80 shadow-sm space-y-5 transition-theme">
+                                <h3 class="font-bold text-base">연락 결과 유형별 분포</h3>
+                                <div id="report-bars-container" class="space-y-4">
+                                    <!-- JS 렌더링 -->
+                                </div>
+                            </div>
+
+                            <!-- 자동 생성 보고서 미리보기 -->
+                            <div class="card p-6 rounded-2xl border border-[#EADBC8] bg-white/80 shadow-sm flex flex-col justify-between transition-theme">
+                                <div>
+                                    <div class="flex items-center justify-between mb-4">
+                                        <h3 class="font-bold text-base">일일 업무 보고 초안</h3>
+                                        <span class="text-xs opacity-60">자동 생성됨</span>
+                                    </div>
+                                    <pre id="report-text-preview" class="p-4 rounded-xl bg-black/5 text-xs leading-relaxed whitespace-pre-wrap font-sans"></pre>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -348,10 +488,42 @@
         </div>
     </div>
 
-    <!-- 수정 5 & 6: 2단계 구조 설정 모달 (테마 / 해상도 / 개인정보 수정) -->
+    <!-- 신규 대상자 등록 모달 -->
+    <div id="target-modal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="bg-white text-gray-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-200">
+            <div class="flex justify-between items-center pb-4 border-b border-gray-100">
+                <h3 class="text-lg font-bold flex items-center gap-2">
+                    <i data-lucide="user-plus" class="w-5 h-5 text-amber-600"></i>
+                    신규 대상자 등록
+                </h3>
+                <button onclick="closeModals()" class="p-1 rounded-lg hover:bg-gray-100"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="py-5 space-y-4 text-sm">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold mb-1 text-gray-700">관리번호</label>
+                        <input id="new-target-id" type="text" placeholder="예: L-0007" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:border-amber-500">
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1 text-gray-700">성명</label>
+                        <input id="new-target-name" type="text" placeholder="예: 대상자 G" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:border-amber-500">
+                    </div>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-gray-700">정기 연락 일정</label>
+                    <input id="new-target-schedule" type="text" value="매주 월·수·금 오전 10:00" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:border-amber-500">
+                </div>
+            </div>
+            <div class="pt-3 border-t border-gray-100 flex justify-end gap-2">
+                <button onclick="closeModals()" class="px-4 py-2 rounded-xl border border-gray-200 text-sm font-medium">취소</button>
+                <button onclick="saveNewTarget()" class="px-5 py-2 rounded-xl bg-amber-600 text-white text-sm font-bold hover:bg-amber-700 transition">등록하기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2단계 구조 설정 모달 (테마 / 해상도 / 개인정보 수정) -->
     <div id="settings-modal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
         <div class="bg-white text-gray-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-200">
-            <!-- 모달 헤더 -->
             <div class="flex justify-between items-center pb-4 border-b border-gray-100">
                 <div class="flex items-center gap-2">
                     <button id="settings-back-btn" onclick="showSettingsSubView('menu')" class="hidden p-1.5 rounded-lg hover:bg-gray-100 text-gray-600 transition">
@@ -367,7 +539,7 @@
                 </button>
             </div>
             
-            <!-- 1단계: 설정 메인 메뉴 (테마, 해상도, 개인정보) -->
+            <!-- 1단계: 설정 메인 메뉴 -->
             <div id="settings-view-menu" class="py-5 space-y-3">
                 <button onclick="showSettingsSubView('theme')" class="w-full flex items-center justify-between p-4 rounded-xl border border-gray-200 hover:border-amber-500 hover:bg-gray-50 transition text-left">
                     <div class="flex items-center gap-3">
@@ -409,7 +581,7 @@
                 </button>
             </div>
 
-            <!-- 2단계-A: 테마 선택 하위 화면 -->
+            <!-- 2단계-A: 테마 선택 -->
             <div id="settings-view-theme" class="hidden py-5 space-y-2.5">
                 <button onclick="applyTheme('warm', '웜 오렌지')" class="w-full flex items-center justify-between px-4 py-3.5 rounded-xl border hover:border-amber-500 transition text-sm font-medium">
                     <span class="flex items-center gap-3"><span class="w-4 h-4 rounded-full bg-[#D97706]"></span>1. 웜 오렌지 (기본 따뜻한 톤)</span>
@@ -433,7 +605,7 @@
                 </button>
             </div>
 
-            <!-- 2단계-B: 해상도 선택 하위 화면 -->
+            <!-- 2단계-B: 해상도 선택 -->
             <div id="settings-view-resolution" class="hidden py-5 space-y-3">
                 <button onclick="applyResolution('1920x1080')" id="res-1920" class="w-full py-4 px-4 rounded-xl border-2 border-amber-500 bg-amber-50 text-amber-900 font-bold text-sm transition flex items-center justify-between">
                     <span>1920 × 1080 (FHD 표준)</span>
@@ -445,7 +617,7 @@
                 </button>
             </div>
 
-            <!-- 2단계-C: 개인정보 수정 하위 화면 -->
+            <!-- 2단계-C: 개인정보 수정 -->
             <div id="settings-view-profile" class="hidden py-5 space-y-4 text-sm">
                 <div>
                     <label class="block font-bold mb-1.5 text-gray-700">성명</label>
@@ -464,14 +636,13 @@
                 </button>
             </div>
 
-            <!-- 모달 하단 닫기 버튼 -->
             <div class="pt-3 border-t border-gray-100 flex justify-end">
                 <button onclick="closeModals()" class="px-5 py-2.5 rounded-xl bg-gray-900 text-white text-sm font-bold hover:bg-gray-800 transition">닫기</button>
             </div>
         </div>
     </div>
 
-    <!-- 수정 4: 개인정보 조회 모달 ("개인정보" 타이틀, 담당 대상자 수 제거) -->
+    <!-- 개인정보 조회 모달 -->
     <div id="info-modal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
         <div class="bg-white text-gray-800 rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-gray-200">
             <div class="flex justify-between items-center pb-4 border-b border-gray-100">
@@ -517,9 +688,7 @@
     <script>
         lucide.createIcons();
 
-        // ============================================================
-        // 실시간 날짜 및 시간 자동 업데이트 (수정 3)
-        // ============================================================
+        // 실시간 날짜 및 시간 자동 업데이트
         function updateRealtimeClock() {
             const now = new Date();
             const days = ['일', '월', '화', '수', '목', '금', '토'];
@@ -538,9 +707,7 @@
         updateRealtimeClock();
         setInterval(updateRealtimeClock, 1000);
 
-        // ============================================================
-        // Supabase 연결 및 원형 상태 인디케이터 업데이트 (수정 2)
-        // ============================================================
+        // Supabase 연결
         const SUPABASE_URL = 'https://vjfxmorygeflqvkuwtkl.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_bQUGUnAEmtsGAEQ6-vILDQ_YJW9GH91';
 
@@ -553,15 +720,24 @@
             tooltip.innerText = 'Supabase DB 연결됨';
         }
 
-        // 초기 로컬 폴백 데이터
-        let localLogs = [
-            { target_id: 'L-0002', target_name: '대상자 B', result_status: '도움 요청', memo: '허리 통증 호소, 방문 확인 요청', manager_name: '담당자 2', followup_status: '미처리 (확인 대기)' },
-            { target_id: 'L-0001', target_name: '대상자 A', result_status: '미응답', memo: '1차 연락 미응답/재연락 검토', manager_name: '담당자 1', followup_status: '재연락 필요' },
-            { target_id: 'L-0004', target_name: '대상자 D', result_status: '연결 오류', memo: '통신사 착신 전환 오류', manager_name: '담당자 3', followup_status: '재연락 필요' },
-            { target_id: 'L-0003', target_name: '대상자 C', result_status: '응답 완료', memo: '아침 식사 완료, 특이사항 없음', manager_name: '담당자 1', followup_status: '완료' }
+        // 전역 데이터 상태
+        let currentLogs = [
+            { log_id: 2, target_id: 'L-0002', target_name: '대상자 B', result_status: '도움 요청', memo: '허리 통증 호소, 방문 확인 요청', manager_name: '김복지', followup_status: '미처리 (확인 대기)' },
+            { log_id: 1, target_id: 'L-0001', target_name: '대상자 A', result_status: '미응답', memo: '1차 연락 미응답/재연락 검토', manager_name: '김복지', followup_status: '재연락 필요' },
+            { log_id: 4, target_id: 'L-0004', target_name: '대상자 D', result_status: '연결 오류', memo: '통신사 착신 전환 오류', manager_name: '김복지', followup_status: '재연락 필요' },
+            { log_id: 3, target_id: 'L-0003', target_name: '대상자 C', result_status: '응답 완료', memo: '아침 식사 완료, 특이사항 없음', manager_name: '김복지', followup_status: '완료' }
         ];
 
-        // 담당자 개인정보 상태 관리 (수정 6)
+        let currentTargets = [
+            { target_id: 'L-0001', name: '대상자 A', contact_schedule: '매주 월·수·금 오전 09:30', manager_name: '김복지', status: '정상 등록' },
+            { target_id: 'L-0002', name: '대상자 B', contact_schedule: '매일 오전 10:00 (집중 관리)', manager_name: '김복지', status: '정상 등록' },
+            { target_id: 'L-0003', name: '대상자 C', contact_schedule: '매주 화·목 오전 10:30', manager_name: '김복지', status: '정상 등록' },
+            { target_id: 'L-0004', name: '대상자 D', contact_schedule: '매주 월·목 오후 14:00', manager_name: '김복지', status: '정상 등록' }
+        ];
+
+        let activeLogFilter = 'ALL';
+
+        // 개인정보 상태 관리
         let managerProfile = {
             name: '김복지',
             role: '안부 확인 전담 사회복지사',
@@ -580,28 +756,21 @@
 
             managerProfile = { name: newName, role: newRole, org: newOrg };
 
-            // 1. 우측 상단 헤더 프로필 즉시 반영
             document.getElementById('avatar-bg').innerText = newName.charAt(0);
             document.getElementById('header-profile-name').innerText = newName;
             document.getElementById('header-profile-org').innerText = newOrg;
 
-            // 2. 개인정보 조회 모달 즉시 반영
             document.getElementById('info-modal-name').innerText = newName;
             document.getElementById('info-modal-role').innerText = newRole;
             document.getElementById('info-modal-org').innerText = newOrg;
 
-            // 3. 설정 메인 메뉴 요약 텍스트 반영
             document.getElementById('current-profile-summary').innerText = `${newName} · ${newOrg}`;
-
             showSettingsSubView('menu');
         }
 
-        // 설정 모달 2단계 화면 전환 (수정 5)
         function showSettingsSubView(viewName) {
             const views = ['menu', 'theme', 'resolution', 'profile'];
-            views.forEach(v => {
-                document.getElementById(`settings-view-${v}`).classList.add('hidden');
-            });
+            views.forEach(v => document.getElementById(`settings-view-${v}`).classList.add('hidden'));
             document.getElementById(`settings-view-${viewName}`).classList.remove('hidden');
 
             const backBtn = document.getElementById('settings-back-btn');
@@ -612,11 +781,7 @@
                 titleEl.innerHTML = '<i data-lucide="settings" class="w-5 h-5 text-amber-600"></i><span>설정</span>';
             } else {
                 backBtn.classList.remove('hidden');
-                const subTitles = {
-                    theme: '테마 설정',
-                    resolution: '해상도 설정',
-                    profile: '개인정보 수정'
-                };
+                const subTitles = { theme: '테마 설정', resolution: '해상도 설정', profile: '개인정보 수정' };
                 titleEl.innerHTML = `<span>${subTitles[viewName]}</span>`;
                 if (viewName === 'profile') {
                     document.getElementById('edit-profile-name').value = managerProfile.name;
@@ -627,70 +792,301 @@
             lucide.createIcons();
         }
 
-        // 데이터 불러오기 (Supabase 또는 로컬)
-        async function fetchLogs() {
-            let logs = localLogs;
+        // ============================================================
+        // Supabase 및 모든 메뉴 데이터 동기화
+        // ============================================================
+        async function fetchAllData() {
             if (supabaseClient) {
-                const { data, error } = await supabaseClient
-                    .from('contact_logs')
-                    .select('*')
-                    .order('log_id', { ascending: false });
-                if (!error && data) {
-                    logs = data;
-                } else {
-                    console.error('Supabase 조회 오류:', error);
-                    const dot = document.getElementById('db-status-dot');
-                    const tooltip = document.getElementById('db-status-tooltip');
-                    dot.className = 'w-3 h-3 rounded-full bg-rose-500 cursor-pointer ring-4 ring-rose-500/20 transition-all';
-                    tooltip.innerText = 'DB 연결 오류';
+                const [logsRes, targetsRes] = await Promise.all([
+                    supabaseClient.from('contact_logs').select('*').order('log_id', { ascending: false }),
+                    supabaseClient.from('targets').select('*').order('target_id', { ascending: true })
+                ]);
+
+                if (!logsRes.error && logsRes.data) {
+                    currentLogs = logsRes.data;
+                }
+                if (!targetsRes.error && targetsRes.data && targetsRes.data.length > 0) {
+                    currentTargets = targetsRes.data;
                 }
             }
-            renderLogs(logs);
+            renderAllSections();
         }
 
-        // 테이블 및 요약 카드 렌더링
-        function renderLogs(logs) {
+        function renderAllSections() {
+            renderDashboardLogs();
+            renderTargetsTable();
+            renderAllLogsTable();
+            renderFollowupsSection();
+            renderReportsSection();
+        }
+
+        function getBadgeHtml(status) {
+            if (status === '도움 요청') return `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-700">${status}</span>`;
+            if (status === '미응답') return `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800">${status}</span>`;
+            if (status === '연결 오류') return `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-gray-200 text-gray-700">${status}</span>`;
+            return `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700">${status}</span>`;
+        }
+
+        function getFollowupColor(followupStatus) {
+            if (followupStatus === '완료') return 'text-emerald-600 font-medium';
+            if (followupStatus && followupStatus.includes('미처리')) return 'font-bold text-rose-600';
+            return 'font-medium text-amber-700';
+        }
+
+        // 1. 홈페이지(대시보드) 렌더링
+        function renderDashboardLogs() {
             const tbody = document.getElementById('logs-table-body');
             tbody.innerHTML = '';
 
             let needFollowup = 0;
             let completed = 0;
 
-            logs.forEach(item => {
-                if (item.result_status === '응답 완료') completed++;
+            currentLogs.forEach(item => {
+                if (item.followup_status === '완료' || item.result_status === '응답 완료') completed++;
                 else needFollowup++;
-
-                let badgeClass = 'bg-emerald-100 text-emerald-700';
-                let statusColor = 'text-emerald-600 font-medium';
-                if (item.result_status === '도움 요청') {
-                    badgeClass = 'bg-rose-100 text-rose-700';
-                    statusColor = 'font-bold text-rose-600';
-                } else if (item.result_status === '미응답') {
-                    badgeClass = 'bg-amber-100 text-amber-800';
-                    statusColor = 'font-medium text-amber-700';
-                } else if (item.result_status === '연결 오류') {
-                    badgeClass = 'bg-gray-200 text-gray-700';
-                    statusColor = 'opacity-75';
-                }
 
                 const row = `
                     <tr class="hover:bg-black/5 transition">
                         <td class="py-4 px-6 font-mono text-xs opacity-75">${item.target_id}</td>
                         <td class="py-4 px-6 font-bold">${item.target_name}</td>
-                        <td class="py-4 px-6">
-                            <span class="px-2.5 py-1 rounded-full text-xs font-bold ${badgeClass}">${item.result_status}</span>
-                        </td>
+                        <td class="py-4 px-6">${getBadgeHtml(item.result_status)}</td>
                         <td class="py-4 px-6 opacity-80">${item.memo || '-'}</td>
                         <td class="py-4 px-6">${item.manager_name || managerProfile.name}</td>
-                        <td class="py-4 px-6 ${statusColor}">${item.followup_status}</td>
+                        <td class="py-4 px-6 ${getFollowupColor(item.followup_status)}">${item.followup_status}</td>
                     </tr>
                 `;
                 tbody.insertAdjacentHTML('beforeend', row);
             });
 
-            document.getElementById('stat-total-logs').innerText = `${logs.length}건`;
+            document.getElementById('stat-total-targets').innerText = `${currentTargets.length}명`;
+            document.getElementById('stat-total-logs').innerText = `${currentLogs.length}건`;
             document.getElementById('stat-need-followup').innerText = `${needFollowup}건`;
             document.getElementById('stat-completed').innerText = `${completed}건`;
+        }
+
+        // 2. 대상자 · 일정 렌더링
+        function renderTargetsTable() {
+            const tbody = document.getElementById('targets-table-body');
+            const keyword = (document.getElementById('target-search-input')?.value || '').trim().toLowerCase();
+            tbody.innerHTML = '';
+
+            const filtered = currentTargets.filter(t =>
+                t.target_id.toLowerCase().includes(keyword) || t.name.toLowerCase().includes(keyword)
+            );
+
+            filtered.forEach(t => {
+                const row = `
+                    <tr class="hover:bg-black/5 transition">
+                        <td class="py-4 px-6 font-mono text-xs opacity-75">${t.target_id}</td>
+                        <td class="py-4 px-6 font-bold">${t.name}</td>
+                        <td class="py-4 px-6 opacity-85">${t.contact_schedule || '매주 월·수·금 오전 10:00'}</td>
+                        <td class="py-4 px-6">${t.manager_name || managerProfile.name}</td>
+                        <td class="py-4 px-6"><span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700">${t.status || '정상 등록'}</span></td>
+                        <td class="py-4 px-6 text-right">
+                            <button onclick="openInputModalWithTarget('${t.target_id}', '${t.name}')" class="px-3 py-1.5 rounded-lg border border-[#EADBC8] hover:bg-black/5 text-xs font-bold transition">
+                                결과 입력
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                tbody.insertAdjacentHTML('beforeend', row);
+            });
+        }
+
+        // 3. 안부 확인 기록 전체 테이블 렌더링
+        function setLogFilter(filter) {
+            activeLogFilter = filter;
+            document.querySelectorAll('.log-filter-btn').forEach(btn => {
+                if (btn.dataset.filter === filter) {
+                    btn.className = 'log-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-gray-900 text-white';
+                } else {
+                    btn.className = 'log-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium border border-[#EADBC8] bg-white/80 text-gray-700';
+                }
+            });
+            renderAllLogsTable();
+        }
+
+        function renderAllLogsTable() {
+            const tbody = document.getElementById('all-logs-table-body');
+            tbody.innerHTML = '';
+
+            const filtered = activeLogFilter === 'ALL'
+                ? currentLogs
+                : currentLogs.filter(l => l.result_status === activeLogFilter);
+
+            filtered.forEach(item => {
+                const row = `
+                    <tr class="hover:bg-black/5 transition">
+                        <td class="py-4 px-6 font-mono text-xs opacity-75">${item.target_id}</td>
+                        <td class="py-4 px-6 font-bold">${item.target_name}</td>
+                        <td class="py-4 px-6">${getBadgeHtml(item.result_status)}</td>
+                        <td class="py-4 px-6 opacity-80">${item.memo || '-'}</td>
+                        <td class="py-4 px-6">${item.manager_name || managerProfile.name}</td>
+                        <td class="py-4 px-6 ${getFollowupColor(item.followup_status)}">${item.followup_status}</td>
+                    </tr>
+                `;
+                tbody.insertAdjacentHTML('beforeend', row);
+            });
+        }
+
+        // 4. 후속 조치 관리 렌더링 및 완료 처리
+        function renderFollowupsSection() {
+            const grid = document.getElementById('followup-cards-grid');
+            grid.innerHTML = '';
+
+            const followupItems = currentLogs.filter(l => l.result_status !== '응답 완료');
+            const pendingCount = followupItems.filter(l => l.followup_status !== '완료').length;
+            document.getElementById('followup-pending-badge').innerText = `미완료 ${pendingCount}건`;
+
+            if (followupItems.length === 0) {
+                grid.innerHTML = `<div class="col-span-2 p-8 text-center opacity-60 text-sm">현재 후속 조치가 필요한 대상자가 없습니다.</div>`;
+                return;
+            }
+
+            followupItems.forEach((item, idx) => {
+                const isDone = item.followup_status === '완료';
+                const cardHtml = `
+                    <div class="card p-6 rounded-2xl border border-[#EADBC8] bg-white/85 shadow-sm flex flex-col justify-between gap-4 transition-theme">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-mono text-xs px-2 py-0.5 rounded bg-black/5 opacity-75">${item.target_id}</span>
+                                    <span class="font-bold text-base">${item.target_name}</span>
+                                </div>
+                                ${getBadgeHtml(item.result_status)}
+                            </div>
+                            <p class="text-sm opacity-80 mb-3">${item.memo || '특이사항 메모 없음'}</p>
+                            <div class="text-xs opacity-60">기록자: ${item.manager_name || managerProfile.name}</div>
+                        </div>
+                        <div class="pt-3 border-t border-[#EADBC8] flex items-center justify-between">
+                            <span class="text-xs ${getFollowupColor(item.followup_status)}">상태: ${item.followup_status}</span>
+                            ${isDone
+                                ? `<span class="text-xs font-bold text-emerald-600 flex items-center gap-1"><i data-lucide="check-circle" class="w-4 h-4"></i>조치 완료됨</span>`
+                                : `<button onclick="completeFollowup(${item.log_id || -1}, '${item.target_id}')" class="px-3.5 py-1.5 rounded-xl bg-gray-900 text-white text-xs font-bold hover:bg-gray-800 transition">조치 완료 처리</button>`
+                            }
+                        </div>
+                    </div>
+                `;
+                grid.insertAdjacentHTML('beforeend', cardHtml);
+            });
+            lucide.createIcons();
+        }
+
+        async function completeFollowup(logId, targetId) {
+            if (supabaseClient && logId > 0) {
+                const { error } = await supabaseClient
+                    .from('contact_logs')
+                    .update({ followup_status: '완료' })
+                    .eq('log_id', logId);
+                if (error) {
+                    alert('상태 업데이트 오류: ' + error.message);
+                    return;
+                }
+                fetchAllData();
+            } else {
+                const target = currentLogs.find(l => l.log_id === logId || l.target_id === targetId);
+                if (target) target.followup_status = '완료';
+                renderAllSections();
+            }
+        }
+
+        // 5. 요약 보고 렌더링 및 복사
+        function renderReportsSection() {
+            const total = currentLogs.length || 1;
+            const counts = {
+                '응답 완료': currentLogs.filter(l => l.result_status === '응답 완료').length,
+                '미응답': currentLogs.filter(l => l.result_status === '미응답').length,
+                '도움 요청': currentLogs.filter(l => l.result_status === '도움 요청').length,
+                '연결 오류': currentLogs.filter(l => l.result_status === '연결 오류').length
+            };
+
+            const colors = {
+                '응답 완료': 'bg-emerald-500',
+                '미응답': 'bg-amber-500',
+                '도움 요청': 'bg-rose-500',
+                '연결 오류': 'bg-gray-500'
+            };
+
+            const barsContainer = document.getElementById('report-bars-container');
+            barsContainer.innerHTML = '';
+
+            Object.keys(counts).forEach(key => {
+                const count = counts[key];
+                const pct = Math.round((count / total) * 100);
+                barsContainer.insertAdjacentHTML('beforeend', `
+                    <div>
+                        <div class="flex justify-between text-xs font-bold mb-1.5">
+                            <span>${key}</span>
+                            <span>${count}건 (${pct}%)</span>
+                        </div>
+                        <div class="w-full h-2.5 rounded-full bg-black/10 overflow-hidden">
+                            <div class="h-full ${colors[key]} rounded-full transition-all duration-500" style="width: ${pct}%"></div>
+                        </div>
+                    </div>
+                `);
+            });
+
+            const todayStr = document.getElementById('realtime-date')?.innerText || '';
+            const needActionList = currentLogs
+                .filter(l => l.followup_status !== '완료')
+                .map(l => `- [${l.target_id}] ${l.target_name} (${l.result_status}): ${l.memo || '메모 없음'} → ${l.followup_status}`)
+                .join('
+') || '- 미처리 특이사항 없음';
+
+            const reportText = `[LUMI 일일 안부 확인 결과 보고]
+• 보고 일시: ${todayStr}
+• 작성자: ${managerProfile.name} (${managerProfile.org})
+• 전체 확인 건수: 총 ${currentLogs.length}건
+  - 응답 완료: ${counts['응답 완료']}건
+  - 미응답: ${counts['미응답']}건
+  - 도움 요청: ${counts['도움 요청']}건
+  - 연결 오류: ${counts['연결 오류']}건
+
+[후속 조치 진행 현황]
+${needActionList}`;
+
+            document.getElementById('report-text-preview').innerText = reportText;
+        }
+
+        function copyReportSummary() {
+            const text = document.getElementById('report-text-preview').innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('보고서 요약 내용이 클립보드에 복사되었습니다.');
+            });
+        }
+
+        // 신규 대상자 저장
+        async function saveNewTarget() {
+            const target_id = document.getElementById('new-target-id').value.trim();
+            const name = document.getElementById('new-target-name').value.trim();
+            const contact_schedule = document.getElementById('new-target-schedule').value.trim();
+
+            if (!target_id || !name) {
+                alert('관리번호와 성명을 입력해 주세요.');
+                return;
+            }
+
+            const newTarget = {
+                target_id,
+                name,
+                contact_schedule,
+                manager_name: managerProfile.name,
+                status: '정상 등록'
+            };
+
+            if (supabaseClient) {
+                const { error } = await supabaseClient.from('targets').upsert(newTarget);
+                if (error) {
+                    alert('대상자 등록 오류: ' + error.message);
+                    return;
+                }
+                closeModals();
+                fetchAllData();
+            } else {
+                currentTargets.push(newTarget);
+                closeModals();
+                renderAllSections();
+            }
         }
 
         // 안부 확인 결과 저장
@@ -737,23 +1133,26 @@
                     alert('Supabase 저장 중 오류가 발생했습니다: ' + error.message);
                     return;
                 }
+                document.getElementById('input-memo').value = '';
+                closeModals();
+                fetchAllData();
             } else {
-                localLogs.unshift(newRecord);
+                newRecord.log_id = Date.now();
+                currentLogs.unshift(newRecord);
+                document.getElementById('input-memo').value = '';
+                closeModals();
+                renderAllSections();
             }
-
-            document.getElementById('input-memo').value = '';
-            closeModals();
-            fetchLogs();
         }
 
-        // 화면 전환 및 UI 제어
+        // 화면 전환 및 메뉴 선택
         function switchView(view) {
             const landing = document.getElementById('landing-view');
             const dashboard = document.getElementById('dashboard-view');
             if (view === 'dashboard') {
                 landing.classList.add('hidden');
                 dashboard.classList.remove('hidden');
-                fetchLogs();
+                fetchAllData();
                 window.scrollTo(0, 0);
             } else {
                 dashboard.classList.add('hidden');
@@ -771,10 +1170,13 @@
         };
 
         let currentAccent = '#D97706';
+        let currentThemeKey = 'warm';
 
         function applyTheme(key, label) {
             const t = themes[key];
             currentAccent = t.accent;
+            currentThemeKey = key;
+
             document.getElementById('dashboard-view').style.backgroundColor = t.wrapper;
             const main = document.getElementById('main-container');
             main.style.backgroundColor = t.mainBg;
@@ -789,7 +1191,11 @@
             document.getElementById('sidebar-footer').style.borderColor = t.border;
             document.getElementById('logo-text').style.color = t.accent;
             document.getElementById('avatar-bg').style.backgroundColor = t.accent;
-            document.getElementById('action-btn').style.backgroundColor = t.accent;
+
+            document.querySelectorAll('.accent-btn').forEach(btn => {
+                btn.style.backgroundColor = t.accent;
+                btn.style.color = (key === 'dark') ? '#0F172A' : '#FFFFFF';
+            });
 
             document.querySelectorAll('.card').forEach(el => {
                 el.style.backgroundColor = t.cardBg;
@@ -829,12 +1235,13 @@
         }
 
         function selectMenu(menuName) {
+            // 1. 메뉴 버튼 스타일 전환
             document.querySelectorAll('.menu-btn').forEach(btn => {
                 if (btn.dataset.menu === menuName) {
                     btn.classList.add('font-bold', 'shadow-sm');
                     btn.classList.remove('opacity-75');
                     btn.style.backgroundColor = currentAccent;
-                    btn.style.color = '#FFFFFF';
+                    btn.style.color = (currentThemeKey === 'dark') ? '#0F172A' : '#FFFFFF';
                 } else {
                     btn.classList.remove('font-bold', 'shadow-sm');
                     btn.classList.add('opacity-75');
@@ -842,10 +1249,30 @@
                     btn.style.color = 'inherit';
                 }
             });
+
+            // 2. 본문 섹션 전환
+            const sections = ['dashboard', 'targets', 'logs', 'followups', 'reports'];
+            sections.forEach(sec => {
+                document.getElementById(`section-${sec}`).classList.add('hidden');
+            });
+            document.getElementById(`section-${menuName}`).classList.remove('hidden');
+
+            renderAllSections();
         }
 
         function toggleProfileDropdown() { document.getElementById('profile-dropdown').classList.toggle('hidden'); }
         function openInputModal() { document.getElementById('input-modal').classList.remove('hidden'); }
+        function openInputModalWithTarget(id, name) {
+            document.getElementById('input-target-id').value = id;
+            document.getElementById('input-target-name').value = name;
+            document.getElementById('input-modal').classList.remove('hidden');
+        }
+        function openTargetModal() {
+            const nextNum = String(currentTargets.length + 1).padStart(4, '0');
+            document.getElementById('new-target-id').value = `L-${nextNum}`;
+            document.getElementById('new-target-name').value = '';
+            document.getElementById('target-modal').classList.remove('hidden');
+        }
         function openSettingsModal() {
             document.getElementById('profile-dropdown').classList.add('hidden');
             showSettingsSubView('menu');
@@ -858,6 +1285,7 @@
         function openConsultModal() { document.getElementById('consult-modal').classList.remove('hidden'); }
         function closeModals() {
             document.getElementById('input-modal').classList.add('hidden');
+            document.getElementById('target-modal').classList.add('hidden');
             document.getElementById('settings-modal').classList.add('hidden');
             document.getElementById('info-modal').classList.add('hidden');
             document.getElementById('consult-modal').classList.add('hidden');
