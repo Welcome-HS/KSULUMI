@@ -176,7 +176,7 @@
                                 김
                             </div>
                             <div class="text-left">
-                                <div class="text-sm font-bold" id="header-profile-name">김복지 담당자</div>
+                                <div class="text-sm font-bold" id="header-profile-name">김복지</div>
                                 <div class="text-xs opacity-60" id="header-profile-org">부산 남구 복지관</div>
                             </div>
                             <i data-lucide="chevron-down" class="w-4 h-4 opacity-60"></i>
@@ -582,7 +582,7 @@
 
             // 1. 우측 상단 헤더 프로필 즉시 반영
             document.getElementById('avatar-bg').innerText = newName.charAt(0);
-            document.getElementById('header-profile-name').innerText = `${newName} 담당자`;
+            document.getElementById('header-profile-name').innerText = newName;
             document.getElementById('header-profile-org').innerText = newOrg;
 
             // 2. 개인정보 조회 모달 즉시 반영
@@ -714,7 +714,7 @@
                 target_name,
                 result_status,
                 memo,
-                manager_name: `${managerProfile.name} 담당자`,
+                manager_name: managerProfile.name,
                 followup_status
             };
 
@@ -726,7 +726,7 @@
                 await supabaseClient.from('targets').upsert({
                     target_id,
                     name: target_name,
-                    manager_name: `${managerProfile.name} 담당자`
+                    manager_name: managerProfile.name
                 });
 
                 const { error } = await supabaseClient.from('contact_logs').insert([newRecord]);
