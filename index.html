@@ -927,13 +927,94 @@
             </div>
             <div class="pt-3 border-t border-gray-100 flex justify-end gap-2">
                 <button onclick="closeModals()" class="px-4 py-2 rounded-xl border border-gray-200 text-sm font-medium">취소</button>
-                <button onclick="alert('상담 신청이 접수되었습니다.'); closeModals();" class="px-5 py-2 rounded-xl bg-teal-600 text-white text-sm font-bold hover:bg-teal-700">신청하기</button>
+                <button onclick="showLumiAlert('상담 신청이 접수되었습니다.', '도입 문의 완료').then(() => closeModals());" class="px-5 py-2 rounded-xl bg-teal-600 text-white text-sm font-bold hover:bg-teal-700">신청하기</button>
             </div>
         </div>
     </div>
 
     <script>
         lucide.createIcons();
+
+        // ============================================================
+        // 커스텀 중앙 확인/알림 모달 제어 (브라우저 기본 팝업 대체)
+        // ============================================================
+        function showLumiConfirm({ title = '확인', message = '', confirmText = '확인', cancelText = '취소', danger = false }) {
+            return new Promise((resolve) => {
+                const overlay = document.getElementById('lumi-dialog-overlay');
+                const titleEl = document.getElementById('lumi-dialog-title');
+                const msgEl = document.getElementById('lumi-dialog-message');
+                const iconWrap = document.getElementById('lumi-dialog-icon-wrap');
+                const cancelBtn = document.getElementById('lumi-dialog-cancel-btn');
+                const confirmBtn = document.getElementById('lumi-dialog-confirm-btn');
+
+                titleEl.innerText = title;
+                msgEl.innerText = message;
+                confirmBtn.innerText = confirmText;
+                cancelBtn.innerText = cancelText;
+                cancelBtn.classList.remove('hidden');
+
+                if (danger) {
+                    iconWrap.className = 'w-10 h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center shrink-0 mt-0.5';
+                    iconWrap.innerHTML = '<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>';
+                    confirmBtn.className = 'px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-sm font-bold shadow-sm transition';
+                } else {
+                    iconWrap.className = 'w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center shrink-0 mt-0.5';
+                    iconWrap.innerHTML = '<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+                    confirmBtn.className = 'px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-sm font-bold shadow-sm transition';
+                }
+
+                overlay.classList.remove('hidden');
+
+                const cleanup = (result) => {
+                    overlay.classList.add('hidden');
+                    confirmBtn.onclick = null;
+                    cancelBtn.onclick = null;
+                    overlay.onclick = null;
+                    resolve(result);
+                };
+
+                confirmBtn.onclick = () => cleanup(true);
+                cancelBtn.onclick = () => cleanup(false);
+                overlay.onclick = (e) => {
+                    if (e.target === overlay) cleanup(false);
+                };
+            });
+        }
+
+        function showLumiAlert(message, title = '안내') {
+            return new Promise((resolve) => {
+                const overlay = document.getElementById('lumi-dialog-overlay');
+                const titleEl = document.getElementById('lumi-dialog-title');
+                const msgEl = document.getElementById('lumi-dialog-message');
+                const iconWrap = document.getElementById('lumi-dialog-icon-wrap');
+                const cancelBtn = document.getElementById('lumi-dialog-cancel-btn');
+                const confirmBtn = document.getElementById('lumi-dialog-confirm-btn');
+
+                titleEl.innerText = title;
+                msgEl.innerText = message;
+                confirmBtn.innerText = '확인';
+                cancelBtn.classList.add('hidden');
+
+                iconWrap.className = 'w-10 h-10 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center shrink-0 mt-0.5';
+                iconWrap.innerHTML = '<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>';
+                confirmBtn.className = 'px-5 py-2.5 rounded-xl bg-gray-900 hover:bg-gray-800 text-white text-sm font-bold shadow-sm transition';
+
+                overlay.classList.remove('hidden');
+
+                const cleanup = () => {
+                    overlay.classList.add('hidden');
+                    confirmBtn.onclick = null;
+                    overlay.onclick = null;
+                    resolve(true);
+                };
+
+                confirmBtn.onclick = cleanup;
+                overlay.onclick = (e) => {
+                    if (e.target === overlay) cleanup();
+                };
+            });
+        }
+
 
         // ============================================================
         // 1. 실시간 날짜 및 시간 업데이트
@@ -1202,7 +1283,7 @@
             const newOrg = document.getElementById('edit-profile-org').value.trim();
 
             if (!newName || !newRole || !newOrg) {
-                alert('성명, 직책, 소속 기관을 모두 입력해 주세요.');
+                showLumiAlert('성명, 직책, 소속 기관을 모두 입력해 주세요.', '입력 확인');
                 return;
             }
 
@@ -1561,7 +1642,7 @@
                     .update({ followup_status: '완료' })
                     .eq('log_id', logId);
                 if (error) {
-                    alert('상태 업데이트 오류: ' + error.message);
+                    showLumiAlert('상태 업데이트 오류: ' + error.message, '오류');
                     return;
                 }
                 fetchAllData();
@@ -1632,7 +1713,7 @@ ${needActionList}`;
         function copyReportSummary() {
             const text = document.getElementById('report-text-preview').innerText;
             navigator.clipboard.writeText(text).then(() => {
-                alert('보고서 요약 내용이 클립보드에 복사되었습니다.');
+                showLumiAlert('보고서 요약 내용이 클립보드에 복사되었습니다.', '복사 완료');
             });
         }
 
@@ -1672,7 +1753,14 @@ ${needActionList}`;
         async function deleteTargetByIndex(idx) {
             const target = currentTargets[idx];
             if (!target) return;
-            if (!confirm(`[${target.target_id}] ${target.name} 인원을 삭제하시겠습니까?`)) return;
+            const ok = await showLumiConfirm({
+                title: '인원 삭제 확인',
+                message: `[${target.target_id}] ${target.name} 인원을 삭제하시겠습니까?\n삭제 시 관련 안부 확인 기록도 함께 정리됩니다.`,
+                confirmText: '삭제하기',
+                cancelText: '취소',
+                danger: true
+            });
+            if (!ok) return;
 
             const upperId = (target.target_id || '').trim().toUpperCase();
             if (upperId && !deletedTargetIds.includes(upperId)) {
@@ -1713,7 +1801,7 @@ ${needActionList}`;
 
             if (shouldCloseModal) closeModals();
             renderAllSections();
-            alert('인원 관리 변경사항이 저장되었으며 홈페이지 현황에도 반영되었습니다.');
+            showLumiAlert('인원 관리 변경사항이 저장되었으며 홈페이지 현황에도 반영되었습니다.', '저장 완료');
         }
 
         async function saveNewTarget() {
@@ -1723,7 +1811,7 @@ ${needActionList}`;
             const manager_name = (document.getElementById('new-target-manager')?.value || managerProfile.name).trim();
 
             if (!target_id && !name) {
-                alert('관리번호와 성명을 입력해 주세요.');
+                showLumiAlert('관리번호와 성명을 입력해 주세요.', '입력 확인');
                 return;
             }
 
@@ -1785,7 +1873,7 @@ ${needActionList}`;
             const memo = document.getElementById('input-memo').value.trim();
 
             if (!target_id || !target_name) {
-                alert('관리번호와 대상자명을 입력해 주세요.');
+                showLumiAlert('관리번호와 대상자명을 입력해 주세요.', '입력 확인');
                 return;
             }
 
@@ -1828,7 +1916,7 @@ ${needActionList}`;
                 btn.disabled = false;
 
                 if (error) {
-                    alert('Supabase 저장 중 오류가 발생했습니다: ' + error.message);
+                    showLumiAlert('Supabase 저장 중 오류가 발생했습니다: ' + error.message, '저장 오류');
                     return;
                 }
                 document.getElementById('input-memo').value = '';
@@ -2280,7 +2368,7 @@ ${needActionList}`;
             }
 
             if (!SpeechRec) {
-                alert('이 브라우저에서는 실시간 마이크 인식을 지원하지 않습니다. 상단의 예시 음성 버튼이나 텍스트 입력으로 자동 요약·상태 분류를 바로 체험해 보세요.');
+                showLumiAlert('이 브라우저에서는 실시간 마이크 인식을 지원하지 않습니다. 상단의 예시 음성 버튼이나 텍스트 입력으로 자동 요약·상태 분류를 바로 체험해 보세요.', '음성 안내');
                 applySampleCall('응답');
                 return;
             }
@@ -2402,5 +2490,29 @@ ${needActionList}`;
             }
         });
     </script>
+
+    <!-- 커스텀 중앙 확인/알림 모달 (브라우저 기본 confirm/alert 대체) -->
+    <div id="lumi-dialog-overlay" class="hidden fixed inset-0 bg-black/50 backdrop-blur-[1px] flex items-center justify-center z-[70] p-4 transition-opacity">
+        <div class="bg-white text-gray-900 rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-gray-200 transform transition-all">
+            <div class="flex items-start gap-3.5">
+                <div id="lumi-dialog-icon-wrap" class="w-10 h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+                </div>
+                <div class="flex-1">
+                    <h4 id="lumi-dialog-title" class="text-base font-bold text-gray-900">인원 삭제 확인</h4>
+                    <p id="lumi-dialog-message" class="text-sm text-gray-600 mt-1.5 leading-relaxed whitespace-pre-line"></p>
+                </div>
+            </div>
+            <div class="mt-6 flex justify-end gap-2">
+                <button type="button" id="lumi-dialog-cancel-btn" class="px-4 py-2.5 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 text-sm font-bold transition">
+                    취소
+                </button>
+                <button type="button" id="lumi-dialog-confirm-btn" class="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-sm font-bold shadow-sm transition">
+                    삭제하기
+                </button>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>
