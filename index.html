@@ -414,80 +414,144 @@
                         </div>
                     </div>
 
-                    <!-- 탭 2: 인원 관리 -->
-                    <div id="section-targets" class="hidden space-y-6">
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <!-- 탭 2: 인원 관리 (단순화 UI + 자동 저장) -->
+                    <div id="section-targets" class="hidden space-y-5">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                             <div>
-                                <h2 class="text-2xl font-bold">인원 관리 · 안부 확인 일정</h2>
-                                <p class="text-sm opacity-70 mt-1">안부 확인 대상자 명단과 정기 연락 일정을 조회하고 인원을 추가 또는 삭제합니다.</p>
+                                <div class="flex items-center gap-2.5">
+                                    <h2 class="text-2xl font-bold">인원 관리</h2>
+                                    <span id="targets-autosave-badge" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                        자동 저장됨
+                                    </span>
+                                </div>
+                                <p class="text-sm opacity-70 mt-0.5">안부 확인 대상자 명단과 정기 연락 시간을 간편하게 관리합니다.</p>
                             </div>
-                            <div class="flex items-center gap-2.5">
-                                <input id="target-search-input" oninput="debouncedRenderTargets()" type="text" placeholder="이름 또는 관리번호 검색..." class="px-4 py-2.5 rounded-xl border border-[#EADBC8] bg-white/90 text-base text-gray-800 focus:outline-none">
-                                <button onclick="openManageModal()" class="accent-btn px-5 py-2.5 rounded-xl bg-[#D97706] text-white text-base font-bold hover:opacity-90 transition flex items-center gap-2 shrink-0">
-                                    <i data-lucide="sliders-horizontal" class="w-5 h-5"></i>
-                                    관리하기
-                                </button>
-                                <button onclick="saveTargetsExplicitly()" class="px-4 py-2.5 rounded-xl border border-[#EADBC8] bg-white/90 hover:bg-black/5 text-base font-bold transition flex items-center gap-1.5 shrink-0">
-                                    <i data-lucide="save" class="w-4 h-4"></i>
-                                    저장
+                            <div class="flex items-center gap-2">
+                                <input id="target-search-input" oninput="debouncedRenderTargets()" type="text" placeholder="이름·번호 검색" class="w-44 px-3.5 py-2 rounded-xl border border-[#EADBC8] bg-white/90 text-sm text-gray-800 focus:outline-none focus:border-amber-500">
+                                <button onclick="openManageModal()" class="accent-btn px-4 py-2 rounded-xl bg-[#D97706] text-white text-sm font-bold hover:opacity-90 transition flex items-center gap-1.5 shrink-0">
+                                    <i data-lucide="user-plus" class="w-4 h-4"></i>
+                                    인원 추가·삭제
                                 </button>
                             </div>
                         </div>
 
-                        <div class="card rounded-2xl border border-[#EADBC8] bg-white/80 shadow-sm overflow-hidden transition-theme">
+                        <div class="card rounded-2xl border border-[#EADBC8] bg-white/90 shadow-sm overflow-hidden transition-theme">
                             <div class="overflow-x-auto">
                                 <table class="w-full text-left border-collapse">
                                     <thead>
-                                        <tr class="border-b border-[#EADBC8] text-sm uppercase opacity-70 bg-black/5">
-                                            <th class="py-4 px-6">관리번호</th>
-                                            <th class="py-4 px-6">성명</th>
-                                            <th class="py-4 px-6">정기 연락 일정</th>
-                                            <th class="py-4 px-6">관리자</th>
-                                            <th class="py-4 px-6">등록 상태</th>
-                                            <th class="py-4 px-6 text-right">빠른 실행</th>
+                                        <tr class="border-b border-[#EADBC8] text-xs font-bold uppercase opacity-70 bg-black/5">
+                                            <th class="py-3.5 px-5">관리번호</th>
+                                            <th class="py-3.5 px-5">성명</th>
+                                            <th class="py-3.5 px-5">정기 연락 일정</th>
+                                            <th class="py-3.5 px-5">상태</th>
+                                            <th class="py-3.5 px-5 text-right">안부 기록</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="targets-table-body" class="divide-y divide-[#EADBC8] text-base">
+                                    <tbody id="targets-table-body" class="divide-y divide-[#EADBC8] text-sm">
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
 
-                    <!-- 탭 3: 안부 확인 기록 -->
+                    <!-- 탭 3: 안부 확인 기록 (통화 녹음 STT·요약·상태 자동입력 + 40대 이상 간편 UI) -->
                     <div id="section-logs" class="hidden space-y-6">
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
                             <div>
-                                <h2 class="text-2xl font-bold">안부 확인 전체 기록</h2>
-                                <p class="text-sm opacity-65 mt-1">결과 상태별로 필터링하여 전체 통화 및 확인 이력을 조회합니다.</p>
+                                <h2 class="text-2xl font-bold">안부 확인 기록</h2>
+                                <p class="text-sm opacity-75 mt-1">통화 음성을 녹음하면 글로 변환하고, 핵심 요약과 결과 상태를 자동으로 채워줍니다.</p>
                             </div>
-                            <div class="flex flex-wrap items-center gap-2">
-                                <button onclick="setLogFilter('ALL')" class="log-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-gray-900 text-white" data-filter="ALL">전체</button>
-                                <button onclick="setLogFilter('응답 완료')" class="log-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium border border-[#EADBC8] bg-white/80 text-gray-700" data-filter="응답 완료">응답 완료</button>
-                                <button onclick="setLogFilter('미응답')" class="log-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium border border-[#EADBC8] bg-white/80 text-gray-700" data-filter="미응답">미응답</button>
-                                <button onclick="setLogFilter('도움 요청')" class="log-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium border border-[#EADBC8] bg-white/80 text-gray-700" data-filter="도움 요청">도움 요청</button>
-                                <button onclick="setLogFilter('연결 오류')" class="log-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium border border-[#EADBC8] bg-white/80 text-gray-700" data-filter="연결 오류">연결 오류</button>
-                                <button onclick="openInputModal()" class="accent-btn ml-2 px-4 py-1.5 rounded-lg bg-[#D97706] text-white text-xs font-bold hover:opacity-90 transition flex items-center gap-1">
-                                    <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-                                    새 기록 입력
+                            <button onclick="openInputModal()" class="accent-btn px-4 py-2.5 rounded-xl bg-[#D97706] text-white text-sm font-bold hover:opacity-90 transition flex items-center gap-1.5 self-start md:self-auto shrink-0">
+                                <i data-lucide="plus" class="w-4 h-4"></i>
+                                직접 입력
+                            </button>
+                        </div>
+
+                        <!-- 간편 통화 녹음 → 텍스트 변환 · 자동 요약 · 상태 자동 분류 패널 -->
+                        <div class="card p-6 rounded-2xl border border-[#EADBC8] bg-white/95 shadow-sm space-y-4 transition-theme">
+                            <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-[#EADBC8]">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-7 h-7 rounded-full bg-amber-100 text-amber-700 font-bold text-sm flex items-center justify-center">1</span>
+                                    <span class="font-bold text-base">통화 녹음 및 자동 분류</span>
+                                </div>
+                                <div class="flex flex-wrap items-center gap-1.5 text-xs">
+                                    <span class="opacity-65 mr-1">예시 음성 테스트:</span>
+                                    <button type="button" onclick="applySampleCall('응답')" class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold hover:bg-emerald-100 transition">정상 안부</button>
+                                    <button type="button" onclick="applySampleCall('도움')" class="px-2.5 py-1 rounded-lg bg-rose-50 text-rose-800 border border-rose-200 font-bold hover:bg-rose-100 transition">도움 요청</button>
+                                    <button type="button" onclick="applySampleCall('미응답')" class="px-2.5 py-1 rounded-lg bg-amber-50 text-amber-800 border border-amber-200 font-bold hover:bg-amber-100 transition">미응답</button>
+                                    <button type="button" onclick="applySampleCall('오류')" class="px-2.5 py-1 rounded-lg bg-gray-100 text-gray-800 border border-gray-300 font-bold hover:bg-gray-200 transition">연결 오류</button>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                <div>
+                                    <label class="block text-xs font-bold opacity-75 mb-1">대상자 선택</label>
+                                    <select id="voice-target-select" onchange="syncVoiceTargetFields()" class="w-full px-3.5 py-2.5 rounded-xl border border-[#EADBC8] bg-white text-gray-900 text-sm font-bold focus:outline-none focus:border-amber-500">
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold opacity-75 mb-1">자동 판별된 결과</label>
+                                    <div id="voice-auto-status-box" class="w-full px-3.5 py-2.5 rounded-xl border border-[#EADBC8] bg-black/5 text-sm font-bold flex items-center justify-between">
+                                        <span id="voice-detected-status">응답 완료</span>
+                                        <span class="text-xs font-normal opacity-65">자동 입력됨</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-end">
+                                    <button type="button" id="voice-record-btn" onclick="toggleVoiceRecording()" class="w-full py-2.5 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-sm font-bold transition flex items-center justify-center gap-2 shadow-sm">
+                                        <i data-lucide="mic" class="w-4 h-4"></i>
+                                        <span id="voice-record-label">통화 녹음 시작</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <div class="flex items-center justify-between mb-1">
+                                        <label class="text-xs font-bold opacity-75">음성 → 텍스트 변환 (클로바·다글로 방식)</label>
+                                        <span id="voice-rec-indicator" class="text-xs font-medium text-gray-500">대기 중</span>
+                                    </div>
+                                    <textarea id="voice-transcript-input" rows="3" oninput="processVoiceTranscriptAuto()" placeholder="녹음 버튼을 누르거나 통화 내용을 입력하면 자동으로 요약하고 상태를 분류합니다." class="w-full px-3.5 py-2.5 rounded-xl border border-[#EADBC8] bg-white text-gray-900 text-sm leading-relaxed focus:outline-none focus:border-amber-500"></textarea>
+                                </div>
+                                <div>
+                                    <div class="flex items-center justify-between mb-1">
+                                        <label class="text-xs font-bold opacity-75">자동 요약 메모 (화면에 기록될 내용)</label>
+                                        <span class="text-xs text-amber-700 font-medium">수정 가능</span>
+                                    </div>
+                                    <textarea id="voice-summary-output" rows="3" placeholder="핵심 요약 문장이 여기에 자동으로 정리됩니다." class="w-full px-3.5 py-2.5 rounded-xl border border-[#EADBC8] bg-amber-50/40 text-gray-900 text-sm font-medium leading-relaxed focus:outline-none focus:border-amber-500"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-end pt-1">
+                                <button type="button" onclick="saveVoiceAutoLog()" class="accent-btn px-5 py-2.5 rounded-xl bg-[#D97706] text-white text-sm font-bold hover:opacity-90 transition flex items-center gap-1.5">
+                                    <i data-lucide="check-circle" class="w-4 h-4"></i>
+                                    안부 기록 저장
                                 </button>
                             </div>
                         </div>
 
-                        <div class="card rounded-2xl border border-[#EADBC8] bg-white/80 shadow-sm overflow-hidden transition-theme">
+                        <!-- 기록 목록 필터 및 간결한 테이블 (40대 이상 가독성 강화) -->
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <div class="flex flex-wrap items-center gap-1.5">
+                                <button onclick="setLogFilter('ALL')" class="log-filter-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-gray-900 text-white" data-filter="ALL">전체</button>
+                                <button onclick="setLogFilter('응답 완료')" class="log-filter-btn px-3.5 py-2 rounded-xl text-xs font-bold border border-[#EADBC8] bg-white/90 text-gray-700" data-filter="응답 완료">응답 완료</button>
+                                <button onclick="setLogFilter('미응답')" class="log-filter-btn px-3.5 py-2 rounded-xl text-xs font-bold border border-[#EADBC8] bg-white/90 text-gray-700" data-filter="미응답">미응답</button>
+                                <button onclick="setLogFilter('도움 요청')" class="log-filter-btn px-3.5 py-2 rounded-xl text-xs font-bold border border-[#EADBC8] bg-white/90 text-gray-700" data-filter="도움 요청">도움 요청</button>
+                                <button onclick="setLogFilter('연결 오류')" class="log-filter-btn px-3.5 py-2 rounded-xl text-xs font-bold border border-[#EADBC8] bg-white/90 text-gray-700" data-filter="연결 오류">연결 오류</button>
+                            </div>
+                        </div>
+
+                        <div class="card rounded-2xl border border-[#EADBC8] bg-white/90 shadow-sm overflow-hidden transition-theme">
                             <div class="overflow-x-auto">
                                 <table class="w-full text-left border-collapse">
                                     <thead>
-                                        <tr class="border-b border-[#EADBC8] text-sm uppercase opacity-70 bg-black/5">
-                                            <th class="py-3.5 px-6">관리번호</th>
-                                            <th class="py-3.5 px-6">대상자</th>
-                                            <th class="py-3.5 px-6">안부 결과</th>
-                                            <th class="py-3.5 px-6">확인 메모</th>
-                                            <th class="py-3.5 px-6">기록자</th>
-                                            <th class="py-3.5 px-6">후속 상태</th>
+                                        <tr class="border-b border-[#EADBC8] text-xs font-bold uppercase opacity-75 bg-black/5">
+                                            <th class="py-4 px-5">대상자</th>
+                                            <th class="py-4 px-5">안부 결과</th>
+                                            <th class="py-4 px-5">요약 내용</th>
+                                            <th class="py-4 px-5">처리 상태</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="all-logs-table-body" class="divide-y divide-[#EADBC8] text-base">
+                                    <tbody id="all-logs-table-body" class="divide-y divide-[#EADBC8] text-sm">
                                     </tbody>
                                 </table>
                             </div>
@@ -634,33 +698,29 @@
                 </button>
             </div>
 
-            <!-- 탭 A: 인원 추가 -->
-            <div id="manage-panel-add" class="py-5 space-y-4 text-base">
-                <div class="grid grid-cols-3 gap-2.5">
+            <!-- 탭 A: 인원 추가 (단순화 UI + 자동 저장) -->
+            <div id="manage-panel-add" class="py-4 space-y-4 text-sm">
+                <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block font-bold mb-1.5 text-gray-700 text-xs">관리번호 <span class="text-gray-400 font-normal">(L-0006)</span></label>
-                        <input id="new-target-id" type="text" placeholder="L-0006" class="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-amber-500">
+                        <label class="block font-bold mb-1 text-gray-700 text-xs">관리번호</label>
+                        <input id="new-target-id" type="text" placeholder="L-0006" class="w-full px-3.5 py-2 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-amber-500">
                     </div>
                     <div>
-                        <label class="block font-bold mb-1.5 text-gray-700 text-xs">성명 <span class="text-gray-400 font-normal">(2자 이상)</span></label>
-                        <input id="new-target-name" type="text" placeholder="홍길동" class="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-amber-500">
-                    </div>
-                    <div>
-                        <label class="block font-bold mb-1.5 text-gray-700 text-xs">담당 관리자</label>
-                        <input id="new-target-manager" type="text" placeholder="김복지" class="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-amber-500">
+                        <label class="block font-bold mb-1 text-gray-700 text-xs">성명</label>
+                        <input id="new-target-name" type="text" placeholder="홍길동" class="w-full px-3.5 py-2 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-amber-500">
                     </div>
                 </div>
+                <input id="new-target-manager" type="hidden" value="김복지">
 
-                <!-- 정기 연락 요일 및 아이폰 시계 스타일 시간대 선택기 -->
+                <!-- 요일 및 아이폰 시계 스타일 시간 선택기 (1칸씩 정밀 이동) -->
                 <div>
-                    <div class="flex items-center justify-between mb-1.5">
-                        <label class="font-bold text-gray-700 text-sm">정기 연락 일정 선택</label>
-                        <span id="schedule-preview-badge" class="text-xs font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2.5 py-0.5 rounded-full">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="font-bold text-gray-700 text-xs">연락 일정</span>
+                        <span id="schedule-preview-badge" class="text-xs font-bold text-amber-700 bg-amber-50 px-2.5 py-0.5 rounded-md">
                             매주 월·수·금 오전 10:00
                         </span>
                     </div>
 
-                    <!-- 요일 선택 버튼 -->
                     <div class="flex items-center justify-between gap-1 mb-2.5" id="schedule-days-group">
                         <button type="button" onclick="toggleScheduleDay(this, '매일')" data-day="매일" class="day-chip px-2.5 py-1.5 rounded-lg text-xs font-bold border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 transition">매일</button>
                         <button type="button" onclick="toggleScheduleDay(this, '월')" data-day="월" class="day-chip active flex-1 py-1.5 rounded-lg text-xs font-bold border border-amber-500 bg-amber-500 text-white transition">월</button>
@@ -672,7 +732,6 @@
                         <button type="button" onclick="toggleScheduleDay(this, '일')" data-day="일" class="day-chip flex-1 py-1.5 rounded-lg text-xs font-bold border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 transition">일</button>
                     </div>
 
-                    <!-- 아이폰 시계 휠 피커 (오전/오후 · 시 · 분) -->
                     <div class="ios-wheel-container grid grid-cols-3">
                         <div class="ios-wheel-highlight"></div>
                         <div class="ios-wheel-fade-top"></div>
@@ -690,19 +749,19 @@
                     <input id="new-target-schedule" type="hidden" value="매주 월·수·금 오전 10:00">
                 </div>
 
-                <div class="pt-2 border-t border-gray-100 flex justify-end gap-2">
-                    <button onclick="closeModals()" class="px-4 py-2.5 rounded-xl border border-gray-200 text-sm font-medium">취소</button>
-                    <button onclick="saveNewTarget()" class="px-5 py-2.5 rounded-xl bg-amber-600 text-white text-sm font-bold hover:bg-amber-700 transition">추가하기</button>
+                <div class="pt-3 border-t border-gray-100 flex justify-end gap-2">
+                    <button onclick="closeModals()" class="px-4 py-2 rounded-xl border border-gray-200 text-sm font-medium">취소</button>
+                    <button onclick="saveNewTarget()" class="px-5 py-2 rounded-xl bg-amber-600 text-white text-sm font-bold hover:bg-amber-700 transition">추가 (자동 저장)</button>
                 </div>
             </div>
 
-            <!-- 탭 B: 인원 삭제 -->
-            <div id="manage-panel-delete" class="hidden py-5 space-y-3 text-base">
-                <p class="text-sm text-gray-600">삭제할 인원을 선택해 목록에서 제거할 수 있습니다.</p>
+            <!-- 탭 B: 인원 삭제 (즉시 자동 저장) -->
+            <div id="manage-panel-delete" class="hidden py-4 space-y-3 text-sm">
+                <p class="text-xs text-gray-500">삭제 버튼을 누르면 즉시 목록에서 제거되고 자동 저장됩니다.</p>
                 <div id="manage-delete-list" class="max-h-64 overflow-y-auto divide-y divide-gray-100 border border-gray-200 rounded-xl">
                 </div>
-                <div class="pt-2 border-t border-gray-100 flex justify-end gap-2">
-                    <button onclick="saveTargetsExplicitly(true)" class="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-sm font-bold transition">저장하기</button>
+                <div class="pt-3 border-t border-gray-100 flex justify-end">
+                    <button onclick="closeModals()" class="px-5 py-2 rounded-xl bg-gray-900 text-white text-sm font-bold hover:bg-gray-800 transition">완료</button>
                 </div>
             </div>
         </div>
@@ -948,6 +1007,18 @@
         };
 
         // 현재 로그인한 계정의 모든 상태(마지막 화면, 테마, 해상도, 개인정보, 로컬 데이터)를 저장
+        function flashAutoSaveBadge() {
+            const badge = document.getElementById('targets-autosave-badge');
+            if (!badge) return;
+            badge.innerText = '자동 저장 완료 ✓';
+            badge.className = 'inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 transition';
+            clearTimeout(badge._timer);
+            badge._timer = setTimeout(() => {
+                badge.innerText = '자동 저장됨';
+                badge.className = 'inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 transition';
+            }, 1800);
+        }
+
         function persistAccountState() {
             if (!currentUserId) return;
             const stateObj = {
@@ -964,6 +1035,7 @@
                 savedAt: new Date().toISOString()
             };
             localStorage.setItem(STORAGE_PREFIX + currentUserId, JSON.stringify(stateObj));
+            flashAutoSaveBadge();
         }
 
         // 저장된 계정 상태 불러오기
@@ -1349,15 +1421,19 @@
                 (t.target_id || '').toLowerCase().includes(keyword) || (t.name || '').toLowerCase().includes(keyword)
             );
 
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="py-8 px-5 text-center opacity-60 text-sm">표시할 대상자가 없습니다.</td></tr>`;
+                return;
+            }
+
             tbody.innerHTML = filtered.map(t => `
-                    <tr class="hover:bg-black/5">
-                        <td class="py-4 px-6 font-mono text-sm opacity-80">${t.target_id}</td>
-                        <td class="py-4 px-6 font-bold text-base">${t.name}</td>
-                        <td class="py-4 px-6 opacity-85 text-base">${t.contact_schedule || '-'}</td>
-                        <td class="py-4 px-6 text-base">${t.manager_name || managerProfile.name}</td>
-                        <td class="py-4 px-6">${getTargetStatusBadge(t)}</td>
-                        <td class="py-4 px-6 text-right">
-                            <button onclick="openInputModalWithTarget('${t.target_id}', '${t.name}')" class="px-3.5 py-2 rounded-lg border border-[#EADBC8] hover:bg-black/5 text-sm font-bold">
+                    <tr class="hover:bg-black/5 transition">
+                        <td class="py-3.5 px-5 font-mono text-xs opacity-75">${t.target_id}</td>
+                        <td class="py-3.5 px-5 font-bold text-sm">${t.name}</td>
+                        <td class="py-3.5 px-5 opacity-85 text-sm">${t.contact_schedule || '-'}</td>
+                        <td class="py-3.5 px-5">${getTargetStatusBadge(t)}</td>
+                        <td class="py-3.5 px-5 text-right">
+                            <button onclick="openInputModalWithTarget('${t.target_id}', '${t.name}')" class="px-3 py-1.5 rounded-lg border border-[#EADBC8] bg-white/80 hover:bg-black/5 text-xs font-bold transition">
                                 결과 입력
                             </button>
                         </td>
@@ -1378,15 +1454,42 @@
             renderAllLogsTable();
         }
 
+        function populateVoiceTargetSelect() {
+            const sel = document.getElementById('voice-target-select');
+            if (!sel) return;
+            const prevVal = sel.value;
+            if (!currentTargets.length) {
+                sel.innerHTML = `<option value="L-0001|대상자 A">대상자 A (L-0001)</option>`;
+                return;
+            }
+            sel.innerHTML = currentTargets.map(t =>
+                `<option value="${t.target_id}|${t.name}">${t.name} (${t.target_id})</option>`
+            ).join('');
+            if (prevVal && Array.from(sel.options).some(o => o.value === prevVal)) {
+                sel.value = prevVal;
+            }
+        }
+
+        function syncVoiceTargetFields() {
+            const sel = document.getElementById('voice-target-select');
+            if (!sel || !sel.value) return;
+            const [tid, tname] = sel.value.split('|');
+            const idInput = document.getElementById('input-target-id');
+            const nameInput = document.getElementById('input-target-name');
+            if (idInput) idInput.value = tid || '';
+            if (nameInput) nameInput.value = tname || '';
+        }
+
         function renderAllLogsTable() {
             const tbody = document.getElementById('all-logs-table-body');
             tbody.innerHTML = '';
+            populateVoiceTargetSelect();
 
             document.querySelectorAll('.log-filter-btn').forEach(btn => {
                 if (btn.dataset.filter === activeLogFilter) {
-                    btn.className = 'log-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-gray-900 text-white';
+                    btn.className = 'log-filter-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-gray-900 text-white';
                 } else {
-                    btn.className = 'log-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium border border-[#EADBC8] bg-white/80 text-gray-700';
+                    btn.className = 'log-filter-btn px-3.5 py-2 rounded-xl text-xs font-bold border border-[#EADBC8] bg-white/90 text-gray-700';
                 }
             });
 
@@ -1394,14 +1497,17 @@
                 ? currentLogs
                 : currentLogs.filter(l => l.result_status === activeLogFilter);
 
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="py-8 px-5 text-center opacity-60 text-sm">표시할 안부 확인 기록이 없습니다.</td></tr>`;
+                return;
+            }
+
             tbody.innerHTML = filtered.map(item => `
-                    <tr class="hover:bg-black/5">
-                        <td class="py-4 px-6 font-mono text-sm opacity-80">${item.target_id}</td>
-                        <td class="py-4 px-6 font-bold">${item.target_name}</td>
-                        <td class="py-4 px-6">${getBadgeHtml(item.result_status)}</td>
-                        <td class="py-4 px-6 opacity-80">${item.memo || '-'}</td>
-                        <td class="py-4 px-6">${item.manager_name || managerProfile.name}</td>
-                        <td class="py-4 px-6 ${getFollowupColor(item.followup_status)}">${item.followup_status}</td>
+                    <tr class="hover:bg-black/5 transition">
+                        <td class="py-4 px-5 font-bold text-sm">${item.target_name} <span class="font-mono text-xs font-normal opacity-60 ml-1">${item.target_id}</span></td>
+                        <td class="py-4 px-5">${getBadgeHtml(item.result_status)}</td>
+                        <td class="py-4 px-5 text-sm opacity-90">${item.memo || '-'}</td>
+                        <td class="py-4 px-5 text-sm ${getFollowupColor(item.followup_status)}">${item.followup_status}</td>
                     </tr>
                 `).join('');
         }
@@ -1899,14 +2005,36 @@ ${needActionList}`;
         }
 
         // ============================================================
-        // 아이폰 시계 스타일 시간대 휠 피커 & 요일 선택 로직
+        // 아이폰 시계 스타일 시간대 휠 피커 (1회 휠 스크롤 = 정확히 1칸 이동)
         // ============================================================
         let selectedDays = ['월', '수', '금'];
         let isDailySchedule = false;
         let wheelState = { ampm: '오전', hour: '10', minute: '00' };
         let wheelScrollTimers = {};
+        let wheelStepLock = {};
+
+        function attachSingleStepWheel(col, type) {
+            if (!col || col.dataset.wheelBound === 'true') return;
+            col.dataset.wheelBound = 'true';
+            col.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                if (wheelStepLock[type]) return;
+                wheelStepLock[type] = true;
+                setTimeout(() => { wheelStepLock[type] = false; }, 110);
+
+                const items = Array.from(col.querySelectorAll('.ios-wheel-item'));
+                if (!items.length) return;
+                const currentIdx = Math.max(0, Math.min(items.length - 1, Math.round(col.scrollTop / 44)));
+                const dir = e.deltaY > 0 ? 1 : (e.deltaY < 0 ? -1 : 0);
+                const nextIdx = Math.max(0, Math.min(items.length - 1, currentIdx + dir));
+                if (items[nextIdx]) {
+                    scrollWheelToValue(type, items[nextIdx].dataset.val, false);
+                }
+            }, { passive: false });
+        }
 
         function initIosTimeWheel() {
+            const ampmCol = document.getElementById('wheel-ampm');
             const hourCol = document.getElementById('wheel-hour');
             const minCol = document.getElementById('wheel-minute');
             if (!hourCol || !minCol) return;
@@ -1927,6 +2055,10 @@ ${needActionList}`;
                     `<div class="ios-wheel-item" data-val="${m}" onclick="scrollWheelToValue('minute', '${m}')">${m}분</div>`
                 ).join('');
             }
+
+            attachSingleStepWheel(ampmCol, 'ampm');
+            attachSingleStepWheel(hourCol, 'hour');
+            attachSingleStepWheel(minCol, 'minute');
         }
 
         function scrollWheelToValue(type, val, instant = false) {
@@ -2046,6 +2178,218 @@ ${needActionList}`;
             document.getElementById('settings-modal').classList.add('hidden');
             document.getElementById('info-modal').classList.add('hidden');
             document.getElementById('consult-modal').classList.add('hidden');
+        }
+
+
+        // ============================================================
+        // 통화 녹음(STT) → 자동 요약 → 4종 상태 자동 입력 로직
+        // ============================================================
+        let speechRecognition = null;
+        let isRecordingVoice = false;
+        let detectedVoiceStatus = '응답 완료';
+
+        function classifyAndSummarizeTranscript(rawText) {
+            const text = (rawText || '').trim();
+            if (!text) {
+                return { status: '미응답', summary: '통화 응답 없음 (재연락 필요)' };
+            }
+
+            const helpKeywords = ['아프', '통증', '병원', '응급', '어지러', '도와', '약이 떨어', '넘어졌', '숨이', '위험', '도움'];
+            const errorKeywords = ['안 들', '끊겼', '연결 오류', '전파', '착신', '잡음', '수신 불량', '소리가 안'];
+            const noAnswerKeywords = ['부재중', '받지 않', '연락 두절', '통화 불가', '신호만', '미응답'];
+
+            let status = '응답 완료';
+            if (helpKeywords.some(k => text.includes(k))) {
+                status = '도움 요청';
+            } else if (errorKeywords.some(k => text.includes(k))) {
+                status = '연결 오류';
+            } else if (noAnswerKeywords.some(k => text.includes(k))) {
+                status = '미응답';
+            }
+
+            // 문장 분리 후 핵심 문장 추출 요약 (클로바·다글로식 핵심 요약)
+            const sentences = text
+                .split(/[.!?\n]+/)
+                .map(s => s.trim())
+                .filter(s => s.length > 0);
+
+            const filteredSentences = sentences.filter(s =>
+                !['안녕하세요', '여보세요', '수고하십니다', '네 감사합니다'].some(g => s === g)
+            );
+
+            let summary = '';
+            if (filteredSentences.length > 0) {
+                summary = filteredSentences.slice(0, 2).join(' · ');
+            } else {
+                summary = text;
+            }
+            if (summary.length > 65) {
+                summary = summary.slice(0, 62) + '...';
+            }
+
+            return { status, summary };
+        }
+
+        function processVoiceTranscriptAuto() {
+            const transcriptEl = document.getElementById('voice-transcript-input');
+            const summaryEl = document.getElementById('voice-summary-output');
+            const statusLabelEl = document.getElementById('voice-detected-status');
+            if (!transcriptEl || !summaryEl || !statusLabelEl) return;
+
+            const result = classifyAndSummarizeTranscript(transcriptEl.value);
+            detectedVoiceStatus = result.status;
+            statusLabelEl.innerText = result.status;
+            summaryEl.value = result.summary;
+
+            // 결과 입력 모달 라디오도 함께 동기화
+            const radio = document.querySelector(`input[name="result_status"][value="${result.status}"]`);
+            if (radio) radio.checked = true;
+            const memoInput = document.getElementById('input-memo');
+            if (memoInput) memoInput.value = result.summary;
+        }
+
+        function applySampleCall(type) {
+            const transcriptEl = document.getElementById('voice-transcript-input');
+            if (!transcriptEl) return;
+            const samples = {
+                '응답': '여보세요. 오늘 아침 식사 잘 하셨어요? 네, 밥 먹고 약도 챙겨 먹었어요. 몸도 괜찮습니다.',
+                '도움': '여보세요. 어제부터 허리가 너무 아프고 어지러워서 병원에 가야 할 것 같아요. 도움 좀 요청할게요.',
+                '미응답': '연결음만 울리고 통화 연결이 되지 않아 부재중으로 확인됨.',
+                '오류': '여보세요? 소리가 끊기고 잘 안 들려서 통화 연결 오류가 발생했습니다.'
+            };
+            transcriptEl.value = samples[type] || samples['응답'];
+            processVoiceTranscriptAuto();
+        }
+
+        function toggleVoiceRecording() {
+            const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const indicator = document.getElementById('voice-rec-indicator');
+            const label = document.getElementById('voice-record-label');
+            const btn = document.getElementById('voice-record-btn');
+
+            if (isRecordingVoice) {
+                isRecordingVoice = false;
+                if (speechRecognition) {
+                    try { speechRecognition.stop(); } catch (e) {}
+                }
+                if (label) label.innerText = '통화 녹음 시작';
+                if (btn) btn.className = 'w-full py-2.5 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-sm font-bold transition flex items-center justify-center gap-2 shadow-sm';
+                if (indicator) indicator.innerText = '녹음 완료';
+                processVoiceTranscriptAuto();
+                return;
+            }
+
+            if (!SpeechRec) {
+                alert('이 브라우저에서는 실시간 마이크 인식을 지원하지 않습니다. 상단의 예시 음성 버튼이나 텍스트 입력으로 자동 요약·상태 분류를 바로 체험해 보세요.');
+                applySampleCall('응답');
+                return;
+            }
+
+            speechRecognition = new SpeechRec();
+            speechRecognition.lang = 'ko-KR';
+            speechRecognition.interimResults = true;
+            speechRecognition.continuous = true;
+
+            isRecordingVoice = true;
+            if (label) label.innerText = '녹음 중지 (완료)';
+            if (btn) btn.className = 'w-full py-2.5 px-4 rounded-xl bg-gray-900 hover:bg-gray-800 text-white text-sm font-bold transition flex items-center justify-center gap-2 shadow-sm';
+            if (indicator) indicator.innerText = '말씀하시는 중...';
+
+            const transcriptEl = document.getElementById('voice-transcript-input');
+            const baseText = transcriptEl ? transcriptEl.value.trim() : '';
+
+            speechRecognition.onresult = (event) => {
+                let finalChunk = '';
+                let interimChunk = '';
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const txt = event.results[i][0].transcript;
+                    if (event.results[i].isFinal) finalChunk += txt + ' ';
+                    else interimChunk += txt;
+                }
+                if (transcriptEl) {
+                    transcriptEl.value = `${baseText ? baseText + ' ' : ''}${finalChunk}${interimChunk}`.trim();
+                    processVoiceTranscriptAuto();
+                }
+            };
+
+            speechRecognition.onerror = () => {
+                isRecordingVoice = false;
+                if (label) label.innerText = '통화 녹음 시작';
+                if (btn) btn.className = 'w-full py-2.5 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-sm font-bold transition flex items-center justify-center gap-2 shadow-sm';
+                if (indicator) indicator.innerText = '음성 입력 대기';
+            };
+
+            speechRecognition.onend = () => {
+                if (isRecordingVoice) {
+                    isRecordingVoice = false;
+                    if (label) label.innerText = '통화 녹음 시작';
+                    if (btn) btn.className = 'w-full py-2.5 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-sm font-bold transition flex items-center justify-center gap-2 shadow-sm';
+                    if (indicator) indicator.innerText = '녹음 완료';
+                    processVoiceTranscriptAuto();
+                }
+            };
+
+            try {
+                speechRecognition.start();
+            } catch (e) {
+                isRecordingVoice = false;
+                applySampleCall('응답');
+            }
+        }
+
+        async function saveVoiceAutoLog() {
+            const sel = document.getElementById('voice-target-select');
+            const transcriptEl = document.getElementById('voice-transcript-input');
+            const summaryEl = document.getElementById('voice-summary-output');
+
+            const rawText = transcriptEl ? transcriptEl.value.trim() : '';
+            const autoResult = classifyAndSummarizeTranscript(rawText);
+            const finalStatus = autoResult.status;
+            const finalMemo = (summaryEl && summaryEl.value.trim()) ? summaryEl.value.trim() : autoResult.summary;
+
+            let target_id = 'L-0001';
+            let target_name = '대상자 A';
+            if (sel && sel.value) {
+                const parts = sel.value.split('|');
+                target_id = parts[0] || target_id;
+                target_name = parts[1] || target_name;
+            }
+
+            let followup_status = '완료';
+            if (finalStatus === '도움 요청') followup_status = '미처리 (확인 대기)';
+            else if (finalStatus === '미응답' || finalStatus === '연결 오류') followup_status = '재연락 필요';
+
+            const newRecord = {
+                log_id: Date.now(),
+                target_id,
+                target_name,
+                result_status: finalStatus,
+                memo: finalMemo,
+                manager_name: managerProfile.name,
+                followup_status
+            };
+
+            if (supabaseClient) {
+                const { error } = await supabaseClient.from('contact_logs').insert([newRecord]);
+                if (!error) {
+                    fetchAllData();
+                } else {
+                    currentLogs.unshift(newRecord);
+                    persistAccountState();
+                    renderAllSections();
+                }
+            } else {
+                currentLogs.unshift(newRecord);
+                persistAccountState();
+                renderAllSections();
+            }
+
+            if (transcriptEl) transcriptEl.value = '';
+            if (summaryEl) summaryEl.value = '';
+            const statusLabelEl = document.getElementById('voice-detected-status');
+            if (statusLabelEl) statusLabelEl.innerText = '응답 완료';
+            const indicator = document.getElementById('voice-rec-indicator');
+            if (indicator) indicator.innerText = '저장 완료 ✓';
         }
 
         // 페이지 로드 시 최근 로그인 계정 목록 초기화 (자동 복원은 대시보드 버튼 또는 로그인 시 실행)
