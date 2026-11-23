@@ -575,6 +575,13 @@
                         </span>
                     </div>
                     
+                    <div class="flex items-center gap-3">
+                        <button type="button" onclick="toggleGovPhoneWidget()" class="px-3.5 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200/90 text-xs sm:text-sm font-bold transition flex items-center gap-2 shadow-xs">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <i data-lucide="phone-call" class="w-4 h-4 text-[#B45309]"></i>
+                            <span>지자체 가상 전화기</span>
+                        </button>
+
                     <div class="relative">
                         <button onclick="toggleProfileDropdown()" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-black/5 transition">
                             <div class="w-9 h-9 rounded-full bg-[#B45309] text-white flex items-center justify-center font-bold text-sm" id="avatar-bg">
@@ -605,6 +612,7 @@
                                 로그아웃
                             </button>
                         </div>
+                    </div>
                     </div>
                 </header>
 
@@ -718,6 +726,7 @@
                                         <tr class="border-b border-[#E6E1D8] text-xs font-bold uppercase opacity-70 bg-black/5">
                                             <th class="py-3.5 px-5">관리번호</th>
                                             <th class="py-3.5 px-5">성명</th>
+                                            <th class="py-3.5 px-5">연락처</th>
                                             <th class="py-3.5 px-5">정기 연락 일정</th>
                                             <th class="py-3.5 px-5">상태</th>
                                             <th class="py-3.5 px-5 text-right">안부 기록</th>
@@ -743,15 +752,20 @@
                             </button>
                         </div>
 
-                        <!-- 간편 통화 녹음 → 텍스트 변환 · 자동 요약 · 상태 자동 분류 패널 -->
-                        <div class="card p-6 rounded-2xl border border-[#E6E1D8] bg-white/95 shadow-sm space-y-4 transition-theme">
+                        <!-- 통합 연동 패널: 지자체 녹취 파일(.mp3/.wav) 불러오기 + 통화 음성 자동 요약·분류 -->
+                        <div class="card p-6 rounded-2xl border border-[#E6E1D8] bg-white/95 shadow-sm space-y-5 transition-theme">
                             <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-[#E6E1D8]">
                                 <div class="flex items-center gap-2">
-                                    <span class="w-7 h-7 rounded-full bg-amber-100 text-amber-700 font-bold text-sm flex items-center justify-center">1</span>
-                                    <span class="font-bold text-base">통화 녹음 및 자동 분류</span>
+                                    <span class="w-7 h-7 rounded-full bg-amber-100 text-amber-700 font-bold text-sm flex items-center justify-center">
+                                        <i data-lucide="file-audio" class="w-4 h-4"></i>
+                                    </span>
+                                    <div>
+                                        <span class="font-bold text-base">지자체 녹취 파일 · 통화 음성 자동 분석</span>
+                                        <span class="ml-2 text-xs font-medium text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">번호 자동 매칭 지원</span>
+                                    </div>
                                 </div>
                                 <div class="flex flex-wrap items-center gap-1.5 text-xs">
-                                    <span class="opacity-65 mr-1">예시 음성 테스트:</span>
+                                    <span class="opacity-65 mr-1">가상 녹취 샘플:</span>
                                     <button type="button" onclick="applySampleCall('응답')" class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold hover:bg-emerald-100 transition">정상 안부</button>
                                     <button type="button" onclick="applySampleCall('도움')" class="px-2.5 py-1 rounded-lg bg-rose-50 text-rose-800 border border-rose-200 font-bold hover:bg-rose-100 transition">도움 요청</button>
                                     <button type="button" onclick="applySampleCall('미응답')" class="px-2.5 py-1 rounded-lg bg-amber-50 text-amber-800 border border-amber-200 font-bold hover:bg-amber-100 transition">미응답</button>
@@ -759,9 +773,35 @@
                                 </div>
                             </div>
 
+                            <!-- 지자체 녹음 파일(.mp3 / .wav) 업로드 및 발신번호 매칭 바 -->
+                            <div class="p-4 rounded-xl bg-[#FAF8F5] border border-dashed border-[#D6D3D1] flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+                                <div class="flex items-start sm:items-center gap-3">
+                                    <div class="p-2.5 rounded-xl bg-white border border-[#E6E1D8] text-[#B45309] shrink-0">
+                                        <i data-lucide="upload-cloud" class="w-5 h-5"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-bold text-[#1C1917]">지자체 전화기 녹음 파일 첨부 (.mp3 / .wav / .m4a)</div>
+                                        <p id="audio-file-status" class="text-xs text-[#78716C] mt-0.5">
+                                            파일명에 포함된 연락처나 관리번호(예: <span class="font-mono">010-3892-1104_통화녹음.mp3</span>)를 인식해 대상자를 자동 연결합니다.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2 shrink-0">
+                                    <input id="gov-audio-file-input" type="file" accept="audio/*,.mp3,.wav,.m4a" class="hidden" onchange="handleGovAudioFileUpload(event)">
+                                    <button type="button" onclick="document.getElementById('gov-audio-file-input').click()" class="px-3.5 py-2 rounded-xl bg-white hover:bg-gray-50 border border-[#D6D3D1] text-gray-800 text-xs font-bold transition flex items-center gap-1.5">
+                                        <i data-lucide="folder-open" class="w-4 h-4 text-amber-700"></i>
+                                        녹음 파일 선택
+                                    </button>
+                                    <button type="button" onclick="simulateGovServerPull()" class="px-3.5 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-900 text-xs font-bold transition flex items-center gap-1.5">
+                                        <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                                        녹취 서버 가져오기 (시연)
+                                    </button>
+                                </div>
+                            </div>
+
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                                 <div>
-                                    <label class="block text-xs font-bold opacity-75 mb-1">대상자 선택</label>
+                                    <label class="block text-xs font-bold opacity-75 mb-1">대상자 선택 (연락처 자동 매칭)</label>
                                     <select id="voice-target-select" onchange="syncVoiceTargetFields()" class="w-full px-3.5 py-2.5 rounded-xl border border-[#E6E1D8] bg-white text-gray-900 text-sm font-bold focus:outline-none focus:border-amber-500">
                                     </select>
                                 </div>
@@ -775,7 +815,7 @@
                                 <div class="flex items-end">
                                     <button type="button" id="voice-record-btn" onclick="toggleVoiceRecording()" class="w-full py-2.5 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-sm font-bold transition flex items-center justify-center gap-2 shadow-sm">
                                         <i data-lucide="mic" class="w-4 h-4"></i>
-                                        <span id="voice-record-label">통화 녹음 시작</span>
+                                        <span id="voice-record-label">실시간 마이크 녹음</span>
                                     </button>
                                 </div>
                             </div>
@@ -783,10 +823,10 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <div class="flex items-center justify-between mb-1">
-                                        <label class="text-xs font-bold opacity-75">음성 → 텍스트 변환 (클로바·다글로 방식)</label>
+                                        <label class="text-xs font-bold opacity-75">통화 녹취 전문 (STT 변환 결과)</label>
                                         <span id="voice-rec-indicator" class="text-xs font-medium text-gray-500">대기 중</span>
                                     </div>
-                                    <textarea id="voice-transcript-input" rows="3" oninput="processVoiceTranscriptAuto()" placeholder="녹음 버튼을 누르거나 통화 내용을 입력하면 자동으로 요약하고 상태를 분류합니다." class="w-full px-3.5 py-2.5 rounded-xl border border-[#E6E1D8] bg-white text-gray-900 text-sm leading-relaxed focus:outline-none focus:border-amber-500"></textarea>
+                                    <textarea id="voice-transcript-input" rows="3" oninput="processVoiceTranscriptAuto()" placeholder="녹취 파일을 불러오거나 통화 내용을 입력하면 자동으로 요약하고 상태를 분류합니다." class="w-full px-3.5 py-2.5 rounded-xl border border-[#E6E1D8] bg-white text-gray-900 text-sm leading-relaxed focus:outline-none focus:border-amber-500"></textarea>
                                 </div>
                                 <div>
                                     <div class="flex items-center justify-between mb-1">
@@ -976,14 +1016,18 @@
 
             <!-- 탭 A: 인원 추가 (단순화 UI + 자동 저장) -->
             <div id="manage-panel-add" class="py-4 space-y-4 text-sm">
-                <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-3 gap-2.5">
                     <div>
                         <label class="block font-bold mb-1 text-gray-700 text-xs">관리번호</label>
-                        <input id="new-target-id" type="text" placeholder="L-0006" class="w-full px-3.5 py-2 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-amber-500">
+                        <input id="new-target-id" type="text" placeholder="L-0006" class="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-amber-500">
                     </div>
                     <div>
                         <label class="block font-bold mb-1 text-gray-700 text-xs">성명</label>
-                        <input id="new-target-name" type="text" placeholder="홍길동" class="w-full px-3.5 py-2 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-amber-500">
+                        <input id="new-target-name" type="text" placeholder="홍길동" class="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-amber-500">
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1 text-gray-700 text-xs">연락처</label>
+                        <input id="new-target-phone" type="text" placeholder="010-0000-0000" class="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-amber-500">
                     </div>
                 </div>
                 <input id="new-target-manager" type="hidden" value="김복지">
@@ -1337,11 +1381,17 @@
         ];
 
         const DEFAULT_TARGETS = [
-            { target_id: 'L-0001', name: '대상자 A', contact_schedule: '매주 월·수·금 오전 09:30', manager_name: '김복지', status: '완료' },
-            { target_id: 'L-0002', name: '대상자 B', contact_schedule: '매일 오전 10:00 (집중 관리)', manager_name: '김복지', status: '완료' },
-            { target_id: 'L-0003', name: '대상자 C', contact_schedule: '매주 화·목 오전 10:30', manager_name: '김복지', status: '완료' },
-            { target_id: 'L-0004', name: '대상자 D', contact_schedule: '매주 월·목 오후 14:00', manager_name: '김복지', status: '완료' }
+            { target_id: 'L-0001', name: '대상자 A', phone: '010-2341-5678', contact_schedule: '매주 월·수·금 오전 09:30', manager_name: '김복지', status: '완료' },
+            { target_id: 'L-0002', name: '대상자 B', phone: '010-3892-1104', contact_schedule: '매일 오전 10:00 (집중 관리)', manager_name: '김복지', status: '완료' },
+            { target_id: 'L-0003', name: '대상자 C', phone: '010-5120-8843', contact_schedule: '매주 화·목 오전 10:30', manager_name: '김복지', status: '완료' },
+            { target_id: 'L-0004', name: '대상자 D', phone: '010-7745-3910', contact_schedule: '매주 월·목 오후 14:00', manager_name: '김복지', status: '완료' }
         ];
+
+        function getTargetPhone(target, idx = 0) {
+            if (target && target.phone) return target.phone;
+            const numPart = String((target && target.target_id ? target.target_id.replace(/\D/g, '') : '') || (idx + 1)).padStart(4, '0');
+            return `010-4820-${numPart}`;
+        }
 
         const STORAGE_PREFIX = 'lumi_account_state_';
         const ACTIVE_USER_KEY = 'lumi_active_user_id';
@@ -1774,28 +1824,41 @@
             const keyword = (document.getElementById('target-search-input')?.value || '').trim().toLowerCase();
             tbody.innerHTML = '';
 
-            const filtered = currentTargets.filter(t =>
-                (t.target_id || '').toLowerCase().includes(keyword) || (t.name || '').toLowerCase().includes(keyword)
+            const filtered = currentTargets.filter((t, i) =>
+                (t.target_id || '').toLowerCase().includes(keyword) ||
+                (t.name || '').toLowerCase().includes(keyword) ||
+                getTargetPhone(t, i).includes(keyword)
             );
 
             if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="py-8 px-5 text-center opacity-60 text-sm">표시할 대상자가 없습니다.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="py-8 px-5 text-center opacity-60 text-sm">표시할 대상자가 없습니다.</td></tr>`;
                 return;
             }
 
-            tbody.innerHTML = filtered.map(t => `
+            tbody.innerHTML = filtered.map((t, idx) => {
+                const phoneStr = getTargetPhone(t, idx);
+                return `
                     <tr class="hover:bg-black/5 transition">
                         <td class="py-3.5 px-5 font-mono text-xs opacity-75">${t.target_id}</td>
                         <td class="py-3.5 px-5 font-bold text-sm">${t.name}</td>
+                        <td class="py-3.5 px-5 font-mono text-xs opacity-80">${phoneStr}</td>
                         <td class="py-3.5 px-5 opacity-85 text-sm">${t.contact_schedule || '-'}</td>
                         <td class="py-3.5 px-5">${getTargetStatusBadge(t)}</td>
                         <td class="py-3.5 px-5 text-right">
-                            <button onclick="openInputModalWithTarget('${t.target_id}', '${t.name}')" class="px-3 py-1.5 rounded-lg border border-[#E6E1D8] bg-white/80 hover:bg-black/5 text-xs font-bold transition">
-                                결과 입력
-                            </button>
+                            <div class="inline-flex items-center gap-1.5">
+                                <button onclick="dialTargetOnGovPhone('${t.target_id}')" class="px-2.5 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-bold transition inline-flex items-center gap-1">
+                                    <i data-lucide="phone-outgoing" class="w-3.5 h-3.5"></i>
+                                    전화 연결
+                                </button>
+                                <button onclick="openInputModalWithTarget('${t.target_id}', '${t.name}')" class="px-3 py-1.5 rounded-lg border border-[#E6E1D8] bg-white/80 hover:bg-black/5 text-xs font-bold transition">
+                                    결과 입력
+                                </button>
+                            </div>
                         </td>
                     </tr>
-                `).join('');
+                `;
+            }).join('');
+            lucide.createIcons({ root: tbody });
         }
 
         function setLogFilter(filter) {
@@ -1813,17 +1876,28 @@
 
         function populateVoiceTargetSelect() {
             const sel = document.getElementById('voice-target-select');
-            if (!sel) return;
-            const prevVal = sel.value;
-            if (!currentTargets.length) {
-                sel.innerHTML = `<option value="L-0001|대상자 A">대상자 A (L-0001)</option>`;
-                return;
+            const govSel = document.getElementById('gov-phone-target-select');
+            const optionsHtml = currentTargets.length
+                ? currentTargets.map((t, idx) => {
+                    const ph = getTargetPhone(t, idx);
+                    return `<option value="${t.target_id}|${t.name}|${ph}">${t.name} (${t.target_id} · ${ph})</option>`;
+                }).join('')
+                : `<option value="L-0001|대상자 A|010-2341-5678">대상자 A (L-0001 · 010-2341-5678)</option>`;
+
+            if (sel) {
+                const prevVal = sel.value;
+                sel.innerHTML = optionsHtml;
+                if (prevVal && Array.from(sel.options).some(o => o.value === prevVal)) {
+                    sel.value = prevVal;
+                }
             }
-            sel.innerHTML = currentTargets.map(t =>
-                `<option value="${t.target_id}|${t.name}">${t.name} (${t.target_id})</option>`
-            ).join('');
-            if (prevVal && Array.from(sel.options).some(o => o.value === prevVal)) {
-                sel.value = prevVal;
+            if (govSel) {
+                const prevGovVal = govSel.value;
+                govSel.innerHTML = optionsHtml;
+                if (prevGovVal && Array.from(govSel.options).some(o => o.value === prevGovVal)) {
+                    govSel.value = prevGovVal;
+                }
+                onGovPhoneTargetChange();
             }
         }
 
@@ -2083,6 +2157,7 @@ ${needActionList}`;
         async function saveNewTarget() {
             const target_id = document.getElementById('new-target-id').value.trim();
             const name = document.getElementById('new-target-name').value.trim();
+            const phone = (document.getElementById('new-target-phone')?.value || '').trim() || `010-4820-${String(currentTargets.length + 1).padStart(4, '0')}`;
             const contact_schedule = document.getElementById('new-target-schedule').value.trim();
             const manager_name = (document.getElementById('new-target-manager')?.value || managerProfile.name).trim();
 
@@ -2114,6 +2189,7 @@ ${needActionList}`;
             const newTarget = {
                 target_id: target_id || '(미입력)',
                 name: name || '(미입력)',
+                phone,
                 contact_schedule: contact_schedule || '(일정 오류)',
                 manager_name: manager_name || managerProfile.name,
                 status,
@@ -2510,6 +2586,7 @@ ${needActionList}`;
             const nextNum = String(currentTargets.length + 1).padStart(4, '0');
             document.getElementById('new-target-id').value = `L-${nextNum}`;
             document.getElementById('new-target-name').value = '';
+            if (document.getElementById('new-target-phone')) document.getElementById('new-target-phone').value = `010-4820-${nextNum}`;
             document.getElementById('new-target-manager').value = managerProfile.name;
 
             // 요일 및 아이폰 스타일 시간 휠 초기화 (기본: 매주 월·수·금 오전 10:00)
@@ -2756,6 +2833,247 @@ ${needActionList}`;
             if (indicator) indicator.innerText = '저장 완료 ✓';
         }
 
+        // ============================================================
+        // 가상 지자체 행정전화기 & 녹취 파일(.mp3/.wav) 연동 엔진
+        // ============================================================
+        let govCallTimerInterval = null;
+        let govCallSeconds = 0;
+        let isGovCallActive = false;
+        let govCallDirection = '발신';
+
+        const GOV_CALL_SCRIPTS = {
+            '응답': '여보세요, 부산 남구 복지관입니다. 오늘 아침 식사 잘 하셨어요? 네, 밥 먹고 혈압약도 챙겨 먹었어요. 몸도 괜찮습니다.',
+            '도움': '여보세요, 복지관입니다. 어르신 오늘 컨디션 어떠세요? 어제부터 허리가 너무 아프고 어지러워서 병원에 가야 할 것 같아요. 도움 좀 요청할게요.',
+            '미응답': '연결음만 울리고 통화 연결이 되지 않아 부재중으로 확인됨.',
+            '오류': '여보세요? 소리가 끊기고 잘 안 들려서 통화 연결 오류가 발생했습니다.'
+        };
+
+        function toggleGovPhoneWidget(forceState) {
+            const widget = document.getElementById('gov-phone-widget');
+            if (!widget) return;
+            populateVoiceTargetSelect();
+            if (typeof forceState === 'boolean') {
+                widget.classList.toggle('hidden', !forceState);
+            } else {
+                widget.classList.toggle('hidden');
+            }
+            lucide.createIcons({ root: widget });
+        }
+
+        function dialTargetOnGovPhone(targetId) {
+            toggleGovPhoneWidget(true);
+            const govSel = document.getElementById('gov-phone-target-select');
+            if (govSel) {
+                const match = Array.from(govSel.options).find(o => o.value.startsWith(targetId + '|'));
+                if (match) govSel.value = match.value;
+                onGovPhoneTargetChange();
+            }
+            startGovPhoneCall('발신');
+        }
+
+        function onGovPhoneTargetChange() {
+            const govSel = document.getElementById('gov-phone-target-select');
+            const numEl = document.getElementById('gov-phone-matched-number');
+            if (!govSel || !numEl || !govSel.value) return;
+            const parts = govSel.value.split('|');
+            numEl.innerText = parts[2] || '010-2341-5678';
+        }
+
+        function updateGovPhoneScenarioPreview() {
+            const scSel = document.getElementById('gov-phone-scenario-select');
+            const capEl = document.getElementById('gov-phone-live-caption');
+            if (!scSel || !capEl) return;
+            capEl.innerText = `“${GOV_CALL_SCRIPTS[scSel.value] || GOV_CALL_SCRIPTS['응답']}”`;
+        }
+
+        function startGovPhoneCall(direction) {
+            if (isGovCallActive) return;
+            isGovCallActive = true;
+            govCallDirection = direction;
+            govCallSeconds = 0;
+
+            const stateLabel = document.getElementById('gov-phone-state-label');
+            const timerEl = document.getElementById('gov-phone-timer');
+            const callBtn = document.getElementById('gov-phone-call-btn');
+            const inBtn = document.getElementById('gov-phone-incoming-btn');
+            const hangupBtn = document.getElementById('gov-phone-hangup-btn');
+
+            if (stateLabel) stateLabel.innerText = `${direction} 통화 연결됨 · 녹취 중`;
+            if (timerEl) timerEl.innerText = '00:01';
+            if (callBtn) callBtn.classList.add('hidden');
+            if (inBtn) inBtn.classList.add('hidden');
+            if (hangupBtn) hangupBtn.classList.remove('hidden');
+
+            updateGovPhoneScenarioPreview();
+
+            govCallSeconds = 1;
+            clearInterval(govCallTimerInterval);
+            govCallTimerInterval = setInterval(() => {
+                govCallSeconds++;
+                const mm = String(Math.floor(govCallSeconds / 60)).padStart(2, '0');
+                const ss = String(govCallSeconds % 60).padStart(2, '0');
+                if (timerEl) timerEl.innerText = `${mm}:${ss}`;
+            }, 1000);
+        }
+
+        async function endGovPhoneCallAndSync() {
+            clearInterval(govCallTimerInterval);
+            isGovCallActive = false;
+
+            const stateLabel = document.getElementById('gov-phone-state-label');
+            const timerEl = document.getElementById('gov-phone-timer');
+            const callBtn = document.getElementById('gov-phone-call-btn');
+            const inBtn = document.getElementById('gov-phone-incoming-btn');
+            const hangupBtn = document.getElementById('gov-phone-hangup-btn');
+
+            const durationStr = timerEl ? timerEl.innerText : '00:12';
+            if (stateLabel) stateLabel.innerText = '통화 종료 · LUMI 기록 반영 완료';
+            if (callBtn) callBtn.classList.remove('hidden');
+            if (inBtn) inBtn.classList.remove('hidden');
+            if (hangupBtn) hangupBtn.classList.add('hidden');
+
+            const govSel = document.getElementById('gov-phone-target-select');
+            const scSel = document.getElementById('gov-phone-scenario-select');
+            const scenarioKey = scSel ? scSel.value : '응답';
+            const rawTranscript = GOV_CALL_SCRIPTS[scenarioKey] || GOV_CALL_SCRIPTS['응답'];
+            const autoResult = classifyAndSummarizeTranscript(rawTranscript);
+
+            let target_id = 'L-0001';
+            let target_name = '대상자 A';
+            let phone = '010-2341-5678';
+            if (govSel && govSel.value) {
+                const parts = govSel.value.split('|');
+                target_id = parts[0] || target_id;
+                target_name = parts[1] || target_name;
+                phone = parts[2] || phone;
+            }
+
+            let followup_status = '완료';
+            if (autoResult.status === '도움 요청') followup_status = '미처리 (확인 대기)';
+            else if (autoResult.status === '미응답' || autoResult.status === '연결 오류') followup_status = '재연락 필요';
+
+            const memoWithPhoneMeta = `[행정전화 ${govCallDirection} · ${durationStr}] ${autoResult.summary}`;
+
+            const newRecord = {
+                log_id: Date.now(),
+                target_id,
+                target_name,
+                result_status: autoResult.status,
+                memo: memoWithPhoneMeta,
+                manager_name: managerProfile.name,
+                followup_status
+            };
+
+            if (supabaseClient) {
+                const { error } = await supabaseClient.from('contact_logs').insert([newRecord]);
+                if (!error) {
+                    await fetchAllData();
+                } else {
+                    currentLogs.unshift(newRecord);
+                    persistAccountState();
+                    renderAllSections();
+                }
+            } else {
+                currentLogs.unshift(newRecord);
+                persistAccountState();
+                renderAllSections();
+            }
+
+            // 안부 확인 기록 탭 입력창에도 최신 통화 내역 동기화
+            const voiceSel = document.getElementById('voice-target-select');
+            if (voiceSel) {
+                const matchOpt = Array.from(voiceSel.options).find(o => o.value.startsWith(target_id + '|'));
+                if (matchOpt) voiceSel.value = matchOpt.value;
+            }
+            const transcriptEl = document.getElementById('voice-transcript-input');
+            const summaryEl = document.getElementById('voice-summary-output');
+            const statusLabelEl = document.getElementById('voice-detected-status');
+            if (transcriptEl) transcriptEl.value = rawTranscript;
+            if (summaryEl) summaryEl.value = memoWithPhoneMeta;
+            if (statusLabelEl) statusLabelEl.innerText = autoResult.status;
+
+            showLumiAlert(
+                `${target_name} (${phone}) 어르신과의 행정전화 통화(${durationStr})가 자동 요약되어 [${autoResult.status}] 상태로 기록되었습니다.`,
+                '지자체 전화기 자동 연동 완료'
+            );
+        }
+
+        function matchTargetFromFilenameOrText(fileName) {
+            const normalized = (fileName || '').replace(/[^0-9a-zA-Z가-힣]/g, '');
+            for (let i = 0; i < currentTargets.length; i++) {
+                const t = currentTargets[i];
+                const phDigits = getTargetPhone(t, i).replace(/\D/g, '');
+                const idDigits = (t.target_id || '').replace(/\D/g, '');
+                if ((phDigits && normalized.includes(phDigits)) ||
+                    (phDigits.length >= 4 && normalized.includes(phDigits.slice(-4))) ||
+                    (idDigits && normalized.includes(idDigits)) ||
+                    (t.name && normalized.includes(t.name.replace(/\s+/g, '')))) {
+                    return { target: t, index: i };
+                }
+            }
+            return currentTargets.length ? { target: currentTargets[0], index: 0 } : null;
+        }
+
+        function handleGovAudioFileUpload(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+
+            const matched = matchTargetFromFilenameOrText(file.name);
+            const voiceSel = document.getElementById('voice-target-select');
+            const statusBox = document.getElementById('audio-file-status');
+            const transcriptEl = document.getElementById('voice-transcript-input');
+
+            let matchedLabel = '기본 대상자';
+            if (matched && voiceSel) {
+                const ph = getTargetPhone(matched.target, matched.index);
+                const val = `${matched.target.target_id}|${matched.target.name}|${ph}`;
+                voiceSel.value = val;
+                syncVoiceTargetFields();
+                matchedLabel = `${matched.target.name} (${matched.target.target_id} · ${ph})`;
+            }
+
+            // 파일명 키워드에 따라 가상 STT 대화문 추출
+            let scenarioKey = '응답';
+            if (file.name.includes('도움') || file.name.includes('통증') || file.name.includes('병원') || file.name.includes('0002')) {
+                scenarioKey = '도움';
+            } else if (file.name.includes('미응답') || file.name.includes('부재')) {
+                scenarioKey = '미응답';
+            } else if (file.name.includes('오류') || file.name.includes('잡음')) {
+                scenarioKey = '오류';
+            }
+
+            if (statusBox) {
+                statusBox.innerHTML = `<span class="text-emerald-700 font-bold">첨부 완료: ${file.name}</span> → 매칭 대상: <strong>${matchedLabel}</strong>`;
+            }
+            if (transcriptEl) {
+                transcriptEl.value = GOV_CALL_SCRIPTS[scenarioKey];
+                processVoiceTranscriptAuto();
+            }
+            event.target.value = '';
+        }
+
+        function simulateGovServerPull() {
+            const targetIdx = currentTargets.length > 1 ? 1 : 0;
+            const t = currentTargets[targetIdx] || { target_id: 'L-0002', name: '대상자 B' };
+            const ph = getTargetPhone(t, targetIdx);
+            const fakeFileName = `지자체녹취_${ph}_${t.name}_도움요청.wav`;
+
+            const voiceSel = document.getElementById('voice-target-select');
+            if (voiceSel) {
+                voiceSel.value = `${t.target_id}|${t.name}|${ph}`;
+                syncVoiceTargetFields();
+            }
+            const statusBox = document.getElementById('audio-file-status');
+            if (statusBox) {
+                statusBox.innerHTML = `<span class="text-amber-800 font-bold">녹취 서버 수신: ${fakeFileName}</span> → 번호 자동 매칭: <strong>${t.name} (${ph})</strong>`;
+            }
+            const transcriptEl = document.getElementById('voice-transcript-input');
+            if (transcriptEl) {
+                transcriptEl.value = GOV_CALL_SCRIPTS['도움'];
+                processVoiceTranscriptAuto();
+            }
+        }
+
         // 페이지 로드 시 최근 로그인 계정 목록 초기화 (자동 복원은 대시보드 버튼 또는 로그인 시 실행)
         window.addEventListener('DOMContentLoaded', () => {
             renderRecentAccounts();
@@ -2766,6 +3084,74 @@ ${needActionList}`;
             }
         });
     </script>
+
+    <!-- ========================================== -->
+    <!-- 가상 지자체 행정전화기 위젯 (실시간 통화 연동 시연) -->
+    <!-- ========================================== -->
+    <div id="gov-phone-widget" class="hidden fixed bottom-5 right-5 z-[60] w-[350px] sm:w-[375px] bg-[#1C1917] text-white rounded-2xl shadow-2xl border border-[#44403C] overflow-hidden">
+        <!-- 전화기 상단 베젤 -->
+        <div class="px-4 py-3 bg-[#292524] border-b border-[#44403C] flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                <span class="text-xs font-bold tracking-tight text-amber-300">부산 남구 복지관 행정전화 · 내선 402</span>
+            </div>
+            <button type="button" onclick="toggleGovPhoneWidget(false)" class="p-1 rounded-lg text-stone-400 hover:text-white hover:bg-white/10 transition">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+        </div>
+
+        <!-- LCD 디스플레이 영역 -->
+        <div class="p-4 space-y-3.5">
+            <div class="p-3.5 rounded-xl bg-[#0C0A09] border border-[#292524] space-y-2">
+                <div class="flex items-center justify-between text-[11px] text-stone-400">
+                    <span id="gov-phone-state-label">통화 대기 중 · 대상자 선택</span>
+                    <span id="gov-phone-timer" class="font-mono font-bold text-amber-400">00:00</span>
+                </div>
+
+                <!-- 대상자 / 번호 매칭 선택 -->
+                <select id="gov-phone-target-select" onchange="onGovPhoneTargetChange()" class="w-full px-3 py-2 rounded-lg bg-[#1C1917] border border-[#44403C] text-white text-xs font-bold focus:outline-none focus:border-amber-500">
+                </select>
+
+                <div class="flex items-center justify-between text-xs pt-0.5">
+                    <span class="text-stone-400">매칭 번호</span>
+                    <span id="gov-phone-matched-number" class="font-mono font-bold text-emerald-400">010-2341-5678</span>
+                </div>
+            </div>
+
+            <!-- 통화 시나리오 선택 (가상 통화 내용) -->
+            <div>
+                <div class="flex items-center justify-between mb-1.5">
+                    <span class="text-[11px] font-semibold text-stone-300">가상 통화 대화 시나리오</span>
+                    <span class="text-[10px] text-amber-400">통화 종료 시 자동 요약·등록</span>
+                </div>
+                <select id="gov-phone-scenario-select" onchange="updateGovPhoneScenarioPreview()" class="w-full px-3 py-2 rounded-lg bg-[#292524] border border-[#44403C] text-xs text-stone-100 focus:outline-none focus:border-amber-500">
+                    <option value="응답">① 정상 안부 확인 (식사·복약 양호)</option>
+                    <option value="도움">② 도움 요청 (허리 통증·병원 동행 요청)</option>
+                    <option value="미응답">③ 부재중 / 미응답 (재연락 필요 등록)</option>
+                    <option value="오류">④ 통화 품질 불량 / 연결 오류</option>
+                </select>
+                <div id="gov-phone-live-caption" class="mt-2 p-2.5 rounded-lg bg-[#292524]/70 border border-[#44403C]/70 text-[11px] text-stone-300 leading-relaxed min-h-[52px]">
+                    “여보세요, 복지관입니다. 오늘 식사는 잘 하셨어요?” — “네, 아침 먹고 혈압약도 챙겨 먹었어요.”
+                </div>
+            </div>
+
+            <!-- 발신 / 수신 / 통화 종료 버튼 -->
+            <div class="grid grid-cols-2 gap-2 pt-1">
+                <button type="button" id="gov-phone-call-btn" onclick="startGovPhoneCall('발신')" class="py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex items-center justify-center gap-1.5">
+                    <i data-lucide="phone-outgoing" class="w-3.5 h-3.5"></i>
+                    <span>안부 전화 걸기</span>
+                </button>
+                <button type="button" id="gov-phone-incoming-btn" onclick="startGovPhoneCall('수신')" class="py-2.5 px-3 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold transition flex items-center justify-center gap-1.5">
+                    <i data-lucide="phone-incoming" class="w-3.5 h-3.5"></i>
+                    <span>어르신 수신 시연</span>
+                </button>
+            </div>
+            <button type="button" id="gov-phone-hangup-btn" onclick="endGovPhoneCallAndSync()" class="hidden w-full py-2.5 px-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition flex items-center justify-center gap-1.5 animate-pulse">
+                <i data-lucide="phone-off" class="w-3.5 h-3.5"></i>
+                <span>통화 종료 및 LUMI 자동 기록</span>
+            </button>
+        </div>
+    </div>
 
     <!-- 커스텀 중앙 확인/알림 모달 (브라우저 기본 confirm/alert 대체) -->
     <div id="lumi-dialog-overlay" class="hidden fixed inset-0 bg-black/50 backdrop-blur-[1px] flex items-center justify-center z-[70] p-4 transition-opacity">
