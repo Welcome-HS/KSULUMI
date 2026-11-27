@@ -837,15 +837,15 @@
                         </div>
 
                         <!-- 기록 필터 및 CRUD 테이블 (추가 · 수정 · 삭제 지원) -->
-                        <div class="flex flex-wrap items-center justify-between gap-2">
-                            <div class="flex flex-wrap items-center gap-1.5">
-                                <button onclick="setLogFilter('ALL')" class="log-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-gray-900 text-white" data-filter="ALL">전체</button>
-                                <button onclick="setLogFilter('응답 완료')" class="log-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold border border-[#E6E1D8] bg-white/90 text-gray-700" data-filter="응답 완료">응답 완료</button>
-                                <button onclick="setLogFilter('미응답')" class="log-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold border border-[#E6E1D8] bg-white/90 text-gray-700" data-filter="미응답">미응답</button>
-                                <button onclick="setLogFilter('도움 요청')" class="log-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold border border-[#E6E1D8] bg-white/90 text-gray-700" data-filter="도움 요청">도움 요청</button>
-                                <button onclick="setLogFilter('연결 오류')" class="log-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold border border-[#E6E1D8] bg-white/90 text-gray-700" data-filter="연결 오류">연결 오류</button>
+                        <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <button onclick="setLogFilter('ALL')" class="log-filter-btn px-4 py-2 rounded-xl text-[15px] font-bold tracking-tight bg-gray-900 text-white shadow-xs transition" data-filter="ALL">전체</button>
+                                <button onclick="setLogFilter('응답 완료')" class="log-filter-btn px-4 py-2 rounded-xl text-[15px] font-semibold tracking-tight border border-[#E6E1D8] bg-white text-gray-700 hover:bg-amber-50/60 transition" data-filter="응답 완료">응답 완료</button>
+                                <button onclick="setLogFilter('미응답')" class="log-filter-btn px-4 py-2 rounded-xl text-[15px] font-semibold tracking-tight border border-[#E6E1D8] bg-white text-gray-700 hover:bg-amber-50/60 transition" data-filter="미응답">미응답</button>
+                                <button onclick="setLogFilter('도움 요청')" class="log-filter-btn px-4 py-2 rounded-xl text-[15px] font-semibold tracking-tight border border-[#E6E1D8] bg-white text-gray-700 hover:bg-amber-50/60 transition" data-filter="도움 요청">도움 요청</button>
+                                <button onclick="setLogFilter('연결 오류')" class="log-filter-btn px-4 py-2 rounded-xl text-[15px] font-semibold tracking-tight border border-[#E6E1D8] bg-white text-gray-700 hover:bg-amber-50/60 transition" data-filter="연결 오류">연결 오류</button>
                             </div>
-                            <span id="logs-total-count" class="text-xs opacity-65 font-medium">총 0건</span>
+                            <span id="logs-total-count" class="text-sm opacity-75 font-bold">총 0건</span>
                         </div>
 
                         <div class="card rounded-2xl border border-[#E6E1D8] bg-white/90 shadow-sm overflow-hidden transition-theme">
@@ -869,12 +869,28 @@
 
                     <!-- 탭 4: 후속 조치 관리 -->
                     <div id="section-followups" class="hidden space-y-6">
-                        <div class="flex items-center justify-between">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                             <div>
                                 <h2 class="text-2xl font-bold">후속 조치 관리 (미응답 및 도움 요청 건)</h2>
-                                <p class="text-sm opacity-65 mt-1">추적 관리가 필요한 대상자의 조치 상태를 원클릭으로 완료 처리할 수 있습니다.</p>
+                                <p class="text-sm opacity-65 mt-1">카드를 클릭해 대화내역 전문을 확인하거나, 수정·삭제·조치 완료 처리를 할 수 있습니다.</p>
                             </div>
-                            <span id="followup-pending-badge" class="px-3.5 py-1.5 rounded-full bg-rose-100 text-rose-700 text-xs font-bold">미완료 3건</span>
+                            <span id="followup-pending-badge" class="px-4 py-1.5 rounded-full bg-rose-100 text-rose-700 text-sm font-bold self-start sm:self-auto">미완료 3건</span>
+                        </div>
+
+                        <!-- 후속 조치 상태별 탭 (미처리 · 조치 완료 · 전체 · 삭제됨) -->
+                        <div class="flex flex-wrap items-center justify-between gap-3">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <button type="button" onclick="setFollowupTab('pending')" data-ftab="pending" class="followup-tab-btn px-4 py-2 rounded-xl text-[15px] font-bold tracking-tight bg-gray-900 text-white transition">미처리 조치</button>
+                                <button type="button" onclick="setFollowupTab('completed')" data-ftab="completed" class="followup-tab-btn px-4 py-2 rounded-xl text-[15px] font-semibold tracking-tight border border-[#E6E1D8] bg-white text-gray-700 hover:bg-amber-50/60 transition">조치 완료</button>
+                                <button type="button" onclick="setFollowupTab('all')" data-ftab="all" class="followup-tab-btn px-4 py-2 rounded-xl text-[15px] font-semibold tracking-tight border border-[#E6E1D8] bg-white text-gray-700 hover:bg-amber-50/60 transition">전체 내역</button>
+                                <button type="button" onclick="setFollowupTab('deleted')" data-ftab="deleted" class="followup-tab-btn px-4 py-2 rounded-xl text-[15px] font-semibold tracking-tight border border-rose-200 bg-rose-50/60 text-rose-700 hover:bg-rose-100/70 transition flex items-center gap-1.5">
+                                    <span>삭제됨</span>
+                                    <span id="followup-deleted-count" class="px-1.5 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-700">0</span>
+                                </button>
+                            </div>
+                            <button type="button" id="empty-deleted-followups-btn" onclick="clearDeletedFollowups()" class="hidden px-3.5 py-1.5 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold transition">
+                                삭제된 내역 비우기
+                            </button>
                         </div>
 
                         <div id="followup-cards-grid" class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -1455,6 +1471,8 @@
         let currentLogs = JSON.parse(JSON.stringify(DEFAULT_LOGS));
         let currentTargets = JSON.parse(JSON.stringify(DEFAULT_TARGETS));
         let deletedTargetIds = [];
+        let deletedFollowupLogs = [];
+        let activeFollowupTab = 'pending'; // 'pending' | 'completed' | 'all' | 'deleted'
         let managerProfile = {
             name: '김복지',
             role: '안부 확인 전담 사회복지사',
@@ -1487,6 +1505,7 @@
                 localLogs: currentLogs,
                 localTargets: currentTargets,
                 deletedTargetIds: deletedTargetIds,
+                deletedFollowupLogs: deletedFollowupLogs,
                 savedAt: new Date().toISOString()
             };
             localStorage.setItem(STORAGE_PREFIX + currentUserId, JSON.stringify(stateObj));
@@ -1582,6 +1601,7 @@
                 currentLogs = Array.isArray(saved.localLogs) ? saved.localLogs : JSON.parse(JSON.stringify(DEFAULT_LOGS));
                 currentTargets = Array.isArray(saved.localTargets) ? saved.localTargets : JSON.parse(JSON.stringify(DEFAULT_TARGETS));
                 deletedTargetIds = Array.isArray(saved.deletedTargetIds) ? saved.deletedTargetIds : [];
+                deletedFollowupLogs = Array.isArray(saved.deletedFollowupLogs) ? saved.deletedFollowupLogs : [];
                 activeLogFilter = saved.lastFilter || 'ALL';
 
                 applyProfileToUI();
@@ -1607,6 +1627,7 @@
                 currentLogs = JSON.parse(JSON.stringify(DEFAULT_LOGS));
                 currentTargets = JSON.parse(JSON.stringify(DEFAULT_TARGETS));
                 deletedTargetIds = [];
+                deletedFollowupLogs = [];
                 activeLogFilter = 'ALL';
 
                 applyProfileToUI();
@@ -1914,9 +1935,9 @@
             activeLogFilter = filter;
             document.querySelectorAll('.log-filter-btn').forEach(btn => {
                 if (btn.dataset.filter === filter) {
-                    btn.className = 'log-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-gray-900 text-white';
+                    btn.className = 'log-filter-btn px-4 py-2 rounded-xl text-[15px] font-bold tracking-tight bg-gray-900 text-white shadow-xs transition';
                 } else {
-                    btn.className = 'log-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium border border-[#E6E1D8] bg-white/80 text-gray-700';
+                    btn.className = 'log-filter-btn px-4 py-2 rounded-xl text-[15px] font-semibold tracking-tight border border-[#E6E1D8] bg-white text-gray-700 hover:bg-amber-50/60 transition';
                 }
             });
             persistAccountState();
@@ -1969,9 +1990,9 @@
 
             document.querySelectorAll('.log-filter-btn').forEach(btn => {
                 if (btn.dataset.filter === activeLogFilter) {
-                    btn.className = 'log-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-gray-900 text-white';
+                    btn.className = 'log-filter-btn px-4 py-2 rounded-xl text-[15px] font-bold tracking-tight bg-gray-900 text-white shadow-xs transition';
                 } else {
-                    btn.className = 'log-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold border border-[#E6E1D8] bg-white/90 text-gray-700';
+                    btn.className = 'log-filter-btn px-4 py-2 rounded-xl text-[15px] font-semibold tracking-tight border border-[#E6E1D8] bg-white text-gray-700 hover:bg-amber-50/60 transition';
                 }
             });
 
@@ -1990,29 +2011,25 @@
 
             tbody.innerHTML = filtered.map((item, idx) => {
                 const logKey = item.log_id !== undefined && item.log_id !== null ? String(item.log_id) : `idx_${idx}`;
-                const hasTranscript = Boolean((item.transcript || '').trim());
                 return `
                     <tr onclick="openTranscriptDetailModal('${logKey}')" title="클릭하여 대화내역 전문 및 상태 변경" class="hover:bg-amber-50/50 cursor-pointer transition group">
-                        <td class="py-3.5 px-5 font-bold text-sm whitespace-nowrap">
+                        <td class="py-4 px-5 font-bold text-[15px] whitespace-nowrap">
                             ${item.target_name}
                             <span class="font-mono text-xs font-normal opacity-60 ml-1">${item.target_id}</span>
                         </td>
-                        <td class="py-3.5 px-5 whitespace-nowrap">${getBadgeHtml(item.result_status)}</td>
-                        <td class="py-3.5 px-5 text-sm">
+                        <td class="py-4 px-5 whitespace-nowrap">${getBadgeHtml(item.result_status)}</td>
+                        <td class="py-4 px-5 text-[15px]">
                             <div class="font-bold text-gray-900 group-hover:text-amber-900 transition">${item.memo || '-'}</div>
-                            ${hasTranscript
-                                ? `<div class="text-[11px] font-mono text-stone-500 mt-1 line-clamp-1 flex items-center gap-1.5"><span>${escapeHtml(item.transcript.split('\n')[0])}</span><span class="text-[10px] font-sans font-bold text-amber-700 shrink-0">[전문 보기]</span></div>`
-                                : `<div class="text-[11px] text-stone-400 mt-1">클릭하여 상세 내역 및 상태 확인</div>`}
                         </td>
-                        <td class="py-3.5 px-5 text-xs font-bold whitespace-nowrap ${getFollowupColor(item.followup_status)}">${item.followup_status}</td>
-                        <td class="py-3.5 px-5 text-right whitespace-nowrap" onclick="event.stopPropagation()">
+                        <td class="py-4 px-5 text-sm font-bold whitespace-nowrap ${getFollowupColor(item.followup_status)}">${item.followup_status}</td>
+                        <td class="py-4 px-5 text-right whitespace-nowrap" onclick="event.stopPropagation()">
                             <div class="inline-flex items-center gap-1.5">
-                                <button type="button" onclick="openEditLogModal('${logKey}')" class="px-2.5 py-1.5 rounded-lg border border-[#E6E1D8] bg-white hover:bg-amber-50 hover:border-amber-300 text-gray-800 text-xs font-bold transition inline-flex items-center gap-1">
-                                    <i data-lucide="pencil" class="w-3 h-3 text-amber-700"></i>
+                                <button type="button" onclick="openEditLogModal('${logKey}')" class="px-3 py-1.5 rounded-lg border border-[#E6E1D8] bg-white hover:bg-amber-50 hover:border-amber-300 text-gray-800 text-xs font-bold transition inline-flex items-center gap-1">
+                                    <i data-lucide="pencil" class="w-3.5 h-3.5 text-amber-700"></i>
                                     수정
                                 </button>
-                                <button type="button" onclick="deleteLogById('${logKey}')" class="px-2.5 py-1.5 rounded-lg border border-rose-200 bg-rose-50/70 hover:bg-rose-100 text-rose-700 text-xs font-bold transition inline-flex items-center gap-1">
-                                    <i data-lucide="trash-2" class="w-3 h-3"></i>
+                                <button type="button" onclick="deleteLogById('${logKey}')" class="px-3 py-1.5 rounded-lg border border-rose-200 bg-rose-50/70 hover:bg-rose-100 text-rose-700 text-xs font-bold transition inline-flex items-center gap-1">
+                                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                                     삭제
                                 </button>
                             </div>
@@ -2098,17 +2115,157 @@
             }
         }
 
+        function setFollowupTab(tabName) {
+            activeFollowupTab = tabName;
+            renderFollowupsSection();
+        }
+
+        async function deleteFollowupItem(logKey) {
+            const idx = findLogIndexByKey(logKey);
+            if (idx === -1) return;
+            const item = currentLogs[idx];
+
+            const ok = await showLumiConfirm({
+                title: '후속 조치 내역 삭제',
+                message: `${item.target_name} (${item.target_id}) 어르신의 [${item.result_status}] 후속 조치 건을 삭제할까요?
+삭제된 항목은 '삭제됨' 탭에서 확인하거나 복원할 수 있습니다.`,
+                confirmText: '삭제하기',
+                cancelText: '취소',
+                danger: true
+            });
+            if (!ok) return;
+
+            const realId = item.log_id;
+            const numericId = Number(realId);
+            const isDbRowId = Number.isInteger(numericId) && numericId > 0 && numericId <= 2147483647;
+
+            deletedFollowupLogs.unshift({
+                ...item,
+                deleted_at: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })
+            });
+            currentLogs.splice(idx, 1);
+
+            if (supabaseClient && isDbRowId) {
+                await supabaseClient.from('contact_logs').delete().eq('log_id', numericId);
+            }
+
+            persistAccountState();
+            flashLogsAutoSaveBadge();
+            renderDashboardLogs();
+            renderAllLogsTable();
+            renderFollowupsSection();
+            renderReportsSection();
+        }
+
+        function restoreDeletedFollowup(delIdx) {
+            const restored = deletedFollowupLogs[delIdx];
+            if (!restored) return;
+            const { deleted_at, ...cleanItem } = restored;
+            deletedFollowupLogs.splice(delIdx, 1);
+            currentLogs.unshift({
+                ...cleanItem,
+                log_id: Date.now()
+            });
+            persistAccountState();
+            flashLogsAutoSaveBadge();
+            renderDashboardLogs();
+            renderAllLogsTable();
+            renderFollowupsSection();
+            renderReportsSection();
+        }
+
+        async function clearDeletedFollowups() {
+            if (deletedFollowupLogs.length === 0) return;
+            const ok = await showLumiConfirm({
+                title: '삭제된 내역 영구 비우기',
+                message: `삭제됨 탭의 ${deletedFollowupLogs.length}건을 모두 영구 삭제할까요?`,
+                confirmText: '모두 비우기',
+                cancelText: '취소',
+                danger: true
+            });
+            if (!ok) return;
+            deletedFollowupLogs = [];
+            persistAccountState();
+            renderFollowupsSection();
+        }
+
         function renderFollowupsSection() {
             const grid = document.getElementById('followup-cards-grid');
             grid.innerHTML = '';
 
-            const followupItems = currentLogs.filter(l => l.result_status !== '응답 완료');
-            const pendingCount = followupItems.filter(l => l.followup_status !== '완료').length;
+            const allFollowups = currentLogs.filter(l => l.result_status !== '응답 완료');
+            const pendingCount = allFollowups.filter(l => l.followup_status !== '완료').length;
+
             const badgeEl = document.getElementById('followup-pending-badge');
             if (badgeEl) badgeEl.innerText = `미완료 ${pendingCount}건`;
 
+            const delCountEl = document.getElementById('followup-deleted-count');
+            if (delCountEl) delCountEl.innerText = String(deletedFollowupLogs.length);
+
+            const emptyDelBtn = document.getElementById('empty-deleted-followups-btn');
+            if (emptyDelBtn) {
+                emptyDelBtn.classList.toggle('hidden', activeFollowupTab !== 'deleted' || deletedFollowupLogs.length === 0);
+            }
+
+            document.querySelectorAll('.followup-tab-btn').forEach(btn => {
+                const t = btn.dataset.ftab;
+                if (t === activeFollowupTab) {
+                    btn.className = t === 'deleted'
+                        ? 'followup-tab-btn px-4 py-2 rounded-xl text-[15px] font-bold tracking-tight bg-rose-600 text-white shadow-xs transition flex items-center gap-1.5'
+                        : 'followup-tab-btn px-4 py-2 rounded-xl text-[15px] font-bold tracking-tight bg-gray-900 text-white shadow-xs transition';
+                } else {
+                    btn.className = t === 'deleted'
+                        ? 'followup-tab-btn px-4 py-2 rounded-xl text-[15px] font-semibold tracking-tight border border-rose-200 bg-rose-50/60 text-rose-700 hover:bg-rose-100/70 transition flex items-center gap-1.5'
+                        : 'followup-tab-btn px-4 py-2 rounded-xl text-[15px] font-semibold tracking-tight border border-[#E6E1D8] bg-white text-gray-700 hover:bg-amber-50/60 transition';
+                }
+            });
+
+            if (activeFollowupTab === 'deleted') {
+                if (deletedFollowupLogs.length === 0) {
+                    grid.innerHTML = `<div class="col-span-2 p-10 text-center opacity-60 text-sm bg-white/60 rounded-2xl border border-[#E6E1D8]">삭제된 후속 조치 내역이 없습니다.</div>`;
+                    return;
+                }
+                deletedFollowupLogs.forEach((item, delIdx) => {
+                    const cardHtml = `
+                        <div class="card p-6 rounded-2xl border border-rose-200/80 bg-rose-50/30 shadow-sm flex flex-col justify-between gap-4">
+                            <div class="min-w-0">
+                                <div class="flex items-center justify-between gap-2 mb-3">
+                                    <div class="flex items-center gap-2 min-w-0">
+                                        <span class="font-mono text-xs px-2 py-0.5 rounded bg-black/5 opacity-75 shrink-0">${item.target_id}</span>
+                                        <span class="font-bold text-base truncate text-gray-800">${item.target_name}</span>
+                                    </div>
+                                    <div class="shrink-0">${getBadgeHtml(item.result_status)}</div>
+                                </div>
+                                <p class="text-[15px] font-bold text-gray-800 break-words leading-relaxed mb-2">${item.memo || '특이사항 메모 없음'}</p>
+                                <div class="text-xs text-stone-500">기록자: ${item.manager_name || managerProfile.name} · 삭제 시각: ${item.deleted_at || '방금 전'}</div>
+                            </div>
+                            <div class="pt-3 border-t border-rose-200/60 flex items-center justify-between gap-2">
+                                <span class="text-xs font-bold text-rose-600">삭제됨</span>
+                                <button type="button" onclick="restoreDeletedFollowup(${delIdx})" class="px-3.5 py-1.5 rounded-xl bg-white border border-gray-300 hover:bg-gray-900 hover:text-white text-gray-800 text-xs font-bold transition">
+                                    목록으로 복원
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    grid.insertAdjacentHTML('beforeend', cardHtml);
+                });
+                return;
+            }
+
+            let followupItems = allFollowups;
+            if (activeFollowupTab === 'pending') {
+                followupItems = allFollowups.filter(l => l.followup_status !== '완료');
+            } else if (activeFollowupTab === 'completed') {
+                followupItems = allFollowups.filter(l => l.followup_status === '완료');
+            }
+
             if (followupItems.length === 0) {
-                grid.innerHTML = `<div class="col-span-2 p-8 text-center opacity-60 text-sm">현재 후속 조치가 필요한 대상자가 없습니다.</div>`;
+                const emptyMsg = activeFollowupTab === 'pending'
+                    ? '현재 미처리된 후속 조치 건이 없습니다.'
+                    : activeFollowupTab === 'completed'
+                        ? '조치 완료된 후속 조치 건이 없습니다.'
+                        : '현재 후속 조치가 필요한 대상자가 없습니다.';
+                grid.innerHTML = `<div class="col-span-2 p-10 text-center opacity-60 text-sm bg-white/60 rounded-2xl border border-[#E6E1D8]">${emptyMsg}</div>`;
                 return;
             }
 
@@ -2116,10 +2273,9 @@
                 const logIdx = currentLogs.indexOf(item);
                 const logKey = item.log_id !== undefined && item.log_id !== null ? String(item.log_id) : `idx_${logIdx >= 0 ? logIdx : idx}`;
                 const isDone = item.followup_status === '완료';
-                const hasTranscript = Boolean((item.transcript || '').trim());
                 const checkSvg = `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`;
                 const cardHtml = `
-                    <div onclick="openTranscriptDetailModal('${logKey}')" title="클릭하여 대화내역 전문 및 상태 변경" class="card p-6 rounded-2xl border border-[#E6E1D8] bg-white/90 hover:border-amber-400 hover:shadow-md cursor-pointer shadow-sm flex flex-col justify-between gap-4 transition group">
+                    <div onclick="openTranscriptDetailModal('${logKey}')" title="클릭하여 대화내역 전문 및 상태 변경" class="card p-6 rounded-2xl border border-[#E6E1D8] bg-white/95 hover:border-amber-400 hover:shadow-md cursor-pointer shadow-sm flex flex-col justify-between gap-4 transition group">
                         <div class="min-w-0">
                             <div class="flex items-center justify-between gap-2 mb-3">
                                 <div class="flex items-center gap-2 min-w-0">
@@ -2128,10 +2284,7 @@
                                 </div>
                                 <div class="shrink-0">${getBadgeHtml(item.result_status)}</div>
                             </div>
-                            <p class="text-sm font-bold text-gray-900 break-words leading-relaxed mb-2.5 group-hover:text-amber-900 transition">${item.memo || '특이사항 메모 없음'}</p>
-                            ${hasTranscript
-                                ? `<div class="text-xs font-mono text-stone-500 bg-stone-50 border border-stone-200/80 rounded-xl px-3 py-2 mb-2.5 line-clamp-2 break-words">${escapeHtml(item.transcript.split('\n')[0])} <span class="font-sans font-bold text-amber-700 ml-1">[대화내역 전문 보기]</span></div>`
-                                : `<div class="text-xs text-stone-400 mb-2.5">클릭하여 상세 내역 및 상태 변경</div>`}
+                            <p class="text-[15px] font-bold text-gray-900 break-words leading-relaxed mb-2.5 group-hover:text-amber-900 transition">${item.memo || '특이사항 메모 없음'}</p>
                             <div class="text-xs opacity-65">기록자: ${item.manager_name || managerProfile.name}</div>
                         </div>
                         <div class="pt-3 border-t border-[#E6E1D8] flex flex-wrap items-center justify-between gap-2">
@@ -2140,6 +2293,10 @@
                                 <button type="button" onclick="openEditLogModal('${logKey}')" class="px-3 py-1.5 rounded-xl border border-[#E6E1D8] bg-white hover:bg-amber-50 hover:border-amber-300 text-gray-800 text-xs font-bold transition inline-flex items-center gap-1">
                                     <i data-lucide="pencil" class="w-3 h-3 text-amber-700"></i>
                                     수정
+                                </button>
+                                <button type="button" onclick="deleteFollowupItem('${logKey}')" class="px-3 py-1.5 rounded-xl border border-rose-200 bg-rose-50/80 hover:bg-rose-100 text-rose-700 text-xs font-bold transition inline-flex items-center gap-1">
+                                    <i data-lucide="trash-2" class="w-3 h-3"></i>
+                                    삭제
                                 </button>
                                 ${isDone
                                     ? `<span class="text-xs font-bold text-emerald-600 flex items-center gap-1 px-2 py-1">${checkSvg}조치 완료됨</span>`
@@ -2222,12 +2379,27 @@
             });
 
             const todayStr = document.getElementById('realtime-date')?.innerText || '';
-            const needActionList = currentLogs
-                .filter(l => l.followup_status !== '완료')
-                .map(l => `- [${l.target_id}] ${l.target_name} (${l.result_status}): ${l.memo || '메모 없음'} → ${l.followup_status}`)
-                .join('\n') || '- 미처리 특이사항 없음';
 
-            const reportText = `[LUMI 일일 안부 확인 결과 보고]
+            const allSpecialNotesList = currentLogs.length > 0
+                ? currentLogs.map((l, i) => {
+                    const note = (l.memo || '').trim() || '특이사항 메모 없음';
+                    const mgr = l.manager_name || managerProfile.name;
+                    return `${i + 1}. [${l.target_id}] ${l.target_name} | 결과: ${l.result_status} | 처리상태: ${l.followup_status} (기록자: ${mgr})
+   · 특이사항: ${note}`;
+                }).join('\n')
+                : '- 오늘 기록된 안부 확인 내역이 없습니다.';
+
+            const pendingFollowupList = currentLogs
+                .filter(l => l.followup_status !== '완료')
+                .map(l => `- [${l.target_id}] ${l.target_name} (${l.result_status}): ${l.memo || '특이사항 없음'} → 현재 상태: ${l.followup_status}`)
+                .join('\n') || '- 미처리된 후속 조치 건 없음 (전원 조치 완료)';
+
+            const completedFollowupList = currentLogs
+                .filter(l => l.result_status !== '응답 완료' && l.followup_status === '완료')
+                .map(l => `- [${l.target_id}] ${l.target_name} (${l.result_status}): ${l.memo || '특이사항 없음'} → 조치 완료`)
+                .join('\n');
+
+            const reportText = `[LUMI 일일 안부 확인 결과 상세 보고]
 • 보고 일시: ${todayStr}
 • 작성자: ${managerProfile.name} (${managerProfile.org})
 • 전체 확인 건수: 총 ${currentLogs.length}건
@@ -2236,8 +2408,15 @@
   - 도움 요청: ${counts['도움 요청']}건
   - 연결 오류: ${counts['연결 오류']}건
 
-[후속 조치 진행 현황]
-${needActionList}`;
+[1. 전체 대상자별 안부 확인 및 특이사항 상세 내역]
+${allSpecialNotesList}
+
+[2. 후속 조치 진행 현황]
+■ 미처리 / 재연락 필요 내역
+${pendingFollowupList}${completedFollowupList ? `
+
+■ 조치 완료 처리 내역
+${completedFollowupList}` : ''}`;
 
             document.getElementById('report-text-preview').innerText = reportText;
         }
