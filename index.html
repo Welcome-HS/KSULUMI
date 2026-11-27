@@ -98,6 +98,82 @@
             font-size: 17px;
             transform: scale(1.04);
         }
+    
+        /* 차분하고 절제된 화면 전환·모션 애니메이션 (0.2s ~ 0.3s) */
+        @keyframes lumiViewEnter {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes lumiTabEnter {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes lumiBackdropFade {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        @keyframes lumiModalPop {
+            from {
+                opacity: 0;
+                transform: translateY(8px) scale(0.97);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        @keyframes lumiWidgetSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(14px) scale(0.97);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        .lumi-view-anim {
+            animation: lumiViewEnter 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+        .lumi-tab-anim {
+            animation: lumiTabEnter 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+        .lumi-modal-backdrop {
+            animation: lumiBackdropFade 0.2s ease-out both;
+        }
+        .lumi-modal-panel {
+            animation: lumiModalPop 0.24s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+        .lumi-widget-anim {
+            animation: lumiWidgetSlideUp 0.26s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+        .menu-btn {
+            transition: background-color 0.2s ease, color 0.2s ease, opacity 0.2s ease, transform 0.15s ease;
+        }
+        .menu-btn:active {
+            transform: scale(0.985);
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .lumi-view-anim, .lumi-tab-anim, .lumi-modal-backdrop, .lumi-modal-panel, .lumi-widget-anim {
+                animation: none !important;
+            }
+        }
     </style>
 </head>
 <body class="bg-gradient-mint min-h-screen text-gray-800">
@@ -1312,6 +1388,8 @@
                 }
 
                 overlay.classList.remove('hidden');
+                replayAnimClass(overlay, 'lumi-modal-backdrop');
+                replayAnimClass(overlay.firstElementChild, 'lumi-modal-panel');
 
                 const cleanup = (result) => {
                     overlay.classList.add('hidden');
@@ -1348,6 +1426,8 @@
                 confirmBtn.className = 'px-5 py-2.5 rounded-xl bg-gray-900 hover:bg-gray-800 text-white text-sm font-bold shadow-sm transition';
 
                 overlay.classList.remove('hidden');
+                replayAnimClass(overlay, 'lumi-modal-backdrop');
+                replayAnimClass(overlay.firstElementChild, 'lumi-modal-panel');
 
                 const cleanup = () => {
                     overlay.classList.add('hidden');
@@ -1942,6 +2022,7 @@
             });
             persistAccountState();
             renderAllLogsTable();
+            replayAnimClass(document.getElementById('all-logs-table-body'), 'lumi-tab-anim');
         }
 
         function populateVoiceTargetSelect() {
@@ -2086,7 +2167,7 @@
             const transcriptInput = document.getElementById('input-transcript');
             if (transcriptInput) transcriptInput.value = item.transcript || '';
 
-            document.getElementById('input-modal').classList.remove('hidden');
+            (() => { const m = document.getElementById('input-modal'); m.classList.remove('hidden'); replayAnimClass(m, 'lumi-modal-backdrop'); replayAnimClass(m.firstElementChild, 'lumi-modal-panel'); })();
             lucide.createIcons({ root: document.getElementById('input-modal') });
         }
 
@@ -2118,6 +2199,7 @@
         function setFollowupTab(tabName) {
             activeFollowupTab = tabName;
             renderFollowupsSection();
+            replayAnimClass(document.getElementById('followup-cards-grid'), 'lumi-tab-anim');
         }
 
         async function deleteFollowupItem(logKey) {
@@ -2716,6 +2798,14 @@ ${completedFollowupList}` : ''}`;
         // ============================================================
         // 6. 화면 전환, 테마, 해상도, 탭 메뉴 선택
         // ============================================================
+        
+        function replayAnimClass(el, className) {
+            if (!el) return;
+            el.classList.remove(className);
+            void el.offsetWidth;
+            el.classList.add(className);
+        }
+
         function switchView(view) {
             const landing = document.getElementById('landing-view');
             const login = document.getElementById('login-view');
@@ -2727,11 +2817,14 @@ ${completedFollowupList}` : ''}`;
 
             if (view === 'dashboard') {
                 dashboard.classList.remove('hidden');
+                replayAnimClass(document.getElementById('main-container') || dashboard, 'lumi-view-anim');
                 updateRealtimeClock();
             } else if (view === 'login') {
                 login.classList.remove('hidden');
+                replayAnimClass(login.firstElementChild || login, 'lumi-view-anim');
             } else {
                 landing.classList.remove('hidden');
+                replayAnimClass(landing, 'lumi-view-anim');
             }
             window.scrollTo(0, 0);
         }
@@ -2831,7 +2924,9 @@ ${completedFollowupList}` : ''}`;
             sections.forEach(sec => {
                 document.getElementById(`section-${sec}`).classList.add('hidden');
             });
-            document.getElementById(`section-${menuName}`).classList.remove('hidden');
+            const activeSecEl = document.getElementById(`section-${menuName}`);
+            activeSecEl.classList.remove('hidden');
+            replayAnimClass(activeSecEl, 'lumi-tab-anim');
 
             if (shouldSave) persistAccountState();
             renderAllSections();
@@ -2851,7 +2946,7 @@ ${completedFollowupList}` : ''}`;
                 document.getElementById('input-target-id').value = currentTargets[0].target_id || '1';
                 document.getElementById('input-target-name').value = currentTargets[0].name || '대상자 A';
             }
-            document.getElementById('input-modal').classList.remove('hidden');
+            (() => { const m = document.getElementById('input-modal'); m.classList.remove('hidden'); replayAnimClass(m, 'lumi-modal-backdrop'); replayAnimClass(m.firstElementChild, 'lumi-modal-panel'); })();
         }
         function openInputModalWithTarget(id, name) {
             openInputModal();
@@ -3034,7 +3129,7 @@ ${completedFollowupList}` : ''}`;
             initIosTimeWheel();
 
             switchManageTab('add');
-            document.getElementById('manage-modal').classList.remove('hidden');
+            (() => { const m = document.getElementById('manage-modal'); m.classList.remove('hidden'); replayAnimClass(m, 'lumi-modal-backdrop'); replayAnimClass(m.firstElementChild, 'lumi-modal-panel'); })();
             requestAnimationFrame(() => {
                 scrollWheelToValue('ampm', '오전', true);
                 scrollWheelToValue('hour', '10', true);
@@ -3044,13 +3139,13 @@ ${completedFollowupList}` : ''}`;
         function openSettingsModal() {
             document.getElementById('profile-dropdown').classList.add('hidden');
             showSettingsSubView('menu');
-            document.getElementById('settings-modal').classList.remove('hidden');
+            (() => { const m = document.getElementById('settings-modal'); m.classList.remove('hidden'); replayAnimClass(m, 'lumi-modal-backdrop'); replayAnimClass(m.firstElementChild, 'lumi-modal-panel'); })();
         }
         function openInfoModal() {
             document.getElementById('profile-dropdown').classList.add('hidden');
-            document.getElementById('info-modal').classList.remove('hidden');
+            (() => { const m = document.getElementById('info-modal'); m.classList.remove('hidden'); replayAnimClass(m, 'lumi-modal-backdrop'); replayAnimClass(m.firstElementChild, 'lumi-modal-panel'); })();
         }
-        function openConsultModal() { document.getElementById('consult-modal').classList.remove('hidden'); }
+        function openConsultModal() { (() => { const m = document.getElementById('consult-modal'); m.classList.remove('hidden'); replayAnimClass(m, 'lumi-modal-backdrop'); replayAnimClass(m.firstElementChild, 'lumi-modal-panel'); })(); }
         function closeModals() {
             document.getElementById('input-modal').classList.add('hidden');
             document.getElementById('manage-modal').classList.add('hidden');
@@ -3119,6 +3214,8 @@ ${completedFollowupList}` : ''}`;
 
             const modal = document.getElementById('transcript-detail-modal');
             modal.classList.remove('hidden');
+            replayAnimClass(modal, 'lumi-modal-backdrop');
+            replayAnimClass(modal.firstElementChild, 'lumi-modal-panel');
             lucide.createIcons({ root: modal });
         }
 
@@ -3446,11 +3543,9 @@ ${completedFollowupList}` : ''}`;
             const widget = document.getElementById('gov-phone-widget');
             if (!widget) return;
             populateVoiceTargetSelect();
-            if (typeof forceState === 'boolean') {
-                widget.classList.toggle('hidden', !forceState);
-            } else {
-                widget.classList.toggle('hidden');
-            }
+            const willShow = typeof forceState === 'boolean' ? forceState : widget.classList.contains('hidden');
+            widget.classList.toggle('hidden', !willShow);
+            if (willShow) replayAnimClass(widget, 'lumi-widget-anim');
             lucide.createIcons({ root: widget });
         }
 
