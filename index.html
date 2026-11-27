@@ -174,6 +174,43 @@
                 animation: none !important;
             }
         }
+    
+        /* 해상도(1280x720 HD / 1920x1080 FHD / 창 너비)에 따른 유동 폰트 스케일링 */
+        html {
+            font-size: 16px;
+        }
+        #dashboard-view.res-hd {
+            font-size: 14px;
+        }
+        #dashboard-view.res-hd .text-3xl { font-size: 1.55rem; line-height: 2rem; }
+        #dashboard-view.res-hd .text-2xl { font-size: 1.3rem; line-height: 1.75rem; }
+        #dashboard-view.res-hd .text-xl  { font-size: 1.125rem; line-height: 1.5rem; }
+        #dashboard-view.res-hd .text-lg  { font-size: 1rem; line-height: 1.4rem; }
+        #dashboard-view.res-hd .text-base { font-size: 0.875rem; line-height: 1.3rem; }
+        #dashboard-view.res-hd .text-sm  { font-size: 0.8125rem; line-height: 1.2rem; }
+        #dashboard-view.res-hd th,
+        #dashboard-view.res-hd td {
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+        }
+
+        /* 좁은 창(노트북 반화면/태블릿 등)에서도 표 헤더·배지·이름 줄바꿈 깨짐 방지 */
+        @media (max-width: 1440px) {
+            #dashboard-view th,
+            #dashboard-view td {
+                padding-left: 1rem !important;
+                padding-right: 1rem !important;
+            }
+            #dashboard-view .text-base { font-size: 0.9rem; }
+        }
+        @media (max-width: 1180px) {
+            #dashboard-view th,
+            #dashboard-view td {
+                padding-left: 0.75rem !important;
+                padding-right: 0.75rem !important;
+                font-size: 0.825rem;
+            }
+        }
     </style>
 </head>
 <body class="bg-gradient-mint min-h-screen text-gray-800">
@@ -759,12 +796,12 @@
                                 <table class="w-full text-left border-collapse">
                                     <thead>
                                         <tr class="border-b border-[#E6E1D8] text-sm uppercase opacity-70 bg-black/5">
-                                            <th class="py-3.5 px-6">관리번호</th>
-                                            <th class="py-3.5 px-6">대상자</th>
-                                            <th class="py-3.5 px-6">안부 결과</th>
+                                            <th class="py-3.5 px-6 whitespace-nowrap">관리번호</th>
+                                            <th class="py-3.5 px-6 whitespace-nowrap">대상자</th>
+                                            <th class="py-3.5 px-6 whitespace-nowrap">안부 결과</th>
                                             <th class="py-3.5 px-6">확인 메모</th>
-                                            <th class="py-3.5 px-6">기록자</th>
-                                            <th class="py-3.5 px-6">후속 상태</th>
+                                            <th class="py-3.5 px-6 whitespace-nowrap">기록자</th>
+                                            <th class="py-3.5 px-6 whitespace-nowrap">후속 상태</th>
                                         </tr>
                                     </thead>
                                     <tbody id="logs-table-body" class="divide-y divide-[#EADBC8] text-base">
@@ -1905,10 +1942,10 @@
         }
 
         function getBadgeHtml(status) {
-            if (status === '도움 요청') return `<span class="px-3 py-1 rounded-full text-sm font-bold bg-rose-100 text-rose-700">${status}</span>`;
-            if (status === '미응답') return `<span class="px-3 py-1 rounded-full text-sm font-bold bg-amber-100 text-amber-800">${status}</span>`;
-            if (status === '연결 오류') return `<span class="px-3 py-1 rounded-full text-sm font-bold bg-gray-200 text-gray-700">${status}</span>`;
-            return `<span class="px-3 py-1 rounded-full text-sm font-bold bg-emerald-100 text-emerald-700">${status}</span>`;
+            if (status === '도움 요청') return `<span class="inline-block whitespace-nowrap px-3 py-1 rounded-full text-sm font-bold bg-rose-100 text-rose-700">${status}</span>`;
+            if (status === '미응답') return `<span class="inline-block whitespace-nowrap px-3 py-1 rounded-full text-sm font-bold bg-amber-100 text-amber-800">${status}</span>`;
+            if (status === '연결 오류') return `<span class="inline-block whitespace-nowrap px-3 py-1 rounded-full text-sm font-bold bg-gray-200 text-gray-700">${status}</span>`;
+            return `<span class="inline-block whitespace-nowrap px-3 py-1 rounded-full text-sm font-bold bg-emerald-100 text-emerald-700">${status}</span>`;
         }
 
         function getFollowupColor(followupStatus) {
@@ -1931,12 +1968,12 @@
 
                 return `
                     <tr onclick="openTranscriptDetailModal('${logKey}')" title="클릭하여 대화내역 전문 및 상태 변경" class="hover:bg-amber-50/50 cursor-pointer transition">
-                        <td class="py-4 px-6 font-mono text-sm opacity-80">${item.target_id}</td>
-                        <td class="py-4 px-6 font-bold">${item.target_name}</td>
-                        <td class="py-4 px-6">${getBadgeHtml(item.result_status)}</td>
-                        <td class="py-4 px-6 font-bold text-gray-900">${item.memo || '-'}</td>
-                        <td class="py-4 px-6">${item.manager_name || managerProfile.name}</td>
-                        <td class="py-4 px-6 ${getFollowupColor(item.followup_status)}">${item.followup_status}</td>
+                        <td class="py-4 px-6 font-mono text-sm opacity-80 whitespace-nowrap">${item.target_id}</td>
+                        <td class="py-4 px-6 font-bold whitespace-nowrap">${item.target_name}</td>
+                        <td class="py-4 px-6 whitespace-nowrap">${getBadgeHtml(item.result_status)}</td>
+                        <td class="py-4 px-6 font-bold text-gray-900 min-w-[200px]">${item.memo || '-'}</td>
+                        <td class="py-4 px-6 whitespace-nowrap">${item.manager_name || managerProfile.name}</td>
+                        <td class="py-4 px-6 whitespace-nowrap ${getFollowupColor(item.followup_status)}">${item.followup_status}</td>
                     </tr>
                 `;
             }).join('');
@@ -2883,17 +2920,20 @@ ${completedFollowupList}` : ''}`;
 
         function applyResolution(res, shouldSave = true) {
             currentResolution = res;
+            const dashView = document.getElementById('dashboard-view');
             const main = document.getElementById('main-container');
             const btn1920 = document.getElementById('res-1920');
             const btn1280 = document.getElementById('res-1280');
 
             if (res === '1280x720') {
+                if (dashView) dashView.classList.add('res-hd');
                 main.style.maxWidth = '1280px';
                 main.style.height = '720px';
                 btn1280.className = 'w-full py-4 px-4 rounded-xl border-2 border-amber-500 bg-amber-50 text-amber-900 font-bold text-sm transition flex items-center justify-between';
                 btn1920.className = 'w-full py-4 px-4 rounded-xl border border-gray-200 text-gray-700 font-medium text-sm hover:bg-gray-50 transition flex items-center justify-between';
                 document.getElementById('current-res-label').innerText = '1280 × 720 (HD)';
             } else {
+                if (dashView) dashView.classList.remove('res-hd');
                 main.style.maxWidth = '1920px';
                 main.style.height = '94vh';
                 btn1920.className = 'w-full py-4 px-4 rounded-xl border-2 border-amber-500 bg-amber-50 text-amber-900 font-bold text-sm transition flex items-center justify-between';
