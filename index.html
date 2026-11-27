@@ -877,10 +877,16 @@
                                 </div>
                                 <p class="text-sm opacity-70 mt-0.5">녹취 분석 또는 직접 입력으로 안부 기록을 추가·수정·삭제합니다.</p>
                             </div>
-                            <button type="button" onclick="openInputModal()" class="accent-btn px-4 py-2.5 rounded-xl bg-[#B45309] text-white text-sm font-bold hover:opacity-90 transition flex items-center gap-1.5 self-start sm:self-auto shrink-0">
-                                <i data-lucide="plus" class="w-4 h-4"></i>
-                                기록 추가
-                            </button>
+                            <div class="flex items-center gap-2 self-start sm:self-auto shrink-0">
+                                <button type="button" onclick="generateBulkRandomLogsFrom100(5)" class="px-3.5 py-2.5 rounded-xl border border-[#E6E1D8] bg-white hover:bg-amber-50 text-gray-800 text-xs sm:text-sm font-bold transition flex items-center gap-1.5">
+                                    <i data-lucide="shuffle" class="w-4 h-4 text-amber-700"></i>
+                                    랜덤 5건 생성
+                                </button>
+                                <button type="button" onclick="openInputModal()" class="accent-btn px-4 py-2.5 rounded-xl bg-[#B45309] text-white text-sm font-bold hover:opacity-90 transition flex items-center gap-1.5">
+                                    <i data-lucide="plus" class="w-4 h-4"></i>
+                                    기록 추가
+                                </button>
+                            </div>
                         </div>
 
                         <!-- 단순화된 통화 녹취 · 자동 요약 패널 -->
@@ -901,11 +907,19 @@
                                         서버 수신
                                     </button>
                                     <span class="text-stone-300">|</span>
-                                    <button type="button" onclick="applySampleCall('응답')" class="px-2 py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold hover:bg-emerald-100 transition">정상</button>
-                                    <button type="button" onclick="applySampleCall('도움')" class="px-2 py-1 rounded-lg bg-rose-50 text-rose-800 border border-rose-200 font-bold hover:bg-rose-100 transition">도움</button>
-                                    <button type="button" onclick="applySampleCall('미응답')" class="px-2 py-1 rounded-lg bg-amber-50 text-amber-800 border border-amber-200 font-bold hover:bg-amber-100 transition">미응답</button>
-                                    <button type="button" onclick="applySampleCall('오류')" class="px-2 py-1 rounded-lg bg-gray-100 text-gray-800 border border-gray-300 font-bold hover:bg-gray-200 transition">오류</button>
+                                    <button type="button" onclick="applySampleCall('응답')" title="정상 응답 25종 중 랜덤" class="px-2 py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold hover:bg-emerald-100 transition">정상</button>
+                                    <button type="button" onclick="applySampleCall('도움')" title="도움 요청 30종 중 랜덤" class="px-2 py-1 rounded-lg bg-rose-50 text-rose-800 border border-rose-200 font-bold hover:bg-rose-100 transition">도움</button>
+                                    <button type="button" onclick="applySampleCall('미응답')" title="미응답 25종 중 랜덤" class="px-2 py-1 rounded-lg bg-amber-50 text-amber-800 border border-amber-200 font-bold hover:bg-amber-100 transition">미응답</button>
+                                    <button type="button" onclick="applySampleCall('오류')" title="연결 오류 20종 중 랜덤" class="px-2 py-1 rounded-lg bg-gray-100 text-gray-800 border border-gray-300 font-bold hover:bg-gray-200 transition">오류</button>
+                                    <button type="button" onclick="applySampleCall('ALL')" title="100가지 시나리오 전체 중 무작위" class="px-2 py-1 rounded-lg bg-stone-800 text-white font-bold hover:bg-stone-700 transition">랜덤 100</button>
                                 </div>
+                            </div>
+
+                            <!-- 100가지 통화 시나리오 빠른 선택 바 -->
+                            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                                <select id="scenario-100-select" onchange="applyScenarioById(this.value)" class="flex-1 px-3 py-2 rounded-xl border border-[#E6E1D8] bg-[#FAF8F5] text-gray-800 text-xs font-medium focus:outline-none focus:border-amber-500">
+                                    <option value="">-- 100가지 통화 시나리오 직접 선택 (또는 상단 버튼 랜덤 추출) --</option>
+                                </select>
                             </div>
 
                             <!-- 핵심 컨트롤 1줄 바: 대상자 / 자동 결과 / 실시간 녹음 -->
@@ -2098,6 +2112,7 @@
         }
 
         function populateVoiceTargetSelect() {
+            populateScenario100Select();
             const sel = document.getElementById('voice-target-select');
             const govSel = document.getElementById('gov-phone-target-select');
             const optionsHtml = currentTargets.length
@@ -3387,17 +3402,20 @@ ${completedFollowupList}` : ''}`;
                 .filter(Boolean);
             const pureText = cleanLines.join(' ');
 
-            const helpKeywords = ['아프', '통증', '병원', '응급', '어지러', '도와', '약이 떨어', '넘어졌', '숨이', '위험', '도움'];
-            const errorKeywords = ['안 들', '끊겼', '연결 오류', '전파', '착신', '잡음', '수신 불량', '소리가 안'];
-            const noAnswerKeywords = ['부재중', '받지 않', '연락 두절', '통화 불가', '신호만', '미응답', '응답 없음'];
+            const exactMatched = CALL_SCENARIOS_100.find(s => s.transcript.trim() === text);
+            const helpKeywords = ['아프', '통증', '병원', '응급', '어지러', '도와', '약이 떨어', '넘어졌', '숨이', '위험', '도움', '고장', '불면', '우울', '울렁', '가려', '접질', '식욕이 전혀', '기력이 빠져', '에러가 뜨', '추워요', '못 씹겠'];
+            const errorKeywords = ['안 들', '끊겼', '연결 오류', '전파', '착신', '잡음', '수신 불량', '소리가 안', '결번', '정지된', '무음', '패킷', '교환기', '스팸 차단', '음영지역', '에코', '오류 멘트', '번호 형식', '잘못 연결', '인식이 실패', '회선 오류', '중계망'];
+            const noAnswerKeywords = ['부재중', '받지 않', '연락 두절', '통화 불가', '신호만', '미응답', '응답 없음', '음성사서함', '통화 중', '꺼져 있어', '거절 신호', '연결음만', '응답이 없어'];
 
             let status = '응답 완료';
-            if (helpKeywords.some(k => pureText.includes(k))) {
-                status = '도움 요청';
+            if (exactMatched) {
+                status = exactMatched.status;
             } else if (errorKeywords.some(k => pureText.includes(k))) {
                 status = '연결 오류';
             } else if (noAnswerKeywords.some(k => pureText.includes(k))) {
                 status = '미응답';
+            } else if (helpKeywords.some(k => pureText.includes(k))) {
+                status = '도움 요청';
             }
 
             // 대상자 발화 우선 추출 후 핵심 요약 생성
@@ -3438,18 +3456,181 @@ ${completedFollowupList}` : ''}`;
             if (memoInput) memoInput.value = result.summary;
         }
 
-        const TWO_PARTY_SAMPLES = {
-            '응답': '[00:00:04] 담당자: 여보세요, 부산 남구 복지관입니다. 오늘 아침 식사 잘 하셨어요?\n[00:00:17] 대상자: 네, 밥 먹고 혈압약도 챙겨 먹었어요. 몸도 괜찮습니다.\n[00:00:30] 담당자: 다행입니다 어르신. 다음 정기 연락 때 다시 전화드리겠습니다.',
-            '도움': '[00:00:05] 담당자: 여보세요, 복지관입니다. 어르신 오늘 컨디션 어떠세요?\n[00:00:18] 대상자: 어제부터 허리가 너무 아프고 어지러워서 병원에 가야 할 것 같아요. 도움 좀 요청할게요.\n[00:00:30] 담당자: 알겠습니다 어르신. 오늘 바로 방문 확인 진행하겠습니다.',
-            '미응답': '[00:00:05] 담당자: 정기 안부 확인 발신 연결 시도\n[00:00:30] 시스템: 연결음만 울리고 통화 연결이 되지 않아 부재중(미응답)으로 확인됨.',
-            '오류': '[00:00:04] 담당자: 여보세요, 복지관입니다. 제 목소리 잘 들리시나요?\n[00:00:19] 대상자: 여보세요? 소리가 끊기고 잘 안 들려요...\n[00:00:30] 시스템: 통화 품질 불량으로 연결 오류가 발생했습니다.'
+        // ============================================================
+        // 100가지 안부 확인 통화 시나리오 데이터베이스 (4종 상태 자동 분류·샘플·가상전화 연동)
+        // ============================================================
+        const CALL_SCENARIOS_100 = [
+            // [1~25] 응답 완료 (25가지)
+            { id: 1, status: '응답 완료', title: '아침 식사 완료 및 컨디션 양호', transcript: '[00:00:04] 담당자: 여보세요, 복지관입니다. 어르신 오늘 아침 식사는 잘 하셨어요?\n[00:00:16] 대상자: 네, 아침밥 든든하게 먹고 컨디션도 아주 괜찮습니다.\n[00:00:28] 담당자: 다행입니다 어르신. 다음 정기 연락 때 다시 전화드리겠습니다.' },
+            { id: 2, status: '응답 완료', title: '점심 식사 챙김 및 소화 무난함', transcript: '[00:00:05] 담당자: 안녕하세요 어르신, 점심 식사는 하셨는지 안부 여쭙니다.\n[00:00:18] 대상자: 방금 된장국에 밥 말아서 맛있게 먹었어요. 속도 편합니다.\n[00:00:29] 담당자: 식사 잘 챙기셔서 다행입니다. 편안한 오후 보내세요.' },
+            { id: 3, status: '응답 완료', title: '저녁 식사 준비 중이며 식욕 양호', transcript: '[00:00:04] 담당자: 여보세요, 복지관입니다. 오늘 하루 잘 보내셨어요?\n[00:00:17] 대상자: 네, 입맛이 돌아서 지금 저녁 반찬 준비하고 있어요.\n[00:00:30] 담당자: 맛있게 드시고 오늘도 푹 쉬세요 어르신.' },
+            { id: 4, status: '응답 완료', title: '혈압약 제때 복용 완료', transcript: '[00:00:04] 담당자: 어르신, 오늘 아침 혈압약은 잊지 않고 드셨나요?\n[00:00:15] 대상자: 네, 아침 먹자마자 혈압약 바로 챙겨 먹었어요.\n[00:00:27] 담당자: 꾸준하게 잘 챙기시네요. 내일도 건강히 지내세요.' },
+            { id: 5, status: '응답 완료', title: '당뇨약 투여 완료 및 혈당 안정', transcript: '[00:00:05] 담당자: 복지관입니다. 오늘 당뇨약 복용과 혈당 체크는 어떠셨어요?\n[00:00:19] 대상자: 약도 챙겨 먹었고 아침 공복 혈당도 정상 범위로 안정적이에요.\n[00:00:31] 담당자: 관리 아주 잘하고 계십니다. 다음 연락 때 또 뵙겠습니다.' },
+            { id: 6, status: '응답 완료', title: '관절·허리 통증 없이 산책 완료', transcript: '[00:00:04] 담당자: 어르신, 오늘 몸에 불편하거나 뻐근한 곳은 없으세요?\n[00:00:16] 대상자: 오늘은 허리도 안 아프고 가벼워서 집 앞 공원 한 바퀴 걷고 왔어요.\n[00:00:29] 담당자: 산책도 다녀오시고 컨디션이 좋으셔서 정말 다행입니다.' },
+            { id: 7, status: '응답 완료', title: '숙면 후 개운하게 기상', transcript: '[00:00:04] 담당자: 안녕하세요 어르신, 간밤에 주무시는 건 불편함 없으셨어요?\n[00:00:17] 대상자: 어젯밤엔 깨지 않고 푹 자서 아침에 몸이 아주 개운해요.\n[00:00:28] 담당자: 푹 주무셔서 다행입니다. 오늘도 기분 좋은 하루 보내세요.' },
+            { id: 8, status: '응답 완료', title: '경로당 프로그램 참여 예정', transcript: '[00:00:05] 담당자: 여보세요, 복지관입니다. 오늘 특별한 일정 있으신가요?\n[00:00:16] 대상자: 오후에 경로당에서 노래교실이 있어서 친구들 만나러 가려고 해요.\n[00:00:29] 담당자: 즐거운 시간 보내시고 오가실 때 차 조심하세요 어르신.' },
+            { id: 9, status: '응답 완료', title: '자녀·가족과 통화 완료로 기분 양호', transcript: '[00:00:04] 담당자: 어르신, 요즘 적적하지 않으시고 잘 지내시나요?\n[00:00:18] 대상자: 어제 저녁에 아들이랑 손주들이 전화해서 한참 웃었더니 기분이 좋아요.\n[00:00:30] 담당자: 목소리가 한결 밝으시네요. 다음 정기 연락 때 다시 안부 여쭙겠습니다.' },
+            { id: 10, status: '응답 완료', title: '날씨에 맞춰 외투 챙겨 외출 준비', transcript: '[00:00:04] 담당자: 오늘 날씨가 조금 쌀쌀한데 춥지 않게 지내시나요?\n[00:00:17] 대상자: 네, 두꺼운 외투 입고 목도리까지 챙겨서 잠깐 바람 쐬러 나가려 해요.\n[00:00:29] 담당자: 보온 잘 챙기셔서 다행입니다. 다녀오셔서 따뜻하게 쉬세요.' },
+            { id: 11, status: '응답 완료', title: '수분 섭취 충분 및 어지러움 없음', transcript: '[00:00:05] 담당자: 어르신, 오늘 물도 자주 드시고 어지러운 증상은 없으신가요?\n[00:00:16] 대상자: 보리차 끓여 놓고 수시로 마셔서 어지러운 것 없이 멀쩡합니다.\n[00:00:28] 담당자: 수분 섭취 아주 잘하고 계시네요. 감사합니다 어르신.' },
+            { id: 12, status: '응답 완료', title: '정기 건강검진 결과 이상 없음', transcript: '[00:00:04] 담당자: 지난번 받으신 정기 건강검진 결과는 잘 확인하셨어요?\n[00:00:18] 대상자: 네, 병원에서 큰 이상 없고 지금처럼만 관리하면 된다고 했어요.\n[00:00:30] 담당자: 좋은 소식이네요 어르신. 앞으로도 지금처럼 건강 유지하세요.' },
+            { id: 13, status: '응답 완료', title: '보청기·안경 착용 상태 양호', transcript: '[00:00:04] 담당자: 여보세요 어르신, 제 목소리 크고 또렷하게 잘 들리시나요?\n[00:00:15] 대상자: 네, 보청기 건전지 새로 갈아 끼워서 아주 잘 들립니다.\n[00:00:27] 담당자: 잘 들리신다니 다행입니다. 오늘도 식사 거르지 마세요.' },
+            { id: 14, status: '응답 완료', title: '실내 환기 및 난방 적정 유지', transcript: '[00:00:05] 담당자: 어르신, 집 안 온도는 춥거나 답답하지 않으신가요?\n[00:00:17] 대상자: 아침에 창문 열어 환기 잠깐 시키고 보일러 적당히 틀어 따뜻해요.\n[00:00:29] 담당자: 쾌적하게 잘 지내시네요. 다음 주에 다시 연락드리겠습니다.' },
+            { id: 15, status: '응답 완료', title: '반찬·도시락 배달 수령 완료', transcript: '[00:00:04] 담당자: 어르신, 오늘 복지관에서 보내드린 밑반찬 도시락 잘 받으셨어요?\n[00:00:16] 대상자: 네, 방금 문 앞에서 받아서 냉장고에 잘 넣어 두었습니다.\n[00:00:28] 담당자: 맛있게 드시고 기력 챙기세요 어르신.' },
+            { id: 16, status: '응답 완료', title: '가벼운 스트레칭 및 실내 운동 완료', transcript: '[00:00:04] 담당자: 오늘 몸 컨디션은 어떠신지 안부 확인차 연락드렸습니다.\n[00:00:17] 대상자: 아침에 텔레비전 보면서 팔다리 스트레칭 20분 했더니 몸이 가뿐해요.\n[00:00:29] 담당자: 매일 꾸준히 운동하시니 정말 보기 좋습니다 어르신.' },
+            { id: 17, status: '응답 완료', title: 'TV·라디오 청취하며 평온한 일상', transcript: '[00:00:05] 담당자: 여보세요, 복지관입니다. 지금 뭐 하고 계셨어요 어르신?\n[00:00:16] 대상자: 좋아하는 옛날 가요 프로그램 보면서 차 한잔 마시고 있었어요.\n[00:00:28] 담당자: 여유롭고 편안하게 보내고 계시네요. 좋은 하루 되세요.' },
+            { id: 18, status: '응답 완료', title: '이웃과 대화 나누며 산책 후 귀가', transcript: '[00:00:04] 담당자: 어르신, 오늘 바깥 공기도 좀 쐬고 기분 전환하셨나요?\n[00:00:17] 대상자: 옆집 할머니랑 같이 아파트 단지 한 바퀴 돌고 이야기 나누다 들어왔어요.\n[00:00:30] 담당자: 이웃분과 즐겁게 지내셔서 다행입니다. 다음 연락 때 또 뵙겠습니다.' },
+            { id: 19, status: '응답 완료', title: '복약 알림 시간 맞춰 약 복용 유지', transcript: '[00:00:04] 담당자: 어르신, 약 드시는 시간 헷갈리지 않고 잘 챙기고 계시죠?\n[00:00:16] 대상자: 약통에 요일별로 적어 놓아서 빠뜨리지 않고 꼬박꼬박 먹어요.\n[00:00:28] 담당자: 정말 꼼꼼하게 잘 챙기십니다. 건강 잘 유지하세요.' },
+            { id: 20, status: '응답 완료', title: '컨디션 양호하여 오후 장보기 예정', transcript: '[00:00:05] 담당자: 안녕하세요 어르신, 오늘 식재료나 필요한 물건은 넉넉하신가요?\n[00:00:18] 대상자: 컨디션이 좋아서 오후에 집 근처 마트 가서 과일이랑 두부 좀 사 오려고요.\n[00:00:30] 담당자: 무거운 짐은 무리해서 들지 마시고 조심히 다녀오세요.' },
+            { id: 21, status: '응답 완료', title: '주말 가족 방문 예정으로 기분 좋음', transcript: '[00:00:04] 담당자: 어르신, 이번 주 지내시는 데 별다른 어려움은 없으셨나요?\n[00:00:17] 대상자: 아무 문제 없고 이번 토요일에 딸네 식구들이 놀러 온대서 기다리고 있어요.\n[00:00:29] 담당자: 반가운 가족분들 오셔서 즐거운 주말 되시겠습니다.' },
+            { id: 22, status: '응답 완료', title: '치과·안과 정기 검진 무사 완료', transcript: '[00:00:04] 담당자: 어르신, 어제 말씀하신 안과 정기 검진은 잘 다녀오셨어요?\n[00:00:17] 대상자: 네, 눈 상태도 괜찮고 안약만 처방받아서 무사히 다녀왔습니다.\n[00:00:29] 담당자: 잘 다녀오셨다니 안심이 됩니다. 안약 시간 맞춰 잘 넣으세요.' },
+            { id: 23, status: '응답 완료', title: '독서·취미 활동하며 차분한 하루', transcript: '[00:00:05] 담당자: 여보세요, 복지관입니다. 오늘 컨디션은 어떠세요?\n[00:00:16] 대상자: 큰일 없이 평안하고, 아까는 책도 조금 읽고 글씨 연습도 했어요.\n[00:00:28] 담당자: 차분하고 알차게 보내고 계시네요. 다음 연락 때 또 전화드리겠습니다.' },
+            { id: 24, status: '응답 완료', title: '계절 냉난방 적정 유지 및 건강 양호', transcript: '[00:00:04] 담당자: 어르신, 요즘 기온 차가 큰데 감기 기운이나 불편한 곳 없으세요?\n[00:00:17] 대상자: 감기 기운 전혀 없고 집 안 온도도 알맞게 맞춰 놓고 잘 지냅니다.\n[00:00:29] 담당자: 건강하게 잘 지내셔서 감사합니다. 편안한 하루 보내세요.' },
+            { id: 25, status: '응답 완료', title: '다음 정기 안부 일정 확인 완료', transcript: '[00:00:04] 담당자: 어르신, 오늘 별다른 특이사항 없으시면 다음 주 월요일 오전에 다시 전화드릴게요.\n[00:00:16] 대상자: 네, 고마워요. 그때도 집에서 전화 기다리고 있을게요.\n[00:00:27] 담당자: 알겠습니다 어르신. 건강히 잘 지내세요.' },
+
+            // [26~55] 도움 요청 (30가지)
+            { id: 26, status: '도움 요청', title: '허리 통증 악화로 병원 동행·방문 요청', transcript: '[00:00:04] 담당자: 여보세요, 복지관입니다. 어르신 오늘 컨디션 어떠세요?\n[00:00:17] 대상자: 어제부터 허리가 너무 아파서 걷기가 힘들어요. 병원에 가야 할 것 같은데 도움 좀 요청할게요.\n[00:00:30] 담당자: 알겠습니다 어르신. 오늘 바로 방문 확인 및 병원 이동 지원 연결해 드리겠습니다.' },
+            { id: 27, status: '도움 요청', title: '갑작스러운 어지러움·두통 호소', transcript: '[00:00:04] 담당자: 안녕하세요 어르신, 오늘 아침 식사는 하셨나요?\n[00:00:18] 대상자: 아침부터 머리가 핑 돌고 어지러워서 누워 있어요. 누가 좀 와서 봐주셨으면 좋겠어요.\n[00:00:30] 담당자: 무리해서 일어나지 마시고 계세요. 담당자가 즉시 방문 확인하겠습니다.' },
+            { id: 28, status: '도움 요청', title: '혈압 수치 상승으로 진료 상담 요청', transcript: '[00:00:05] 담당자: 어르신, 오늘 혈압약 드시고 컨디션은 어떠신가요?\n[00:00:18] 대상자: 방금 혈압을 쟀는데 평소보다 너무 높게 나와서 걱정이에요. 병원 진료 도움 좀 받을 수 있을까요?\n[00:00:31] 담당자: 네 어르신, 바로 방문 간호 및 인근 병원 진료 연계 도와드리겠습니다.' },
+            { id: 29, status: '도움 요청', title: '처방약 소진으로 약국·병원 방문 지원 요청', transcript: '[00:00:04] 담당자: 여보세요, 복지관입니다. 약은 넉넉하게 남아 있으세요?\n[00:00:17] 대상자: 혈압약이랑 관절약이 오늘 아침 걸로 다 떨어졌어요. 혼자 병원 가기가 어려워 도움 부탁해요.\n[00:00:30] 담당자: 약이 끊기면 안 되니 오늘 중으로 동행 지원 일정 잡아 연락드리겠습니다.' },
+            { id: 30, status: '도움 요청', title: '무릎 통증 심화로 계단·외출 불가', transcript: '[00:00:04] 담당자: 어르신, 요즘 바깥 출입이나 식사 준비는 괜찮으신가요?\n[00:00:18] 대상자: 무릎이 붓고 아파서 계단을 내려갈 수가 없어요. 장보기도 어렵고 파스나 진료 도움이 필요해요.\n[00:00:30] 담당자: 알겠습니다 어르신. 방문 확인과 생활 지원 연계 바로 진행하겠습니다.' },
+            { id: 31, status: '도움 요청', title: '가벼운 낙상·발목 접질림 후 통증 확인 요청', transcript: '[00:00:05] 담당자: 안녕하세요 어르신, 오늘 몸 상태는 어떠신가요?\n[00:00:17] 대상자: 어제 화장실 앞에서 발목을 살짝 접질려서 넘어졌는데 오늘 붓기가 좀 아파요. 병원 가봐야 할까요?\n[00:00:31] 담당자: 다치셨군요 어르신. 오늘 바로 방문해서 상태 확인하고 정형외과 진료 도와드리겠습니다.' },
+            { id: 32, status: '도움 요청', title: '며칠째 식욕 부진 및 기력 저하 호소', transcript: '[00:00:04] 담당자: 어르신, 오늘 식사는 잘 챙겨 드셨는지 여쭙니다.\n[00:00:17] 대상자: 며칠째 입맛이 전혀 없고 기력이 빠져서 밥을 못 먹었어요. 죽이라도 좀 구할 수 있을지 도움 요청합니다.\n[00:00:30] 담당자: 기력이 떨어지셨네요. 영양식 지원과 건강 상태 확인을 위해 오늘 방문하겠습니다.' },
+            { id: 33, status: '도움 요청', title: '심한 불면증으로 수면 부족 및 상담 요청', transcript: '[00:00:04] 담당자: 어르신, 간밤에는 좀 편히 주무셨어요?\n[00:00:18] 대상자: 일주일째 밤마다 잠이 안 와서 뜬눈으로 새워요. 너무 피곤하고 힘들어서 상담이나 병원 도움이 필요해요.\n[00:00:30] 담당자: 많이 힘드셨겠습니다 어르신. 건강 상담과 진료 연계 바로 도와드리겠습니다.' },
+            { id: 34, status: '도움 요청', title: '가슴 답답함·두근거림 증상 호소(신속 확인)', transcript: '[00:00:04] 담당자: 여보세요, 복지관입니다. 어르신 오늘 컨디션 어떠세요?\n[00:00:16] 대상자: 아까부터 가슴이 좀 답답하고 두근거려서 숨쉬기가 불편해요. 빨리 좀 도와주세요.\n[00:00:28] 담당자: 어르신, 편히 앉아 계세요. 즉시 보호자 연락 및 응급·방문 확인 조치하겠습니다.' },
+            { id: 35, status: '도움 요청', title: '호흡 곤란·숨참 증상 언급(긴급 대응)', transcript: '[00:00:03] 담당자: 어르신, 목소리가 힘드신데 어디 편찮으신가요?\n[00:00:15] 대상자: 조금만 움직여도 숨이 차고 호흡이 가빠서 말을 오래 못 하겠어요. 병원 도움 요청할게요.\n[00:00:27] 담당자: 알겠습니다 어르신. 지금 바로 119 및 전담 인력 긴급 출동 연계하겠습니다.' },
+            { id: 36, status: '도움 요청', title: '거실 전등·형광등 고장으로 교체 도움 요청', transcript: '[00:00:05] 담당자: 안녕하세요 어르신, 집 안 생활하시는 데 불편한 점은 없으세요?\n[00:00:18] 대상자: 거실 형광등이 나가서 밤에 너무 어두운데 의자에 올라가기가 위험해서 교체 도움 좀 부탁해요.\n[00:00:30] 담당자: 절대 직접 올라가지 마세요 어르신. 오늘 주거지원 담당자가 방문해 교체해 드리겠습니다.' },
+            { id: 37, status: '도움 요청', title: '보일러·온수 고장으로 점검 요청', transcript: '[00:00:04] 담당자: 어르신, 오늘 집 안 난방이나 따뜻한 물은 잘 나오나요?\n[00:00:17] 대상자: 어제 저녁부터 보일러 에러가 뜨면서 찬물만 나와요. 고치는 데를 몰라서 도움 요청합니다.\n[00:00:30] 담당자: 추우셨겠습니다 어르신. 관리사무소 및 수리 기사 연결 바로 도와드리겠습니다.' },
+            { id: 38, status: '도움 요청', title: '쌀·생수 등 무거운 생필품 지원 문의', transcript: '[00:00:04] 담당자: 여보세요, 복지관입니다. 집에 드실 쌀이나 물은 넉넉하신가요?\n[00:00:17] 대상자: 쌀이랑 생수가 다 떨어졌는데 무거워서 혼자 들고 올 수가 없어요. 배달이나 지원 도움 받을 수 있을까요?\n[00:00:30] 담당자: 네 어르신, 긴급 생필품 꾸러미 전달 일정 잡아서 오늘 중으로 가져다드리겠습니다.' },
+            { id: 39, status: '도움 요청', title: '외래 진료 예약 및 병원 이동 지원 요청', transcript: '[00:00:05] 담당자: 어르신, 다음 주 대학병원 진료 날짜는 확인하셨어요?\n[00:00:18] 대상자: 날짜는 잡혔는데 혼자 찾아가기가 너무 막막해요. 동행 도우미 지원 좀 요청할게요.\n[00:00:30] 담당자: 알겠습니다 어르신. 병원 안심동행 서비스 신청해 드리고 일정 안내해 드리겠습니다.' },
+            { id: 40, status: '도움 요청', title: '보청기·보행보조기 고장 점검 요청', transcript: '[00:00:04] 담당자: 어르신, 사용하시는 보행기나 보청기는 불편함 없으신가요?\n[00:00:17] 대상자: 보행기 바퀴 한쪽이 뻑뻑해서 밀기가 위험해요. 점검이나 수리 도움 좀 받을 수 있을까요?\n[00:00:29] 담당자: 안전과 직결되니 보조기기센터 수리 연계 바로 진행해 드리겠습니다.' },
+            { id: 41, status: '도움 요청', title: '우울감·외로움 호소 및 말벗 상담 요청', transcript: '[00:00:04] 담당자: 안녕하세요 어르신, 요즘 기분이나 마음은 좀 어떠세요?\n[00:00:19] 대상자: 며칠 내내 아무도 안 만나고 혼자 있으려니 너무 우울하고 눈물이 나요. 누가 잠깐 들러서 말벗 해줬으면 해요.\n[00:00:32] 담당자: 많이 외로우셨군요 어르신. 오늘 오후에 생활지원사가 방문해 이야기 나누도록 하겠습니다.' },
+            { id: 42, status: '도움 요청', title: '폭염·한파 대비 냉난방 용품 지원 요청', transcript: '[00:00:05] 담당자: 어르신, 날씨가 많이 변했는데 집에서 지내실 만하신가요?\n[00:00:18] 대상자: 이불이 얇고 전기장판이 고장 나서 밤에 너무 추워요. 난방용품 지원 도움 요청합니다.\n[00:00:30] 담당자: 바로 확인해서 계절 난방용품 지원 대상 연계해 드리겠습니다 어르신.' },
+            { id: 43, status: '도움 요청', title: '주민센터·은행 서류 발급 동행 요청', transcript: '[00:00:04] 담당자: 여보세요, 복지관입니다. 오늘 특별한 용무 있으신가요?\n[00:00:18] 대상자: 주민센터에서 서류 떼서 은행에 내야 하는데 글씨가 작아 혼자 못 하겠어요. 도움 좀 부탁해요.\n[00:00:30] 담당자: 네 어르신, 내일 오전에 담당자가 동행해서 서류 발급과 은행 업무 도와드리겠습니다.' },
+            { id: 44, status: '도움 요청', title: '휴대폰·TV 리모컨 작동 오류 도움 요청', transcript: '[00:00:04] 담당자: 어르신, 오늘 집에서 무료하지 않게 잘 지내고 계세요?\n[00:00:17] 대상자: 어제 리모컨을 잘못 눌렀는지 텔레비전이 안 나오고 휴대폰 소리도 안 들려요. 방문해서 봐주실 수 있나요?\n[00:00:30] 담당자: 알겠습니다 어르신. 오후 방문 일정에 맞춰 기기 설정 바로 맞춰 드리겠습니다.' },
+            { id: 45, status: '도움 요청', title: '대형 쓰레기 및 분리수거 배출 지원 요청', transcript: '[00:00:05] 담당자: 안녕하세요 어르신, 생활하시는 데 불편한 점 있으시면 말씀해 주세요.\n[00:00:18] 대상자: 허리가 안 좋아서 무거운 재활용 쓰레기랑 박스 내다 버리기가 너무 힘들어요. 도움 좀 요청할게요.\n[00:00:30] 담당자: 무리해서 들지 마세요 어르신. 방문 시 분리수거 배출 깔끔히 도와드리겠습니다.' },
+            { id: 46, status: '도움 요청', title: '입원 예정으로 반려동물 임시 돌봄 상담', transcript: '[00:00:04] 담당자: 어르신, 다음 주 병원 입원 준비는 잘 되어 가시나요?\n[00:00:18] 대상자: 제가 며칠 입원하면 집에 있는 강아지 밥 줄 사람이 없어서 걱정이에요. 돌봄 연계 도움 받을 수 있을까요?\n[00:00:31] 담당자: 걱정 많으셨겠습니다. 지자체 반려동물 임시돌봄 지원 사업 확인 후 안내해 드리겠습니다.' },
+            { id: 47, status: '도움 요청', title: '보호자 연락 두절로 정서적 불안 호소', transcript: '[00:00:04] 담당자: 여보세요, 복지관입니다. 어르신 오늘 컨디션 어떠세요?\n[00:00:18] 대상자: 외국 나간 아들이 며칠째 연락이 안 돼서 가슴이 두근거리고 불안해요. 확인 좀 도와주세요.\n[00:00:30] 담당자: 진정하세요 어르신. 등록된 비상연락망 확인 및 정서 안정을 위해 방문 드리겠습니다.' },
+            { id: 48, status: '도움 요청', title: '치아 통증·틀니 불편으로 식사 곤란', transcript: '[00:00:05] 담당자: 어르신, 오늘 식사는 편하게 잘 하셨는지 안부 여쭙니다.\n[00:00:18] 대상자: 어금니가 욱신거리고 틀니가 안 맞아서 밥을 못 씹겠어요. 치과 진료 도움 좀 요청할게요.\n[00:00:30] 담당자: 식사를 못 하시면 안 되니 구강검진 및 치과 예약 지원 바로 연결해 드리겠습니다.' },
+            { id: 49, status: '도움 요청', title: '피부 발진·가려움 증상 발생 상담 요청', transcript: '[00:00:04] 담당자: 안녕하세요 어르신, 오늘 몸에 불편한 곳은 없으신가요?\n[00:00:17] 대상자: 팔이랑 등에 붉은 반점이 올라오고 너무 가려워서 잠을 못 잤어요. 약이나 병원 도움이 필요해요.\n[00:00:30] 담당자: 알겠습니다 어르신. 방문 간호사 확인 및 피부과 진료 안내 도와드리겠습니다.' },
+            { id: 50, status: '도움 요청', title: '복용 약 부작용 의심 증상 문의', transcript: '[00:00:04] 담당자: 어르신, 새로 처방받으신 약 드시고 몸은 좀 괜찮으세요?\n[00:00:18] 대상자: 그 약을 먹고 나서 속이 울렁거리고 졸음이 너무 쏟아져요. 계속 먹어도 되는지 도움 부탁해요.\n[00:00:30] 담당자: 임의로 조절하지 마시고 처방 병원과 약국에 바로 복약 상담 연결해 드리겠습니다.' },
+            { id: 51, status: '도움 요청', title: '장기요양등급 및 돌봄 서비스 신청 문의', transcript: '[00:00:05] 담당자: 여보세요, 복지관입니다. 요즘 혼자 생활하시는 데 어려움은 없으세요?\n[00:00:19] 대상자: 갈수록 거동이 힘들어져서 요양보호사 도움을 받고 싶은데 신청 방법을 몰라 도움 요청합니다.\n[00:00:31] 담당자: 네 어르신, 노인장기요양등급 신청 절차 안내와 서류 작성을 직접 방문해 도와드리겠습니다.' },
+            { id: 52, status: '도움 요청', title: '방문 간호·방문 요양 일정 조정 요청', transcript: '[00:00:04] 담당자: 어르신, 이번 주 돌봄 서비스 이용하시는 데 불편함 없으세요?\n[00:00:17] 대상자: 병원 진료 날이랑 방문 요양 시간이 겹쳐서 요일을 좀 바꾸고 싶은데 연락 도움 부탁해요.\n[00:00:29] 담당자: 알겠습니다 어르신. 제공 기관에 연락해 일정 조율 후 다시 말씀드리겠습니다.' },
+            { id: 53, status: '도움 요청', title: '빙판길·가파른 계단 위험으로 외출 불가 지원 요청', transcript: '[00:00:04] 담당자: 어르신, 오늘 밖에 길도 미끄러운데 안전하게 계시죠?\n[00:00:18] 대상자: 집 앞 골목이 미끄러워서 한 발짝도 못 나가고 있어요. 반찬이랑 약 배달 도움 좀 요청할게요.\n[00:00:30] 담당자: 절대 무리해서 나오지 마세요 어르신. 대체식과 필요 물품 직접 가져다드리겠습니다.' },
+            { id: 54, status: '도움 요청', title: '가족 간병 부담으로 단기 돌봄 연계 문의', transcript: '[00:00:05] 담당자: 안녕하세요 어르신, 배우자분 간호하시느라 많이 힘드시죠?\n[00:00:19] 대상자: 제가 허리가 아파서 며칠간 돌보기가 너무 벅차요. 단기 보호나 돌봄 도움 받을 곳이 있을까요?\n[00:00:32] 담당자: 많이 지치셨겠습니다. 긴급 돌봄 및 단기보호 서비스 연계 즉시 확인해 드리겠습니다.' },
+            { id: 55, status: '도움 요청', title: '야간·주말 응급 상황 대비 안내 요청', transcript: '[00:00:04] 담당자: 어르신, 오늘 밤이나 주말에 지내시는 데 걱정되는 점 있으세요?\n[00:00:18] 대상자: 밤에 갑자기 혈압이 오르거나 아플 때 어디로 바로 연락해야 할지 불안해서 도움 요청합니다.\n[00:00:30] 담당자: 응급안전안심장치 점검과 야간 비상연락처 큰 글씨 안내표를 오늘 방문해 부착해 드리겠습니다.' },
+
+            // [56~80] 미응답 (25가지)
+            { id: 56, status: '미응답', title: '1차 정기 발신 연결음만 울리고 무응답', transcript: '[00:00:05] 담당자: 정기 안부 확인 발신 연결 시도\n[00:00:30] 시스템: 연결음만 울리고 통화 연결이 되지 않아 부재중(미응답)으로 확인됨.' },
+            { id: 57, status: '미응답', title: '2차 재연락 시도했으나 통화 연결 안 됨', transcript: '[00:00:04] 담당자: 오전 미응답 건 2차 재연락 발신 시도\n[00:00:30] 시스템: 2차 발신 역시 응답이 없어 재연락 필요 상태로 유지됨.' },
+            { id: 58, status: '미응답', title: '외출 중으로 휴대폰 수신 불가 상태', transcript: '[00:00:05] 담당자: 정기 안부 확인 발신 연결 시도\n[00:00:29] 시스템: 통화 연결이 되지 않아 미응답 처리됨 (외출 중 수신 불가 추정).' },
+            { id: 59, status: '미응답', title: '병원 진료 대기 중으로 통화 미연결', transcript: '[00:00:04] 담당자: 오전 정기 안부 확인 전화 발신\n[00:00:28] 시스템: 수신 응답 없음 (정기 병원 외래 진료 시간대 중복 추정, 오후 재연락 필요).' },
+            { id: 60, status: '미응답', title: '낮잠·휴식 시간대로 전화 미수신', transcript: '[00:00:05] 담당자: 오후 안부 확인 발신 연결 시도\n[00:00:30] 시스템: 신호음 지속 후 미응답으로 자동 분류됨 (오후 3시 이후 재연락 예정).' },
+            { id: 61, status: '미응답', title: '경로당 모임 참석 중 통화 미응답', transcript: '[00:00:04] 담당자: 정기 안부 확인 발신 시도\n[00:00:29] 시스템: 연결음 후 응답 없음 (경로당 프로그램 시간대 미수신 추정).' },
+            { id: 62, status: '미응답', title: '음성사서함 연결 및 안부 메시지 남김', transcript: '[00:00:05] 담당자: 여보세요, 부산 남구 복지관입니다. 안부 확인차 전화드렸습니다.\n[00:00:25] 시스템: 응답이 없어 음성사서함으로 전환되어 부재중(미응답) 처리됨.' },
+            { id: 63, status: '미응답', title: '통화 중 신호로 연결 실패', transcript: '[00:00:04] 담당자: 정기 안부 확인 발신 연결 시도\n[00:00:22] 시스템: 상대방 통화 중 신호로 연결되지 않아 미응답(재연락 필요) 기록됨.' },
+            { id: 64, status: '미응답', title: '오전 연락 미응답으로 오후 2시 재연락 예정', transcript: '[00:00:05] 담당자: 오전 10시 정기 안부 발신 시도\n[00:00:30] 시스템: 오전 시간대 통화 응답 없음 (오후 2시 재연락 목록 자동 등록).' },
+            { id: 65, status: '미응답', title: '주말·공휴일 직후 정기 연락 미응답', transcript: '[00:00:04] 담당자: 주말 이후 첫 정기 안부 확인 발신\n[00:00:30] 시스템: 연결음 지속 후 부재중(미응답)으로 확인되어 후속 확인 필요.' },
+            { id: 66, status: '미응답', title: '연속 2회 부재중으로 보호자 비상연락 검토', transcript: '[00:00:05] 담당자: 전일 부재중 대상자 금일 재발신 시도\n[00:00:30] 시스템: 연속 2회 미응답 발생 — 보호자 비상연락망 확인 필요.' },
+            { id: 67, status: '미응답', title: '연속 3회 미응답으로 방문 확인 검토 대상', transcript: '[00:00:04] 담당자: 연속 미응답 대상자 긴급 안부 발신 시도\n[00:00:30] 시스템: 3회 연속 응답 없음 — 현장 방문 확인 우선 검토 필요.' },
+            { id: 68, status: '미응답', title: '벨소리 무음·진동 설정으로 미수신 추정', transcript: '[00:00:05] 담당자: 정기 안부 확인 발신 연결 시도\n[00:00:30] 시스템: 신호음 정상 송출되었으나 무응답 (단말기 무음 설정 의심).' },
+            { id: 69, status: '미응답', title: '휴대폰 배터리 방전·전원 꺼짐 안내', transcript: '[00:00:04] 담당자: 정기 안부 확인 발신 연결 시도\n[00:00:18] 시스템: 고객의 전화기가 꺼져 있어 연결할 수 없다는 안내 멘트 후 미응답 처리.' },
+            { id: 70, status: '미응답', title: '수신 버튼 오조작으로 통화 즉시 종료', transcript: '[00:00:05] 담당자: 여보세요, 복지관입니다. 어르신?\n[00:00:12] 시스템: 수신 직후 통화 종료 버튼이 눌려 대화가 이루어지지 않아 미응답 처리됨.' },
+            { id: 71, status: '미응답', title: '시장·외부 소음 환경으로 수신 불가', transcript: '[00:00:04] 담당자: 정기 안부 확인 발신 시도\n[00:00:29] 시스템: 연결음만 울리고 받지 않아 미응답 기록 (오전 장보기 시간대 추정).' },
+            { id: 72, status: '미응답', title: '일시적 통화 거절 신호 발생(재연락 필요)', transcript: '[00:00:05] 담당자: 정기 안부 확인 발신 연결 시도\n[00:00:16] 시스템: 수신자 측 통화 거절 신호 발생 — 30분 후 재연락 필요.' },
+            { id: 73, status: '미응답', title: '요양보호사 방문 시간대 중복으로 미연결', transcript: '[00:00:04] 담당자: 정기 안부 확인 전화 발신\n[00:00:28] 시스템: 응답 없음 (방문 돌봄 서비스 진행 시간대 중복 추정, 오후 재확인).' },
+            { id: 74, status: '미응답', title: '친척·자녀 집 방문 중으로 유선전화 부재중', transcript: '[00:00:05] 담당자: 자택 유선전화로 정기 안부 발신 시도\n[00:00:30] 시스템: 자택 전화 무응답 — 휴대폰 보조 연락처로 재연락 필요.' },
+            { id: 75, status: '미응답', title: '주번호 미응답으로 보조 연락처 발신 예정', transcript: '[00:00:04] 담당자: 등록된 주 연락처로 안부 발신 시도\n[00:00:30] 시스템: 주 연락처 부재중(미응답) 확인, 보조 번호 재시도 필요.' },
+            { id: 76, status: '미응답', title: '이른 아침 외출로 오전 연락 미수신', transcript: '[00:00:05] 담당자: 오전 9시 30분 정기 안부 발신\n[00:00:30] 시스템: 연결음 지속 후 부재중(미응답) 처리됨.' },
+            { id: 77, status: '미응답', title: '청력 저하로 벨소리 미인지 가능성', transcript: '[00:00:04] 담당자: 정기 안부 확인 발신 연결 시도\n[00:00:30] 시스템: 끝까지 응답이 없어 미응답으로 기록됨 (큰 벨소리 안내 필요).' },
+            { id: 78, status: '미응답', title: '장시간 연락 두절로 안전 확인 요망', transcript: '[00:00:05] 담당자: 당일 오전·오후 연속 안부 확인 발신\n[00:00:30] 시스템: 당일 2회 모두 응답 없음 — 퇴근 전 재연락 및 확인 필수.' },
+            { id: 79, status: '미응답', title: '타 기관 상담 통화 중으로 잠시 후 재연락', transcript: '[00:00:04] 담당자: 정기 안부 확인 전화 발신\n[00:00:20] 시스템: 통화 중 안내음 발생으로 미응답(재연락 필요) 분류됨.' },
+            { id: 80, status: '미응답', title: '재연락 약속 시간 경과 후에도 미수신', transcript: '[00:00:05] 담당자: 오후 4시 재연락 예정 건 발신 시도\n[00:00:30] 시스템: 약속 시간 발신에도 응답이 없어 후속 조치 대기 등록됨.' },
+
+            // [81~100] 연결 오류 (20가지)
+            { id: 81, status: '연결 오류', title: '통화 연결 직후 음성 끊김 및 잡음 심함', transcript: '[00:00:04] 담당자: 여보세요, 복지관입니다. 제 목소리 잘 들리시나요?\n[00:00:18] 대상자: 여보세요? 잡음이 너무 심하고 소리가 다 끊겨서 안 들려요...\n[00:00:30] 시스템: 통화 품질 불량으로 연결 오류가 발생했습니다.' },
+            { id: 82, status: '연결 오류', title: '상대방 음성이 들리지 않는 일방 무음 오류', transcript: '[00:00:04] 담당자: 여보세요, 안녕하세요 어르신? 복지관입니다.\n[00:00:19] 시스템: 회선은 연결되었으나 수신 측 음성 데이터가 전달되지 않는 무음 연결 오류가 감지됨.' },
+            { id: 83, status: '연결 오류', title: '발신자 마이크 음성 미전달 오류', transcript: '[00:00:04] 담당자: 여보세요, 복지관입니다.\n[00:00:16] 대상자: 여보세요? 아무 소리도 안 들리는데 누구세요?\n[00:00:28] 시스템: 송신 오디오 채널 오류로 통화가 종료되었습니다.' },
+            { id: 84, status: '연결 오류', title: '통신사 착신 전환 설정 오류로 연결 실패', transcript: '[00:00:04] 담당자: 정기 안부 확인 발신 시도\n[00:00:17] 시스템: 통신사 착신 전환 설정 오류 안내 멘트가 송출되어 연결 오류로 분류됨.' },
+            { id: 85, status: '연결 오류', title: '일시 정지된 회선 안내 멘트 수신', transcript: '[00:00:05] 담당자: 등록된 대상자 번호로 발신 시도\n[00:00:19] 시스템: 발신 정지 또는 일시 정지된 번호 안내음 수신 — 번호 상태 확인 필요.' },
+            { id: 86, status: '연결 오류', title: '결번·번호 변경 안내음 발생', transcript: '[00:00:04] 담당자: 정기 안부 확인 발신 연결 시도\n[00:00:16] 시스템: 없는 번호(결번) 안내 멘트가 송출되어 연결 오류로 등록됨.' },
+            { id: 87, status: '연결 오류', title: '발신 즉시 회선 오류음과 함께 강제 종료', transcript: '[00:00:03] 담당자: 안부 확인 전화 발신 버튼 실행\n[00:00:09] 시스템: 발신 직후 비정상 회선 오류음과 함께 통화가 강제 종료됨.' },
+            { id: 88, status: '연결 오류', title: '패킷 손실로 문장 중간 단절 반복', transcript: '[00:00:04] 담당자: 어르신, 오늘 식사는 잘 하셨어요?\n[00:00:17] 대상자: 네... 어제... 병원... (음성 단절)...\n[00:00:29] 시스템: 네트워크 패킷 손실 과다로 수신 불량 연결 오류 발생.' },
+            { id: 89, status: '연결 오류', title: '행정전화 VoIP 회선 과부하로 연결 지연', transcript: '[00:00:04] 담당자: 기관 행정전화 내선 발신 시도\n[00:00:25] 시스템: VoIP 교환기 응답 지연 시간 초과로 연결 오류가 발생했습니다.' },
+            { id: 90, status: '연결 오류', title: '특수 번호·발신 제한 설정으로 연결 차단', transcript: '[00:00:04] 담당자: 정기 안부 확인 발신 시도\n[00:00:15] 시스템: 수신자 단말기의 발신번호 표시 제한/특수번호 차단 설정으로 연결 실패.' },
+            { id: 91, status: '연결 오류', title: '스팸 차단 앱 자동 거절로 연결 오류', transcript: '[00:00:04] 담당자: 복지관 대표번호로 안부 발신 시도\n[00:00:14] 시스템: 수신 단말기 스팸 차단 필터에 의해 즉시 차단되어 연결 오류로 기록됨.' },
+            { id: 92, status: '연결 오류', title: '지하·음영지역 진입으로 통화 중 급단절', transcript: '[00:00:04] 담당자: 여보세요, 복지관입니다. 지금 어디 계세요?\n[00:00:15] 대상자: 지금 지하철역 내려가고 있는데 소리가 자꾸 끊겨요...\n[00:00:24] 시스템: 전파 음영지역 진입으로 통화가 비정상 종료(연결 오류)됨.' },
+            { id: 93, status: '연결 오류', title: '하울링·에코 현상 심화로 의사소통 불가', transcript: '[00:00:04] 담당자: 어르신, 오늘 컨디션 괜찮으세요?\n[00:00:17] 대상자: 내 목소리가 울려서 무슨 말인지 하나도 안 들려요...\n[00:00:29] 시스템: 심한 에코 및 잡음으로 정상 통화가 불가하여 연결 오류 처리됨.' },
+            { id: 94, status: '연결 오류', title: '연결음 없이 바로 시스템 오류 멘트 전환', transcript: '[00:00:03] 담당자: 정기 안부 확인 발신 시도\n[00:00:12] 시스템: 링백톤 없이 통신망 오류 안내 멘트로 전환되어 재확인 필요.' },
+            { id: 95, status: '연결 오류', title: '대상자 연락처 자릿수·지역번호 오등록 의심', transcript: '[00:00:04] 담당자: 인원 관리 등록 번호로 발신 시도\n[00:00:13] 시스템: 유효하지 않은 번호 형식 오류로 발신이 실패했습니다 (번호 수정 필요).' },
+            { id: 96, status: '연결 오류', title: '보호자 번호와 대상자 번호 혼선 연결', transcript: '[00:00:05] 담당자: 여보세요, 어르신 댁 맞으신가요?\n[00:00:18] 대상자: 여기는 보호자 직장인데 번호가 잘못 연결된 것 같습니다.\n[00:00:29] 시스템: 연락처 매칭 오류 확인 — 인원 관리 번호 정정 필요.' },
+            { id: 97, status: '연결 오류', title: '통화 녹취 오디오 손상 및 STT 인식 실패', transcript: '[00:00:04] 담당자: 안부 확인 통화 녹취 파일 분석 시도\n[00:00:22] 시스템: 배경 잡음 과다 및 오디오 데이터 손상으로 음성 인식이 실패했습니다.' },
+            { id: 98, status: '연결 오류', title: '연결 시도 10초 내 회선 자동 끊김 반복', transcript: '[00:00:04] 담당자: 정기 안부 확인 재발신 시도\n[00:00:11] 시스템: 발신 후 7초 만에 회선 오류가 발생하며 통화가 끊겼습니다.' },
+            { id: 99, status: '연결 오류', title: '지역 통신망 일시 장애로 발신 불가', transcript: '[00:00:04] 담당자: 정기 안부 확인 전화 발신 시도\n[00:00:18] 시스템: 통신사 중계망 일시 장애로 통화 연결이 실패했습니다 (연결 오류).' },
+            { id: 100, status: '연결 오류', title: '2회 연속 동일 회선 오류 발생(점검 필요)', transcript: '[00:00:05] 담당자: 연결 오류 건 재발신 시도\n[00:00:19] 시스템: 2회 연속 동일 회선 연결 오류가 발생하여 대체 연락 수단 확인이 필요합니다.' }
+        ];
+
+        const TYPE_TO_STATUS_MAP = {
+            '응답': '응답 완료',
+            '도움': '도움 요청',
+            '미응답': '미응답',
+            '오류': '연결 오류'
         };
+
+        const TWO_PARTY_SAMPLES = {
+            '응답': CALL_SCENARIOS_100[0].transcript,
+            '도움': CALL_SCENARIOS_100[25].transcript,
+            '미응답': CALL_SCENARIOS_100[55].transcript,
+            '오류': CALL_SCENARIOS_100[80].transcript
+        };
+
+        const lastPickedScenarioByType = {};
+
+        function getRandomScenarioByType(type) {
+            if (!type || type === 'ALL') {
+                const idx = Math.floor(Math.random() * CALL_SCENARIOS_100.length);
+                return CALL_SCENARIOS_100[idx];
+            }
+            const targetStatus = TYPE_TO_STATUS_MAP[type] || type;
+            const pool = CALL_SCENARIOS_100.filter(s => s.status === targetStatus);
+            if (!pool.length) return CALL_SCENARIOS_100[0];
+            let picked = pool[Math.floor(Math.random() * pool.length)];
+            if (pool.length > 1 && lastPickedScenarioByType[targetStatus] === picked.id) {
+                picked = pool[(pool.indexOf(picked) + 1) % pool.length];
+            }
+            lastPickedScenarioByType[targetStatus] = picked.id;
+            return picked;
+        }
 
         function applySampleCall(type) {
             const transcriptEl = document.getElementById('voice-transcript-input');
+            const selEl = document.getElementById('scenario-100-select');
             if (!transcriptEl) return;
-            transcriptEl.value = TWO_PARTY_SAMPLES[type] || TWO_PARTY_SAMPLES['응답'];
+            const picked = getRandomScenarioByType(type);
+            if (selEl) selEl.value = String(picked.id);
+            transcriptEl.value = picked.transcript;
             processVoiceTranscriptAuto();
+        }
+
+        function applyScenarioById(idStr) {
+            const idNum = parseInt(idStr, 10);
+            const found = CALL_SCENARIOS_100.find(s => s.id === idNum);
+            const transcriptEl = document.getElementById('voice-transcript-input');
+            if (!found || !transcriptEl) return;
+            transcriptEl.value = found.transcript;
+            processVoiceTranscriptAuto();
+        }
+
+        function populateScenario100Select() {
+            const sel = document.getElementById('scenario-100-select');
+            if (!sel || sel.options.length > 1) return;
+            const groups = ['응답 완료', '도움 요청', '미응답', '연결 오류'];
+            sel.innerHTML = `<option value="">-- 100가지 통화 시나리오 직접 선택 (또는 상단 버튼 랜덤 추출) --</option>` +
+                groups.map(grp => {
+                    const items = CALL_SCENARIOS_100.filter(s => s.status === grp);
+                    return `<optgroup label="${grp} (${items.length}종)">` +
+                        items.map(s => `<option value="${s.id}">#${String(s.id).padStart(3, '0')} [${s.status}] ${s.title}</option>`).join('') +
+                        `</optgroup>`;
+                }).join('');
         }
 
         let voiceRecStartTime = 0;
@@ -3541,6 +3722,33 @@ ${completedFollowupList}` : ''}`;
                 isRecordingVoice = false;
                 applySampleCall('응답');
             }
+        }
+
+
+        function generateBulkRandomLogsFrom100(count = 5) {
+            const targetsPool = currentTargets.length > 0 ? currentTargets : DEFAULT_TARGETS;
+            for (let i = 0; i < count; i++) {
+                const target = targetsPool[Math.floor(Math.random() * targetsPool.length)];
+                const scenario = CALL_SCENARIOS_100[Math.floor(Math.random() * CALL_SCENARIOS_100.length)];
+                const parsed = classifyAndSummarizeTranscript(scenario.transcript);
+                let followup_status = '완료';
+                if (scenario.status === '도움 요청') followup_status = '미처리 (확인 대기)';
+                else if (scenario.status === '미응답' || scenario.status === '연결 오류') followup_status = '재연락 필요';
+
+                currentLogs.unshift({
+                    log_id: Date.now() + i + Math.floor(Math.random() * 1000),
+                    target_id: target.target_id,
+                    target_name: target.name,
+                    result_status: scenario.status,
+                    memo: parsed.summary || scenario.title,
+                    transcript: scenario.transcript,
+                    manager_name: managerProfile.name,
+                    followup_status
+                });
+            }
+            persistAccountState();
+            flashLogsAutoSaveBadge();
+            renderAllSections();
         }
 
         async function saveVoiceAutoLog() {
@@ -3643,11 +3851,15 @@ ${completedFollowupList}` : ''}`;
             numEl.innerText = parts[2] || '010-2341-5678';
         }
 
+        let currentGovActiveTranscript = CALL_SCENARIOS_100[0].transcript;
+
         function updateGovPhoneScenarioPreview() {
             const scSel = document.getElementById('gov-phone-scenario-select');
             const capEl = document.getElementById('gov-phone-live-caption');
             if (!scSel || !capEl) return;
-            capEl.innerText = GOV_CALL_SCRIPTS[scSel.value] || GOV_CALL_SCRIPTS['응답'];
+            const picked = getRandomScenarioByType(scSel.value);
+            currentGovActiveTranscript = picked.transcript;
+            capEl.innerText = `[#${String(picked.id).padStart(3, '0')} ${picked.title}]\n` + picked.transcript;
         }
 
         function startGovPhoneCall(direction) {
@@ -3699,7 +3911,7 @@ ${completedFollowupList}` : ''}`;
             const govSel = document.getElementById('gov-phone-target-select');
             const scSel = document.getElementById('gov-phone-scenario-select');
             const scenarioKey = scSel ? scSel.value : '응답';
-            const rawTranscript = GOV_CALL_SCRIPTS[scenarioKey] || GOV_CALL_SCRIPTS['응답'];
+            const rawTranscript = currentGovActiveTranscript || getRandomScenarioByType(scenarioKey).transcript;
             const autoResult = classifyAndSummarizeTranscript(rawTranscript);
 
             let target_id = '1';
