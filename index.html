@@ -209,7 +209,7 @@
                                     <div>
                                         <div class="flex items-center gap-2">
                                             <span class="font-bold text-sm text-[#1C1917]">이순자 어르신</span>
-                                            <span class="text-[11px] font-mono text-[#78716C]">L-0002</span>
+                                            <span class="text-[11px] font-mono text-[#78716C]">2</span>
                                         </div>
                                         <p class="text-xs text-[#44403C] mt-1 leading-relaxed">
                                             “어제부터 허리가 뻐근해서 병원 동행이 필요할 것 같아요.”
@@ -224,7 +224,7 @@
                                     <div>
                                         <div class="flex items-center gap-2">
                                             <span class="font-bold text-sm text-[#1C1917]">박영수 어르신</span>
-                                            <span class="text-[11px] font-mono text-[#78716C]">L-0001</span>
+                                            <span class="text-[11px] font-mono text-[#78716C]">1</span>
                                         </div>
                                         <p class="text-xs text-[#44403C] mt-1 leading-relaxed">
                                             오전 10:00 1차 통화 미응답 · 오후 재연락 목록 자동 등록
@@ -239,7 +239,7 @@
                                     <div>
                                         <div class="flex items-center gap-2">
                                             <span class="font-bold text-sm text-[#1C1917]">최정숙 어르신</span>
-                                            <span class="text-[11px] font-mono text-[#78716C]">L-0003</span>
+                                            <span class="text-[11px] font-mono text-[#78716C]">3</span>
                                         </div>
                                         <p class="text-xs text-[#57534E] mt-1 leading-relaxed">
                                             아침 식사 및 혈압약 복용 완료, 컨디션 양호하심
@@ -956,7 +956,7 @@
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block font-bold mb-1 text-gray-700 text-xs">관리번호</label>
-                        <input id="input-target-id" type="text" value="L-0001" class="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-amber-500">
+                        <input id="input-target-id" type="text" inputmode="numeric" value="1" class="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-amber-500">
                     </div>
                     <div>
                         <label class="block font-bold mb-1 text-gray-700 text-xs">대상자명</label>
@@ -1047,7 +1047,7 @@
                 <div class="grid grid-cols-3 gap-2.5">
                     <div>
                         <label class="block font-bold mb-1 text-gray-700 text-xs">관리번호</label>
-                        <input id="new-target-id" type="text" placeholder="L-0006" class="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-amber-500">
+                        <input id="new-target-id" type="text" inputmode="numeric" placeholder="5" class="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-amber-500">
                     </div>
                     <div>
                         <label class="block font-bold mb-1 text-gray-700 text-xs">성명</label>
@@ -1404,7 +1404,7 @@
         const DEFAULT_LOGS = [
             {
                 log_id: 2,
-                target_id: 'L-0002',
+                target_id: '2',
                 target_name: '대상자 B',
                 result_status: '도움 요청',
                 memo: '허리 통증 호소, 방문 확인 요청',
@@ -1414,7 +1414,7 @@
             },
             {
                 log_id: 1,
-                target_id: 'L-0001',
+                target_id: '1',
                 target_name: '대상자 A',
                 result_status: '미응답',
                 memo: '1차 연락 미응답/재연락 검토',
@@ -1424,7 +1424,7 @@
             },
             {
                 log_id: 4,
-                target_id: 'L-0004',
+                target_id: '4',
                 target_name: '대상자 D',
                 result_status: '연결 오류',
                 memo: '통신사 착신 전환 오류',
@@ -1434,7 +1434,7 @@
             },
             {
                 log_id: 3,
-                target_id: 'L-0003',
+                target_id: '3',
                 target_name: '대상자 C',
                 result_status: '응답 완료',
                 memo: '아침 식사 완료, 특이사항 없음',
@@ -1445,10 +1445,10 @@
         ];
 
         const DEFAULT_TARGETS = [
-            { target_id: 'L-0001', name: '대상자 A', phone: '010-2341-5678', contact_schedule: '매주 월·수·금 오전 09:30', manager_name: '김복지', status: '완료' },
-            { target_id: 'L-0002', name: '대상자 B', phone: '010-3892-1104', contact_schedule: '매일 오전 10:00 (집중 관리)', manager_name: '김복지', status: '완료' },
-            { target_id: 'L-0003', name: '대상자 C', phone: '010-5120-8843', contact_schedule: '매주 화·목 오전 10:30', manager_name: '김복지', status: '완료' },
-            { target_id: 'L-0004', name: '대상자 D', phone: '010-7745-3910', contact_schedule: '매주 월·목 오후 14:00', manager_name: '김복지', status: '완료' }
+            { target_id: '1', name: '대상자 A', phone: '010-2341-5678', contact_schedule: '매주 월·수·금 오전 09:30', manager_name: '김복지', status: '완료' },
+            { target_id: '2', name: '대상자 B', phone: '010-3892-1104', contact_schedule: '매일 오전 10:00 (집중 관리)', manager_name: '김복지', status: '완료' },
+            { target_id: '3', name: '대상자 C', phone: '010-5120-8843', contact_schedule: '매주 화·목 오전 10:30', manager_name: '김복지', status: '완료' },
+            { target_id: '4', name: '대상자 D', phone: '010-7745-3910', contact_schedule: '매주 월·목 오후 14:00', manager_name: '김복지', status: '완료' }
         ];
 
         function getTargetPhone(target, idx = 0) {
@@ -1869,7 +1869,7 @@
         }
 
         function validateTargetEntry(t) {
-            const idOk = /^L-\d{4}$/i.test((t.target_id || '').trim());
+            const idOk = /^\d+$/.test((t.target_id || '').trim());
             const nameStr = (t.name || '').trim();
             const nameOk = nameStr.length >= 2 && !/^[0-9!@#$%^&*()_+=\-]+$/.test(nameStr);
             const schedStr = (t.contact_schedule || '').trim();
@@ -1952,7 +1952,7 @@
                     const ph = getTargetPhone(t, idx);
                     return `<option value="${t.target_id}|${t.name}|${ph}">${t.name} (${t.target_id} · ${ph})</option>`;
                 }).join('')
-                : `<option value="L-0001|대상자 A|010-2341-5678">대상자 A (L-0001 · 010-2341-5678)</option>`;
+                : `<option value="1|대상자 A|010-2341-5678">대상자 A (1 · 010-2341-5678)</option>`;
 
             if (sel) {
                 const prevVal = sel.value;
@@ -2541,7 +2541,7 @@ ${completedFollowupList}` : ''}`;
             if (!isValid || isDuplicateId) {
                 status = '오류';
                 if (isDuplicateId) error_reason = '중복된 관리번호';
-                else if (!/^L-\d{4}$/i.test(target_id)) error_reason = '관리번호 형식 오류 (예: L-0006)';
+                else if (!/^\d+$/.test(target_id)) error_reason = '관리번호 형식 오류 (숫자만 입력, 예: 5)';
                 else if (name.length < 2 || /^[0-9!@#$%^&*()_+=\-]+$/.test(name)) error_reason = '성명 입력 형식 오류';
                 else if (contact_schedule.length < 4 || !/[0-9월화수목금토일오전후매주]/.test(contact_schedule)) error_reason = '연락 일정 형식 오류';
                 else error_reason = '담당 관리자명 형식 오류';
@@ -2848,7 +2848,7 @@ ${completedFollowupList}` : ''}`;
             if (document.getElementById('input-memo')) document.getElementById('input-memo').value = '';
             if (document.getElementById('input-transcript')) document.getElementById('input-transcript').value = '';
             if (currentTargets.length > 0) {
-                document.getElementById('input-target-id').value = currentTargets[0].target_id || 'L-0001';
+                document.getElementById('input-target-id').value = currentTargets[0].target_id || '1';
                 document.getElementById('input-target-name').value = currentTargets[0].name || '대상자 A';
             }
             document.getElementById('input-modal').classList.remove('hidden');
@@ -3017,10 +3017,14 @@ ${completedFollowupList}` : ''}`;
         }
 
         function openManageModal() {
-            const nextNum = String(currentTargets.length + 1).padStart(4, '0');
-            document.getElementById('new-target-id').value = `L-${nextNum}`;
+            const existingNums = currentTargets
+                .map(t => parseInt(String(t.target_id || '').replace(/\D/g, ''), 10))
+                .filter(n => !Number.isNaN(n) && n > 0);
+            const nextPlainNum = existingNums.length > 0 ? Math.max(...existingNums) + 1 : 1;
+            const nextPhoneSuffix = String(nextPlainNum).padStart(4, '0');
+            document.getElementById('new-target-id').value = String(nextPlainNum);
             document.getElementById('new-target-name').value = '';
-            if (document.getElementById('new-target-phone')) document.getElementById('new-target-phone').value = `010-4820-${nextNum}`;
+            if (document.getElementById('new-target-phone')) document.getElementById('new-target-phone').value = `010-4820-${nextPhoneSuffix}`;
             document.getElementById('new-target-manager').value = managerProfile.name;
 
             // 요일 및 아이폰 스타일 시간 휠 초기화 (기본: 매주 월·수·금 오전 10:00)
@@ -3377,7 +3381,7 @@ ${completedFollowupList}` : ''}`;
             const finalStatus = autoResult.status;
             const finalMemo = (summaryEl && summaryEl.value.trim()) ? summaryEl.value.trim() : autoResult.summary;
 
-            let target_id = 'L-0001';
+            let target_id = '1';
             let target_name = '대상자 A';
             if (sel && sel.value) {
                 const parts = sel.value.split('|');
@@ -3528,7 +3532,7 @@ ${completedFollowupList}` : ''}`;
             const rawTranscript = GOV_CALL_SCRIPTS[scenarioKey] || GOV_CALL_SCRIPTS['응답'];
             const autoResult = classifyAndSummarizeTranscript(rawTranscript);
 
-            let target_id = 'L-0001';
+            let target_id = '1';
             let target_name = '대상자 A';
             let phone = '010-2341-5678';
             if (govSel && govSel.value) {
@@ -3643,7 +3647,7 @@ ${completedFollowupList}` : ''}`;
 
         function simulateGovServerPull() {
             const targetIdx = currentTargets.length > 1 ? 1 : 0;
-            const t = currentTargets[targetIdx] || { target_id: 'L-0002', name: '대상자 B' };
+            const t = currentTargets[targetIdx] || { target_id: '2', name: '대상자 B' };
             const ph = getTargetPhone(t, targetIdx);
             const fakeFileName = `지자체녹취_${ph}_${t.name}_도움요청.wav`;
 
@@ -3774,7 +3778,7 @@ ${completedFollowupList}` : ''}`;
                         <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800">대화내역 전문 & 상태 관리</span>
                         <span id="detail-manager-info" class="text-xs text-gray-500">기록자: -</span>
                     </div>
-                    <h3 id="detail-target-title" class="text-xl font-bold text-gray-900 mt-1.5">대상자명 (L-0001)</h3>
+                    <h3 id="detail-target-title" class="text-xl font-bold text-gray-900 mt-1.5">대상자명 (1)</h3>
                 </div>
                 <button type="button" onclick="closeModals()" class="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500">
                     <i data-lucide="x" class="w-5 h-5"></i>
