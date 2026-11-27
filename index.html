@@ -175,12 +175,16 @@
             }
         }
     
-        /* 해상도(1280x720 HD / 1920x1080 FHD / 창 너비)에 따른 유동 폰트 스케일링 */
+        /* 화면 크기(창 너비/해상도) 변동에 따라 폰트 크기가 자동 조절되는 유동 타이포그래피 (30~50대 시인성 강화) */
         html {
-            font-size: 16px;
+            font-size: clamp(15px, 0.55rem + 0.52vw, 22px);
+        }
+        #dashboard-view {
+            font-size: clamp(16px, 0.6rem + 0.55vw, 23px);
+            line-height: 1.55;
         }
         #dashboard-view.res-hd {
-            font-size: 14px;
+            font-size: clamp(14px, 0.52rem + 0.42vw, 18px);
         }
         #dashboard-view.res-hd .text-3xl { font-size: 1.55rem; line-height: 2rem; }
         #dashboard-view.res-hd .text-2xl { font-size: 1.3rem; line-height: 1.75rem; }
@@ -1203,7 +1207,7 @@
                     <div class="flex items-center justify-between mb-1">
                         <label for="new-target-address" class="block font-bold text-gray-700 text-xs">거주지 주소 <span class="font-normal text-gray-400">(도움 요청 시 인근 병원·시설 추천 기준)</span></label>
                     </div>
-                    <input id="new-target-address" type="text" placeholder="예: 창원시 성산구 창이대로 881번길 8, 206동 104호" class="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-amber-500">
+                    <input id="new-target-address" type="text" placeholder="예: 부산광역시 남구 수영로 309 (경성대학교)" class="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-amber-500">
                 </div>
                 <input id="new-target-manager" type="hidden" value="김복지">
 
@@ -1598,7 +1602,7 @@
         const DEFAULT_TARGETS = [
             { target_id: '1', name: '대상자 A', phone: '010-2341-5678', address: '부산광역시 남구 수영로 266번길 36, 102동 405호', contact_schedule: '매주 월·수·금 오전 09:30', manager_name: '김복지', status: '완료' },
             { target_id: '2', name: '대상자 B', phone: '010-3892-1104', address: '부산광역시 남구 못골로 87, 201동 302호', contact_schedule: '매일 오전 10:00 (집중 관리)', manager_name: '김복지', status: '완료' },
-            { target_id: '3', name: '대상자 C', phone: '010-5120-8843', address: '창원시 성산구 창이대로 881번길 8, 206동 104호', contact_schedule: '매주 화·목 오전 10:30', manager_name: '김복지', status: '완료' },
+            { target_id: '3', name: '대상자 C', phone: '010-5120-8843', address: '부산광역시 남구 수영로 309 (경성대학교)', contact_schedule: '매주 화·목 오전 10:30', manager_name: '김복지', status: '완료' },
             { target_id: '4', name: '대상자 D', phone: '010-7745-3910', address: '부산광역시 남구 유엔평화로 12, 304동 801호', contact_schedule: '매주 월·목 오후 14:00', manager_name: '김복지', status: '완료' }
         ];
 
@@ -2070,12 +2074,56 @@
             }
         }
 
+        function showAddressCenterModal(targetName, currentAddr) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('address-edit-modal');
+                const titleEl = document.getElementById('address-modal-target-title');
+                const inputEl = document.getElementById('address-modal-input');
+                const saveBtn = document.getElementById('address-modal-save-btn');
+                const cancelBtn = document.getElementById('address-modal-cancel-btn');
+                const closeBtn = document.getElementById('address-modal-close-btn');
+
+                if (!modal || !inputEl) {
+                    const fb = window.prompt(`[${targetName}] 거주지 주소를 입력하거나 수정해 주세요.\n(예: 부산광역시 남구 수영로 309 (경성대학교))`, currentAddr);
+                    resolve(fb);
+                    return;
+                }
+
+                if (titleEl) titleEl.textContent = `[${targetName}] 거주지 주소 입력 · 수정`;
+                inputEl.value = currentAddr || '';
+
+                modal.classList.remove('hidden');
+                replayAnimClass(modal, 'lumi-modal-backdrop');
+                replayAnimClass(modal.firstElementChild, 'lumi-modal-panel');
+                setTimeout(() => { inputEl.focus(); inputEl.select(); }, 30);
+
+                const cleanup = (val) => {
+                    modal.classList.add('hidden');
+                    saveBtn.onclick = null;
+                    cancelBtn.onclick = null;
+                    closeBtn.onclick = null;
+                    modal.onclick = null;
+                    inputEl.onkeydown = null;
+                    resolve(val);
+                };
+
+                saveBtn.onclick = () => cleanup(inputEl.value);
+                cancelBtn.onclick = () => cleanup(null);
+                closeBtn.onclick = () => cleanup(null);
+                modal.onclick = (e) => { if (e.target === modal) cleanup(null); };
+                inputEl.onkeydown = (e) => {
+                    if (e.key === 'Enter') { e.preventDefault(); cleanup(inputEl.value); }
+                    else if (e.key === 'Escape') { e.preventDefault(); cleanup(null); }
+                };
+            });
+        }
+
         async function editTargetAddressInline(targetId) {
             const idx = currentTargets.findIndex(t => (t.target_id || '').trim().toUpperCase() === (targetId || '').trim().toUpperCase());
             if (idx === -1) return;
             const target = currentTargets[idx];
             const currentAddr = target.address || '';
-            const nextAddr = window.prompt(`[${target.name}] 거주지 주소를 입력하거나 수정해 주세요.\n(예: 창원시 성산구 창이대로 881번길 8, 206동 104호)`, currentAddr);
+            const nextAddr = await showAddressCenterModal(target.name, currentAddr);
             if (nextAddr === null) return;
             target.address = nextAddr.trim();
             persistAccountState();
@@ -4459,6 +4507,30 @@ ${completedFollowupList}` : ''}`;
                         상태 및 변경사항 저장
                     </button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 화면 중앙 거주지 주소 입력/수정 모달 -->
+    <div id="address-edit-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-[1px] flex items-center justify-center z-[75] p-4">
+        <div class="bg-white text-gray-900 rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-gray-200">
+            <div class="flex items-center justify-between pb-3.5 border-b border-gray-100">
+                <h3 id="address-modal-target-title" class="text-lg font-bold text-gray-900 flex items-center gap-2">
+                    <i data-lucide="map-pin" class="w-5 h-5 text-amber-600"></i>
+                    <span>거주지 주소 입력 · 수정</span>
+                </h3>
+                <button type="button" id="address-modal-close-btn" class="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 transition">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="py-4 space-y-2.5">
+                <label for="address-modal-input" class="block text-xs font-bold text-gray-700">거주지 주소</label>
+                <input id="address-modal-input" type="text" placeholder="예: 부산광역시 남구 수영로 309 (경성대학교)" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 text-sm text-gray-900 focus:outline-none focus:border-amber-500">
+                <p class="text-xs text-gray-500">기준 예시: 부산광역시 남구 수영로 309 (경성대학교 인근)</p>
+            </div>
+            <div class="pt-3 border-t border-gray-100 flex justify-end gap-2">
+                <button type="button" id="address-modal-cancel-btn" class="px-4 py-2 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 text-sm font-bold transition">취소</button>
+                <button type="button" id="address-modal-save-btn" class="px-5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-sm font-bold transition">저장하기</button>
             </div>
         </div>
     </div>
