@@ -739,121 +739,113 @@
                         </div>
                     </div>
 
-                    <!-- 탭 3: 안부 확인 기록 (통화 녹음 STT·요약·상태 자동입력 + 40대 이상 간편 UI) -->
-                    <div id="section-logs" class="hidden space-y-6">
-                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                    <!-- 탭 3: 안부 확인 기록 (단순화 UI · 2인 대화 타임스탬프 녹취 · 기록 추가/수정/삭제) -->
+                    <div id="section-logs" class="hidden space-y-5">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                             <div>
-                                <h2 class="text-2xl font-bold">안부 확인 기록</h2>
-                                <p class="text-sm opacity-75 mt-1">통화 음성을 녹음하면 글로 변환하고, 핵심 요약과 결과 상태를 자동으로 채워줍니다.</p>
+                                <div class="flex items-center gap-2.5">
+                                    <h2 class="text-2xl font-bold">안부 확인 기록</h2>
+                                    <span id="logs-autosave-badge" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                        자동 저장됨
+                                    </span>
+                                </div>
+                                <p class="text-sm opacity-70 mt-0.5">녹취 분석 또는 직접 입력으로 안부 기록을 추가·수정·삭제합니다.</p>
                             </div>
-                            <button onclick="openInputModal()" class="accent-btn px-4 py-2.5 rounded-xl bg-[#B45309] text-white text-sm font-bold hover:opacity-90 transition flex items-center gap-1.5 self-start md:self-auto shrink-0">
+                            <button type="button" onclick="openInputModal()" class="accent-btn px-4 py-2.5 rounded-xl bg-[#B45309] text-white text-sm font-bold hover:opacity-90 transition flex items-center gap-1.5 self-start sm:self-auto shrink-0">
                                 <i data-lucide="plus" class="w-4 h-4"></i>
-                                직접 입력
+                                기록 추가
                             </button>
                         </div>
 
-                        <!-- 통합 연동 패널: 지자체 녹취 파일(.mp3/.wav) 불러오기 + 통화 음성 자동 요약·분류 -->
-                        <div class="card p-6 rounded-2xl border border-[#E6E1D8] bg-white/95 shadow-sm space-y-5 transition-theme">
+                        <!-- 단순화된 통화 녹취 · 자동 요약 패널 -->
+                        <div class="card p-5 rounded-2xl border border-[#E6E1D8] bg-white/95 shadow-sm space-y-4 transition-theme">
                             <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-[#E6E1D8]">
                                 <div class="flex items-center gap-2">
-                                    <span class="w-7 h-7 rounded-full bg-amber-100 text-amber-700 font-bold text-sm flex items-center justify-center">
-                                        <i data-lucide="file-audio" class="w-4 h-4"></i>
-                                    </span>
-                                    <div>
-                                        <span class="font-bold text-base">지자체 녹취 파일 · 통화 음성 자동 분석</span>
-                                        <span class="ml-2 text-xs font-medium text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">번호 자동 매칭 지원</span>
-                                    </div>
+                                    <i data-lucide="mic" class="w-4 h-4 text-amber-700"></i>
+                                    <span class="font-bold text-sm">녹취 음성 · 대화 자동 분석</span>
+                                    <span id="audio-file-status" class="text-xs text-stone-500 ml-1">파일 첨부 시 번호 자동 매칭</span>
                                 </div>
                                 <div class="flex flex-wrap items-center gap-1.5 text-xs">
-                                    <span class="opacity-65 mr-1">가상 녹취 샘플:</span>
-                                    <button type="button" onclick="applySampleCall('응답')" class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold hover:bg-emerald-100 transition">정상 안부</button>
-                                    <button type="button" onclick="applySampleCall('도움')" class="px-2.5 py-1 rounded-lg bg-rose-50 text-rose-800 border border-rose-200 font-bold hover:bg-rose-100 transition">도움 요청</button>
-                                    <button type="button" onclick="applySampleCall('미응답')" class="px-2.5 py-1 rounded-lg bg-amber-50 text-amber-800 border border-amber-200 font-bold hover:bg-amber-100 transition">미응답</button>
-                                    <button type="button" onclick="applySampleCall('오류')" class="px-2.5 py-1 rounded-lg bg-gray-100 text-gray-800 border border-gray-300 font-bold hover:bg-gray-200 transition">연결 오류</button>
-                                </div>
-                            </div>
-
-                            <!-- 지자체 녹음 파일(.mp3 / .wav) 업로드 및 발신번호 매칭 바 -->
-                            <div class="p-4 rounded-xl bg-[#FAF8F5] border border-dashed border-[#D6D3D1] flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-                                <div class="flex items-start sm:items-center gap-3">
-                                    <div class="p-2.5 rounded-xl bg-white border border-[#E6E1D8] text-[#B45309] shrink-0">
-                                        <i data-lucide="upload-cloud" class="w-5 h-5"></i>
-                                    </div>
-                                    <div>
-                                        <div class="text-sm font-bold text-[#1C1917]">지자체 전화기 녹음 파일 첨부 (.mp3 / .wav / .m4a)</div>
-                                        <p id="audio-file-status" class="text-xs text-[#78716C] mt-0.5">
-                                            파일명에 포함된 연락처나 관리번호(예: <span class="font-mono">010-3892-1104_통화녹음.mp3</span>)를 인식해 대상자를 자동 연결합니다.
-                                        </p>
-                                    </div>
-                                </div>
-                                <div class="flex items-center gap-2 shrink-0">
                                     <input id="gov-audio-file-input" type="file" accept="audio/*,.mp3,.wav,.m4a" class="hidden" onchange="handleGovAudioFileUpload(event)">
-                                    <button type="button" onclick="document.getElementById('gov-audio-file-input').click()" class="px-3.5 py-2 rounded-xl bg-white hover:bg-gray-50 border border-[#D6D3D1] text-gray-800 text-xs font-bold transition flex items-center gap-1.5">
-                                        <i data-lucide="folder-open" class="w-4 h-4 text-amber-700"></i>
-                                        녹음 파일 선택
+                                    <button type="button" onclick="document.getElementById('gov-audio-file-input').click()" class="px-2.5 py-1.5 rounded-lg bg-white hover:bg-gray-50 border border-[#D6D3D1] text-gray-800 font-bold transition inline-flex items-center gap-1">
+                                        <i data-lucide="folder-open" class="w-3.5 h-3.5 text-amber-700"></i>
+                                        파일 첨부
                                     </button>
-                                    <button type="button" onclick="simulateGovServerPull()" class="px-3.5 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-900 text-xs font-bold transition flex items-center gap-1.5">
-                                        <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
-                                        녹취 서버 가져오기 (시연)
+                                    <button type="button" onclick="simulateGovServerPull()" class="px-2.5 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-900 font-bold transition">
+                                        서버 수신
                                     </button>
+                                    <span class="text-stone-300">|</span>
+                                    <button type="button" onclick="applySampleCall('응답')" class="px-2 py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold hover:bg-emerald-100 transition">정상</button>
+                                    <button type="button" onclick="applySampleCall('도움')" class="px-2 py-1 rounded-lg bg-rose-50 text-rose-800 border border-rose-200 font-bold hover:bg-rose-100 transition">도움</button>
+                                    <button type="button" onclick="applySampleCall('미응답')" class="px-2 py-1 rounded-lg bg-amber-50 text-amber-800 border border-amber-200 font-bold hover:bg-amber-100 transition">미응답</button>
+                                    <button type="button" onclick="applySampleCall('오류')" class="px-2 py-1 rounded-lg bg-gray-100 text-gray-800 border border-gray-300 font-bold hover:bg-gray-200 transition">오류</button>
                                 </div>
                             </div>
 
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                <div>
-                                    <label class="block text-xs font-bold opacity-75 mb-1">대상자 선택 (연락처 자동 매칭)</label>
-                                    <select id="voice-target-select" onchange="syncVoiceTargetFields()" class="w-full px-3.5 py-2.5 rounded-xl border border-[#E6E1D8] bg-white text-gray-900 text-sm font-bold focus:outline-none focus:border-amber-500">
+                            <!-- 핵심 컨트롤 1줄 바: 대상자 / 자동 결과 / 실시간 녹음 -->
+                            <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
+                                <div class="md:col-span-5">
+                                    <label class="block text-xs font-bold opacity-75 mb-1">대상자</label>
+                                    <select id="voice-target-select" onchange="syncVoiceTargetFields()" class="w-full px-3 py-2 rounded-xl border border-[#E6E1D8] bg-white text-gray-900 text-sm font-bold focus:outline-none focus:border-amber-500">
                                     </select>
                                 </div>
-                                <div>
-                                    <label class="block text-xs font-bold opacity-75 mb-1">자동 판별된 결과</label>
-                                    <div id="voice-auto-status-box" class="w-full px-3.5 py-2.5 rounded-xl border border-[#E6E1D8] bg-black/5 text-sm font-bold flex items-center justify-between">
+                                <div class="md:col-span-4">
+                                    <label class="block text-xs font-bold opacity-75 mb-1">자동 판별 결과</label>
+                                    <div id="voice-auto-status-box" class="w-full px-3 py-2 rounded-xl border border-[#E6E1D8] bg-black/5 text-sm font-bold flex items-center justify-between">
                                         <span id="voice-detected-status">응답 완료</span>
-                                        <span class="text-xs font-normal opacity-65">자동 입력됨</span>
+                                        <span class="text-[11px] font-normal opacity-60">자동 분류</span>
                                     </div>
                                 </div>
-                                <div class="flex items-end">
-                                    <button type="button" id="voice-record-btn" onclick="toggleVoiceRecording()" class="w-full py-2.5 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-sm font-bold transition flex items-center justify-center gap-2 shadow-sm">
+                                <div class="md:col-span-3">
+                                    <button type="button" id="voice-record-btn" onclick="toggleVoiceRecording()" class="w-full py-2 px-3.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-sm font-bold transition flex items-center justify-center gap-1.5 shadow-sm">
                                         <i data-lucide="mic" class="w-4 h-4"></i>
-                                        <span id="voice-record-label">실시간 마이크 녹음</span>
+                                        <span id="voice-record-label">실시간 녹음</span>
                                     </button>
                                 </div>
                             </div>
 
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- 2인 참여자 타임스탬프 녹취 전문 & 자동 요약 메모 -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
                                 <div>
                                     <div class="flex items-center justify-between mb-1">
-                                        <label class="text-xs font-bold opacity-75">통화 녹취 전문 (STT 변환 결과)</label>
-                                        <span id="voice-rec-indicator" class="text-xs font-medium text-gray-500">대기 중</span>
+                                        <label class="text-xs font-bold opacity-75">통화 녹취 전문 (참여자 2인 · 타임스탬프)</label>
+                                        <div class="flex items-center gap-2">
+                                            <button type="button" onclick="appendSpeakerTurnLine('담당자')" class="text-[11px] font-bold text-stone-600 hover:text-stone-900 underline">+담당자</button>
+                                            <button type="button" onclick="appendSpeakerTurnLine('대상자')" class="text-[11px] font-bold text-amber-700 hover:text-amber-900 underline">+대상자</button>
+                                            <span id="voice-rec-indicator" class="text-[11px] font-medium text-gray-500">대기 중</span>
+                                        </div>
                                     </div>
-                                    <textarea id="voice-transcript-input" rows="3" oninput="processVoiceTranscriptAuto()" placeholder="녹취 파일을 불러오거나 통화 내용을 입력하면 자동으로 요약하고 상태를 분류합니다." class="w-full px-3.5 py-2.5 rounded-xl border border-[#E6E1D8] bg-white text-gray-900 text-sm leading-relaxed focus:outline-none focus:border-amber-500"></textarea>
+                                    <textarea id="voice-transcript-input" rows="4" oninput="processVoiceTranscriptAuto()" placeholder="[00:00:05] 담당자: 여보세요, 복지관입니다. 오늘 식사는 잘 하셨어요?&#10;[00:00:18] 대상자: 네, 아침 먹고 약도 챙겨 먹었어요.&#10;[00:00:30] 담당자: 다행입니다. 내일 다시 연락드리겠습니다." class="w-full px-3 py-2 rounded-xl border border-[#E6E1D8] bg-white text-gray-900 text-xs font-mono leading-relaxed focus:outline-none focus:border-amber-500"></textarea>
                                 </div>
-                                <div>
-                                    <div class="flex items-center justify-between mb-1">
-                                        <label class="text-xs font-bold opacity-75">자동 요약 메모 (화면에 기록될 내용)</label>
-                                        <span class="text-xs text-amber-700 font-medium">수정 가능</span>
+                                <div class="flex flex-col justify-between">
+                                    <div>
+                                        <div class="flex items-center justify-between mb-1">
+                                            <label class="text-xs font-bold opacity-75">요약 메모</label>
+                                            <span class="text-[11px] text-amber-700 font-medium">수정 가능</span>
+                                        </div>
+                                        <textarea id="voice-summary-output" rows="4" placeholder="대화 핵심 요약이 자동으로 채워집니다." class="w-full px-3 py-2 rounded-xl border border-[#E6E1D8] bg-amber-50/40 text-gray-900 text-sm font-medium leading-relaxed focus:outline-none focus:border-amber-500"></textarea>
                                     </div>
-                                    <textarea id="voice-summary-output" rows="3" placeholder="핵심 요약 문장이 여기에 자동으로 정리됩니다." class="w-full px-3.5 py-2.5 rounded-xl border border-[#E6E1D8] bg-amber-50/40 text-gray-900 text-sm font-medium leading-relaxed focus:outline-none focus:border-amber-500"></textarea>
                                 </div>
                             </div>
 
-                            <div class="flex justify-end pt-1">
-                                <button type="button" onclick="saveVoiceAutoLog()" class="accent-btn px-5 py-2.5 rounded-xl bg-[#B45309] text-white text-sm font-bold hover:opacity-90 transition flex items-center gap-1.5">
+                            <div class="flex justify-end">
+                                <button type="button" onclick="saveVoiceAutoLog()" class="accent-btn px-4 py-2 rounded-xl bg-[#B45309] text-white text-sm font-bold hover:opacity-90 transition flex items-center gap-1.5">
                                     <i data-lucide="check-circle" class="w-4 h-4"></i>
                                     안부 기록 저장
                                 </button>
                             </div>
                         </div>
 
-                        <!-- 기록 목록 필터 및 간결한 테이블 (40대 이상 가독성 강화) -->
+                        <!-- 기록 필터 및 CRUD 테이블 (추가 · 수정 · 삭제 지원) -->
                         <div class="flex flex-wrap items-center justify-between gap-2">
                             <div class="flex flex-wrap items-center gap-1.5">
-                                <button onclick="setLogFilter('ALL')" class="log-filter-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-gray-900 text-white" data-filter="ALL">전체</button>
-                                <button onclick="setLogFilter('응답 완료')" class="log-filter-btn px-3.5 py-2 rounded-xl text-xs font-bold border border-[#E6E1D8] bg-white/90 text-gray-700" data-filter="응답 완료">응답 완료</button>
-                                <button onclick="setLogFilter('미응답')" class="log-filter-btn px-3.5 py-2 rounded-xl text-xs font-bold border border-[#E6E1D8] bg-white/90 text-gray-700" data-filter="미응답">미응답</button>
-                                <button onclick="setLogFilter('도움 요청')" class="log-filter-btn px-3.5 py-2 rounded-xl text-xs font-bold border border-[#E6E1D8] bg-white/90 text-gray-700" data-filter="도움 요청">도움 요청</button>
-                                <button onclick="setLogFilter('연결 오류')" class="log-filter-btn px-3.5 py-2 rounded-xl text-xs font-bold border border-[#E6E1D8] bg-white/90 text-gray-700" data-filter="연결 오류">연결 오류</button>
+                                <button onclick="setLogFilter('ALL')" class="log-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-gray-900 text-white" data-filter="ALL">전체</button>
+                                <button onclick="setLogFilter('응답 완료')" class="log-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold border border-[#E6E1D8] bg-white/90 text-gray-700" data-filter="응답 완료">응답 완료</button>
+                                <button onclick="setLogFilter('미응답')" class="log-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold border border-[#E6E1D8] bg-white/90 text-gray-700" data-filter="미응답">미응답</button>
+                                <button onclick="setLogFilter('도움 요청')" class="log-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold border border-[#E6E1D8] bg-white/90 text-gray-700" data-filter="도움 요청">도움 요청</button>
+                                <button onclick="setLogFilter('연결 오류')" class="log-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold border border-[#E6E1D8] bg-white/90 text-gray-700" data-filter="연결 오류">연결 오류</button>
                             </div>
+                            <span id="logs-total-count" class="text-xs opacity-65 font-medium">총 0건</span>
                         </div>
 
                         <div class="card rounded-2xl border border-[#E6E1D8] bg-white/90 shadow-sm overflow-hidden transition-theme">
@@ -861,10 +853,11 @@
                                 <table class="w-full text-left border-collapse">
                                     <thead>
                                         <tr class="border-b border-[#E6E1D8] text-xs font-bold uppercase opacity-75 bg-black/5">
-                                            <th class="py-4 px-5">대상자</th>
-                                            <th class="py-4 px-5">안부 결과</th>
-                                            <th class="py-4 px-5">요약 내용</th>
-                                            <th class="py-4 px-5">처리 상태</th>
+                                            <th class="py-3.5 px-5 whitespace-nowrap">대상자</th>
+                                            <th class="py-3.5 px-5 whitespace-nowrap">안부 결과</th>
+                                            <th class="py-3.5 px-5">요약 내용</th>
+                                            <th class="py-3.5 px-5 whitespace-nowrap">처리 상태</th>
+                                            <th class="py-3.5 px-5 text-right whitespace-nowrap">관리</th>
                                         </tr>
                                     </thead>
                                     <tbody id="all-logs-table-body" class="divide-y divide-[#EADBC8] text-sm">
@@ -929,47 +922,48 @@
     <!-- 모달 창 영역                                 -->
     <!-- ========================================== -->
 
-    <!-- 안부 통화 기록 완료 모달 -->
+    <!-- 안부 확인 기록 추가 / 수정 모달 -->
     <div id="input-modal" class="hidden fixed inset-0 bg-black/45 flex items-center justify-center z-50 p-4">
-        <div class="bg-white text-gray-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-200">
-            <div class="flex justify-between items-center pb-4 border-b border-gray-100">
-                <h3 class="text-lg font-bold flex items-center gap-2">
+        <div class="bg-white text-gray-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-gray-200 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center pb-3.5 border-b border-gray-100">
+                <h3 id="input-modal-title" class="text-lg font-bold flex items-center gap-2">
                     <i data-lucide="phone-call" class="w-5 h-5 text-amber-600"></i>
-                    안부 통화 기록 완료
+                    <span>안부 확인 기록 추가</span>
                 </h3>
-                <button onclick="closeModals()" class="p-1 rounded-lg hover:bg-gray-100">
+                <button type="button" onclick="closeModals()" class="p-1 rounded-lg hover:bg-gray-100">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
-            
-            <div class="py-5 space-y-4 text-sm">
+            <input type="hidden" id="edit-log-id" value="">
+
+            <div class="py-4 space-y-3.5 text-sm">
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block font-bold mb-1 text-gray-700">관리번호</label>
-                        <input id="input-target-id" type="text" value="L-0006" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:border-amber-500">
+                        <label class="block font-bold mb-1 text-gray-700 text-xs">관리번호</label>
+                        <input id="input-target-id" type="text" value="L-0001" class="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-amber-500">
                     </div>
                     <div>
-                        <label class="block font-bold mb-1 text-gray-700">대상자명</label>
-                        <input id="input-target-name" type="text" value="대상자 F" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:border-amber-500">
+                        <label class="block font-bold mb-1 text-gray-700 text-xs">대상자명</label>
+                        <input id="input-target-name" type="text" value="대상자 A" class="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-amber-500">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block font-bold mb-2 text-gray-700">연락 결과 선택</label>
-                    <div class="grid grid-cols-2 gap-2">
-                        <label class="flex items-center gap-2 p-3 rounded-xl border cursor-pointer hover:bg-gray-50">
+                    <label class="block font-bold mb-1.5 text-gray-700 text-xs">안부 결과</label>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                        <label class="flex items-center gap-1.5 p-2.5 rounded-xl border cursor-pointer hover:bg-gray-50 text-xs font-bold">
                             <input type="radio" name="result_status" value="응답 완료" checked>
                             <span>응답 완료</span>
                         </label>
-                        <label class="flex items-center gap-2 p-3 rounded-xl border cursor-pointer hover:bg-gray-50">
+                        <label class="flex items-center gap-1.5 p-2.5 rounded-xl border cursor-pointer hover:bg-gray-50 text-xs font-bold">
                             <input type="radio" name="result_status" value="미응답">
                             <span>미응답</span>
                         </label>
-                        <label class="flex items-center gap-2 p-3 rounded-xl border cursor-pointer hover:bg-gray-50">
+                        <label class="flex items-center gap-1.5 p-2.5 rounded-xl border cursor-pointer hover:bg-gray-50 text-xs font-bold">
                             <input type="radio" name="result_status" value="도움 요청">
                             <span>도움 요청</span>
                         </label>
-                        <label class="flex items-center gap-2 p-3 rounded-xl border cursor-pointer hover:bg-gray-50">
+                        <label class="flex items-center gap-1.5 p-2.5 rounded-xl border cursor-pointer hover:bg-gray-50 text-xs font-bold">
                             <input type="radio" name="result_status" value="연결 오류">
                             <span>연결 오류</span>
                         </label>
@@ -977,15 +971,33 @@
                 </div>
 
                 <div>
-                    <label class="block font-bold mb-1 text-gray-700">확인 메모</label>
-                    <textarea id="input-memo" rows="2" placeholder="통화 내용 및 특이사항을 입력하세요" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:border-amber-500"></textarea>
+                    <label class="block font-bold mb-1 text-gray-700 text-xs">처리 상태</label>
+                    <select id="input-followup-status" class="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm font-medium focus:outline-none focus:border-amber-500">
+                        <option value="AUTO">자동 설정 (결과에 맞춤)</option>
+                        <option value="완료">완료</option>
+                        <option value="미처리 (확인 대기)">미처리 (확인 대기)</option>
+                        <option value="재연락 필요">재연락 필요</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block font-bold mb-1 text-gray-700 text-xs">요약 내용</label>
+                    <textarea id="input-memo" rows="2" placeholder="핵심 요약 및 특이사항을 입력하세요" class="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-amber-500"></textarea>
+                </div>
+
+                <div>
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="block font-bold text-gray-700 text-xs">녹취 전문 (2인 대화 · 타임스탬프)</label>
+                        <span class="text-[11px] text-gray-400">예: [00:00:30] 대상자: 내용</span>
+                    </div>
+                    <textarea id="input-transcript" rows="4" placeholder="[00:00:04] 담당자: 여보세요, 복지관입니다.&#10;[00:00:18] 대상자: 네, 오늘도 잘 지내고 있습니다.&#10;[00:00:30] 담당자: 감사합니다 어르신." class="w-full px-3 py-2 rounded-xl border border-gray-300 text-xs font-mono leading-relaxed focus:outline-none focus:border-amber-500"></textarea>
                 </div>
             </div>
 
             <div class="pt-3 border-t border-gray-100 flex justify-end gap-2">
-                <button onclick="closeModals()" class="px-4 py-2.5 rounded-xl border border-gray-200 text-sm font-medium">취소</button>
-                <button onclick="saveContactLog()" id="save-log-btn" class="px-5 py-2.5 rounded-xl bg-amber-600 text-white text-sm font-bold hover:bg-amber-700 transition">
-                    결과 저장
+                <button type="button" onclick="closeModals()" class="px-4 py-2 rounded-xl border border-gray-200 text-sm font-medium">취소</button>
+                <button type="button" onclick="saveContactLog()" id="save-log-btn" class="px-5 py-2 rounded-xl bg-amber-600 text-white text-sm font-bold hover:bg-amber-700 transition">
+                    저장하기
                 </button>
             </div>
         </div>
@@ -1374,10 +1386,46 @@
         // 3. 기본 데이터 및 계정별 상태(localStorage) 관리 엔진
         // ============================================================
         const DEFAULT_LOGS = [
-            { log_id: 2, target_id: 'L-0002', target_name: '대상자 B', result_status: '도움 요청', memo: '허리 통증 호소, 방문 확인 요청', manager_name: '김복지', followup_status: '미처리 (확인 대기)' },
-            { log_id: 1, target_id: 'L-0001', target_name: '대상자 A', result_status: '미응답', memo: '1차 연락 미응답/재연락 검토', manager_name: '김복지', followup_status: '재연락 필요' },
-            { log_id: 4, target_id: 'L-0004', target_name: '대상자 D', result_status: '연결 오류', memo: '통신사 착신 전환 오류', manager_name: '김복지', followup_status: '재연락 필요' },
-            { log_id: 3, target_id: 'L-0003', target_name: '대상자 C', result_status: '응답 완료', memo: '아침 식사 완료, 특이사항 없음', manager_name: '김복지', followup_status: '완료' }
+            {
+                log_id: 2,
+                target_id: 'L-0002',
+                target_name: '대상자 B',
+                result_status: '도움 요청',
+                memo: '허리 통증 호소, 방문 확인 요청',
+                transcript: '[00:00:04] 담당자: 여보세요, 복지관입니다. 어르신 오늘 컨디션 어떠세요?\n[00:00:15] 대상자: 어제부터 허리가 너무 아프고 어지러워서 병원에 가야 할 것 같아요. 도움 좀 요청할게요.\n[00:00:30] 담당자: 알겠습니다 어르신. 오늘 중으로 담당자가 방문 확인 도와드리겠습니다.',
+                manager_name: '김복지',
+                followup_status: '미처리 (확인 대기)'
+            },
+            {
+                log_id: 1,
+                target_id: 'L-0001',
+                target_name: '대상자 A',
+                result_status: '미응답',
+                memo: '1차 연락 미응답/재연락 검토',
+                transcript: '[00:00:05] 담당자: 안부 확인 정기 발신 연결 시도\n[00:00:30] 시스템: 연결음 지속 후 부재중 (통화 응답 없음)',
+                manager_name: '김복지',
+                followup_status: '재연락 필요'
+            },
+            {
+                log_id: 4,
+                target_id: 'L-0004',
+                target_name: '대상자 D',
+                result_status: '연결 오류',
+                memo: '통신사 착신 전환 오류',
+                transcript: '[00:00:04] 담당자: 여보세요, 복지관입니다. 잘 들리시나요?\n[00:00:18] 대상자: 여보세요? 소리가 자꾸 끊기고 안 들려요...\n[00:00:30] 시스템: 수신 불량으로 통화 연결 종료',
+                manager_name: '김복지',
+                followup_status: '재연락 필요'
+            },
+            {
+                log_id: 3,
+                target_id: 'L-0003',
+                target_name: '대상자 C',
+                result_status: '응답 완료',
+                memo: '아침 식사 완료, 특이사항 없음',
+                transcript: '[00:00:04] 담당자: 여보세요, 복지관입니다. 오늘 아침 식사는 잘 하셨어요?\n[00:00:16] 대상자: 네, 밥 먹고 혈압약도 챙겨 먹었어요. 몸도 괜찮습니다.\n[00:00:30] 담당자: 다행입니다 어르신. 다음 정기 연락 때 다시 전화드리겠습니다.',
+                manager_name: '김복지',
+                followup_status: '완료'
+            }
         ];
 
         const DEFAULT_TARGETS = [
@@ -1913,14 +1961,16 @@
 
         function renderAllLogsTable() {
             const tbody = document.getElementById('all-logs-table-body');
+            const countEl = document.getElementById('logs-total-count');
+            if (!tbody) return;
             tbody.innerHTML = '';
             populateVoiceTargetSelect();
 
             document.querySelectorAll('.log-filter-btn').forEach(btn => {
                 if (btn.dataset.filter === activeLogFilter) {
-                    btn.className = 'log-filter-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-gray-900 text-white';
+                    btn.className = 'log-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-gray-900 text-white';
                 } else {
-                    btn.className = 'log-filter-btn px-3.5 py-2 rounded-xl text-xs font-bold border border-[#E6E1D8] bg-white/90 text-gray-700';
+                    btn.className = 'log-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold border border-[#E6E1D8] bg-white/90 text-gray-700';
                 }
             });
 
@@ -1928,19 +1978,120 @@
                 ? currentLogs
                 : currentLogs.filter(l => l.result_status === activeLogFilter);
 
+            if (countEl) {
+                countEl.textContent = `총 ${filtered.length}건`;
+            }
+
             if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="py-8 px-5 text-center opacity-60 text-sm">표시할 안부 확인 기록이 없습니다.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" class="py-8 px-5 text-center opacity-60 text-sm">표시할 안부 확인 기록이 없습니다.</td></tr>`;
                 return;
             }
 
-            tbody.innerHTML = filtered.map(item => `
+            tbody.innerHTML = filtered.map((item, idx) => {
+                const logKey = item.log_id !== undefined && item.log_id !== null ? String(item.log_id) : `idx_${idx}`;
+                const hasTranscript = Boolean((item.transcript || '').trim());
+                return `
                     <tr class="hover:bg-black/5 transition">
-                        <td class="py-4 px-5 font-bold text-sm">${item.target_name} <span class="font-mono text-xs font-normal opacity-60 ml-1">${item.target_id}</span></td>
-                        <td class="py-4 px-5">${getBadgeHtml(item.result_status)}</td>
-                        <td class="py-4 px-5 text-sm opacity-90">${item.memo || '-'}</td>
-                        <td class="py-4 px-5 text-sm ${getFollowupColor(item.followup_status)}">${item.followup_status}</td>
+                        <td class="py-3.5 px-5 font-bold text-sm whitespace-nowrap">
+                            ${item.target_name}
+                            <span class="font-mono text-xs font-normal opacity-60 ml-1">${item.target_id}</span>
+                        </td>
+                        <td class="py-3.5 px-5 whitespace-nowrap">${getBadgeHtml(item.result_status)}</td>
+                        <td class="py-3.5 px-5 text-sm opacity-90">
+                            <div>${item.memo || '-'}</div>
+                            ${hasTranscript ? `<div class="text-[11px] font-mono text-stone-500 mt-1 line-clamp-1">${item.transcript.split('\n')[0]}</div>` : ''}
+                        </td>
+                        <td class="py-3.5 px-5 text-xs font-bold whitespace-nowrap ${getFollowupColor(item.followup_status)}">${item.followup_status}</td>
+                        <td class="py-3.5 px-5 text-right whitespace-nowrap">
+                            <div class="inline-flex items-center gap-1.5">
+                                <button type="button" onclick="openEditLogModal('${logKey}')" class="px-2.5 py-1.5 rounded-lg border border-[#E6E1D8] bg-white hover:bg-amber-50 hover:border-amber-300 text-gray-800 text-xs font-bold transition inline-flex items-center gap-1">
+                                    <i data-lucide="pencil" class="w-3 h-3 text-amber-700"></i>
+                                    수정
+                                </button>
+                                <button type="button" onclick="deleteLogById('${logKey}')" class="px-2.5 py-1.5 rounded-lg border border-rose-200 bg-rose-50/70 hover:bg-rose-100 text-rose-700 text-xs font-bold transition inline-flex items-center gap-1">
+                                    <i data-lucide="trash-2" class="w-3 h-3"></i>
+                                    삭제
+                                </button>
+                            </div>
+                        </td>
                     </tr>
-                `).join('');
+                `;
+            }).join('');
+            lucide.createIcons({ root: tbody });
+        }
+
+        function flashLogsAutoSaveBadge() {
+            const badge = document.getElementById('logs-autosave-badge');
+            if (!badge) return;
+            badge.innerText = '자동 저장 완료 ✓';
+            badge.className = 'inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 transition';
+            setTimeout(() => {
+                badge.innerText = '자동 저장됨';
+                badge.className = 'inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 transition';
+            }, 1800);
+        }
+
+        function findLogIndexByKey(logKey) {
+            if (String(logKey).startsWith('idx_')) {
+                const i = parseInt(String(logKey).replace('idx_', ''), 10);
+                return Number.isNaN(i) ? -1 : i;
+            }
+            return currentLogs.findIndex(l => String(l.log_id) === String(logKey));
+        }
+
+        function openEditLogModal(logKey) {
+            const idx = findLogIndexByKey(logKey);
+            if (idx === -1) return;
+            const item = currentLogs[idx];
+
+            const titleEl = document.querySelector('#input-modal-title span');
+            if (titleEl) titleEl.textContent = '안부 확인 기록 수정';
+            const saveBtn = document.getElementById('save-log-btn');
+            if (saveBtn) saveBtn.textContent = '수정 저장';
+
+            document.getElementById('edit-log-id').value = logKey;
+            document.getElementById('input-target-id').value = item.target_id || '';
+            document.getElementById('input-target-name').value = item.target_name || '';
+
+            const radio = document.querySelector(`input[name="result_status"][value="${item.result_status}"]`);
+            if (radio) radio.checked = true;
+
+            const followSel = document.getElementById('input-followup-status');
+            if (followSel) {
+                const validOpts = ['완료', '미처리 (확인 대기)', '재연락 필요'];
+                followSel.value = validOpts.includes(item.followup_status) ? item.followup_status : 'AUTO';
+            }
+
+            document.getElementById('input-memo').value = item.memo || '';
+            const transcriptInput = document.getElementById('input-transcript');
+            if (transcriptInput) transcriptInput.value = item.transcript || '';
+
+            document.getElementById('input-modal').classList.remove('hidden');
+            lucide.createIcons({ root: document.getElementById('input-modal') });
+        }
+
+        async function deleteLogById(logKey) {
+            const idx = findLogIndexByKey(logKey);
+            if (idx === -1) return;
+            const item = currentLogs[idx];
+
+            const ok = await showLumiConfirm(
+                `${item.target_name} (${item.target_id}) 어르신의 [${item.result_status}] 확인 기록을 삭제할까요?
+삭제 후에는 복구할 수 없습니다.`,
+                '확인 기록 삭제',
+                '삭제하기'
+            );
+            if (!ok) return;
+
+            const realId = item.log_id;
+            currentLogs.splice(idx, 1);
+            persistAccountState();
+            flashLogsAutoSaveBadge();
+            renderAllSections();
+
+            if (supabaseClient && realId && typeof realId === 'number' && realId < 1000000000000) {
+                await supabaseClient.from('contact_logs').delete().eq('log_id', realId);
+            }
         }
 
         function renderFollowupsSection() {
@@ -2219,10 +2370,13 @@ ${needActionList}`;
         }
 
         async function saveContactLog() {
+            const editKey = (document.getElementById('edit-log-id')?.value || '').trim();
             const target_id = document.getElementById('input-target-id').value.trim();
             const target_name = document.getElementById('input-target-name').value.trim();
             const result_status = document.querySelector('input[name="result_status"]:checked').value;
             const memo = document.getElementById('input-memo').value.trim();
+            const transcript = (document.getElementById('input-transcript')?.value || '').trim();
+            const selectedFollowup = document.getElementById('input-followup-status')?.value || 'AUTO';
 
             if (!target_id || !target_name) {
                 showLumiAlert('관리번호와 대상자명을 입력해 주세요.', '입력 확인');
@@ -2230,14 +2384,56 @@ ${needActionList}`;
             }
 
             let followup_status = '완료';
-            if (result_status === '도움 요청') followup_status = '미처리 (확인 대기)';
-            else if (result_status === '미응답' || result_status === '연결 오류') followup_status = '재연락 필요';
+            if (selectedFollowup !== 'AUTO') {
+                followup_status = selectedFollowup;
+            } else {
+                if (result_status === '도움 요청') followup_status = '미처리 (확인 대기)';
+                else if (result_status === '미응답' || result_status === '연결 오류') followup_status = '재연락 필요';
+            }
 
+            // 기존 기록 수정 모드
+            if (editKey) {
+                const idx = findLogIndexByKey(editKey);
+                if (idx !== -1) {
+                    const existing = currentLogs[idx];
+                    const updatedRecord = {
+                        ...existing,
+                        target_id,
+                        target_name,
+                        result_status,
+                        memo,
+                        transcript,
+                        followup_status
+                    };
+                    currentLogs[idx] = updatedRecord;
+                    persistAccountState();
+                    flashLogsAutoSaveBadge();
+
+                    if (supabaseClient && existing.log_id && typeof existing.log_id === 'number' && existing.log_id < 1000000000000) {
+                        await supabaseClient.from('contact_logs').update({
+                            target_id,
+                            target_name,
+                            result_status,
+                            memo,
+                            followup_status
+                        }).eq('log_id', existing.log_id);
+                    }
+                }
+                document.getElementById('edit-log-id').value = '';
+                document.getElementById('input-memo').value = '';
+                if (document.getElementById('input-transcript')) document.getElementById('input-transcript').value = '';
+                closeModals();
+                renderAllSections();
+                return;
+            }
+
+            // 신규 기록 추가 모드
             const newRecord = {
                 target_id,
                 target_name,
                 result_status,
                 memo,
+                transcript,
                 manager_name: managerProfile.name,
                 followup_status
             };
@@ -2263,17 +2459,29 @@ ${needActionList}`;
                     });
                 }
 
-                const { error } = await supabaseClient.from('contact_logs').insert([newRecord]);
-                btn.innerText = '결과 저장';
+                const { error } = await supabaseClient.from('contact_logs').insert([{
+                    target_id,
+                    target_name,
+                    result_status,
+                    memo,
+                    manager_name: managerProfile.name,
+                    followup_status
+                }]);
+                btn.innerText = '저장하기';
                 btn.disabled = false;
 
                 if (error) {
                     showLumiAlert('Supabase 저장 중 오류가 발생했습니다: ' + error.message, '저장 오류');
                     return;
                 }
+                newRecord.log_id = Date.now();
+                currentLogs.unshift(newRecord);
+                persistAccountState();
+                flashLogsAutoSaveBadge();
                 document.getElementById('input-memo').value = '';
+                if (document.getElementById('input-transcript')) document.getElementById('input-transcript').value = '';
                 closeModals();
-                fetchAllData();
+                renderAllSections();
             } else {
                 newRecord.log_id = Date.now();
                 currentLogs.unshift(newRecord);
@@ -2287,7 +2495,9 @@ ${needActionList}`;
                     });
                 }
                 persistAccountState();
+                flashLogsAutoSaveBadge();
                 document.getElementById('input-memo').value = '';
+                if (document.getElementById('input-transcript')) document.getElementById('input-transcript').value = '';
                 closeModals();
                 renderAllSections();
             }
@@ -2418,11 +2628,25 @@ ${needActionList}`;
         }
 
         function toggleProfileDropdown() { document.getElementById('profile-dropdown').classList.toggle('hidden'); }
-        function openInputModal() { document.getElementById('input-modal').classList.remove('hidden'); }
+        function openInputModal() {
+            const titleEl = document.querySelector('#input-modal-title span');
+            if (titleEl) titleEl.textContent = '안부 확인 기록 추가';
+            const saveBtn = document.getElementById('save-log-btn');
+            if (saveBtn) saveBtn.textContent = '저장하기';
+            if (document.getElementById('edit-log-id')) document.getElementById('edit-log-id').value = '';
+            if (document.getElementById('input-followup-status')) document.getElementById('input-followup-status').value = 'AUTO';
+            if (document.getElementById('input-memo')) document.getElementById('input-memo').value = '';
+            if (document.getElementById('input-transcript')) document.getElementById('input-transcript').value = '';
+            if (currentTargets.length > 0) {
+                document.getElementById('input-target-id').value = currentTargets[0].target_id || 'L-0001';
+                document.getElementById('input-target-name').value = currentTargets[0].name || '대상자 A';
+            }
+            document.getElementById('input-modal').classList.remove('hidden');
+        }
         function openInputModalWithTarget(id, name) {
+            openInputModal();
             document.getElementById('input-target-id').value = id;
             document.getElementById('input-target-name').value = name;
-            document.getElementById('input-modal').classList.remove('hidden');
         }
         function switchManageTab(tab) {
             const addBtn = document.getElementById('manage-tab-add');
@@ -2629,41 +2853,74 @@ ${needActionList}`;
         let isRecordingVoice = false;
         let detectedVoiceStatus = '응답 완료';
 
+        function formatTimestampSeconds(totalSec) {
+            const sec = Math.max(0, Math.floor(totalSec));
+            const hh = String(Math.floor(sec / 3600)).padStart(2, '0');
+            const mm = String(Math.floor((sec % 3600) / 60)).padStart(2, '0');
+            const ss = String(sec % 60).padStart(2, '0');
+            return `${hh}:${mm}:${ss}`;
+        }
+
+        function appendSpeakerTurnLine(speaker) {
+            const transcriptEl = document.getElementById('voice-transcript-input');
+            if (!transcriptEl) return;
+            const lines = transcriptEl.value.trim().split('\n').filter(Boolean);
+            let nextSec = 5;
+            if (lines.length > 0) {
+                const m = lines[lines.length - 1].match(/^\[(\d{2}):(\d{2}):(\d{2})\]/);
+                if (m) {
+                    nextSec = parseInt(m[1], 10) * 3600 + parseInt(m[2], 10) * 60 + parseInt(m[3], 10) + 12;
+                } else {
+                    nextSec = lines.length * 15;
+                }
+            }
+            const stamp = `[${formatTimestampSeconds(nextSec)}]`;
+            const prefix = `${stamp} ${speaker}: `;
+            transcriptEl.value = (transcriptEl.value.trim() ? transcriptEl.value.trim() + '\n' : '') + prefix;
+            transcriptEl.focus();
+            transcriptEl.setSelectionRange(transcriptEl.value.length, transcriptEl.value.length);
+        }
+
         function classifyAndSummarizeTranscript(rawText) {
             const text = (rawText || '').trim();
             if (!text) {
                 return { status: '미응답', summary: '통화 응답 없음 (재연락 필요)' };
             }
 
+            // 타임스탬프와 화자 라벨([00:00:30] 대상자:)을 제외한 순수 발화 내용 추출
+            const cleanLines = text
+                .split(/\n+/)
+                .map(line => line.replace(/^\[\d{2}:\d{2}:\d{2}\]\s*(담당자|대상자|시스템)\s*:\s*/g, '').trim())
+                .filter(Boolean);
+            const pureText = cleanLines.join(' ');
+
             const helpKeywords = ['아프', '통증', '병원', '응급', '어지러', '도와', '약이 떨어', '넘어졌', '숨이', '위험', '도움'];
             const errorKeywords = ['안 들', '끊겼', '연결 오류', '전파', '착신', '잡음', '수신 불량', '소리가 안'];
-            const noAnswerKeywords = ['부재중', '받지 않', '연락 두절', '통화 불가', '신호만', '미응답'];
+            const noAnswerKeywords = ['부재중', '받지 않', '연락 두절', '통화 불가', '신호만', '미응답', '응답 없음'];
 
             let status = '응답 완료';
-            if (helpKeywords.some(k => text.includes(k))) {
+            if (helpKeywords.some(k => pureText.includes(k))) {
                 status = '도움 요청';
-            } else if (errorKeywords.some(k => text.includes(k))) {
+            } else if (errorKeywords.some(k => pureText.includes(k))) {
                 status = '연결 오류';
-            } else if (noAnswerKeywords.some(k => text.includes(k))) {
+            } else if (noAnswerKeywords.some(k => pureText.includes(k))) {
                 status = '미응답';
             }
 
-            // 문장 분리 후 핵심 문장 추출 요약 (클로바·다글로식 핵심 요약)
-            const sentences = text
-                .split(/[.!?\n]+/)
+            // 대상자 발화 우선 추출 후 핵심 요약 생성
+            const targetUtterances = text
+                .split(/\n+/)
+                .filter(line => /대상자\s*:/.test(line))
+                .map(line => line.replace(/^\[\d{2}:\d{2}:\d{2}\]\s*대상자\s*:\s*/g, '').trim())
+                .filter(Boolean);
+
+            const sourceForSummary = targetUtterances.length > 0 ? targetUtterances.join(' ') : pureText;
+            const sentences = sourceForSummary
+                .split(/[.!?]+/)
                 .map(s => s.trim())
-                .filter(s => s.length > 0);
+                .filter(s => s.length > 0 && !['안녕하세요', '여보세요', '수고하십니다', '네 감사합니다'].includes(s));
 
-            const filteredSentences = sentences.filter(s =>
-                !['안녕하세요', '여보세요', '수고하십니다', '네 감사합니다'].some(g => s === g)
-            );
-
-            let summary = '';
-            if (filteredSentences.length > 0) {
-                summary = filteredSentences.slice(0, 2).join(' · ');
-            } else {
-                summary = text;
-            }
+            let summary = sentences.length > 0 ? sentences.slice(0, 2).join(' · ') : sourceForSummary;
             if (summary.length > 65) {
                 summary = summary.slice(0, 62) + '...';
             }
@@ -2682,25 +2939,28 @@ ${needActionList}`;
             statusLabelEl.innerText = result.status;
             summaryEl.value = result.summary;
 
-            // 결과 입력 모달 라디오도 함께 동기화
             const radio = document.querySelector(`input[name="result_status"][value="${result.status}"]`);
             if (radio) radio.checked = true;
             const memoInput = document.getElementById('input-memo');
             if (memoInput) memoInput.value = result.summary;
         }
 
+        const TWO_PARTY_SAMPLES = {
+            '응답': '[00:00:04] 담당자: 여보세요, 부산 남구 복지관입니다. 오늘 아침 식사 잘 하셨어요?\n[00:00:17] 대상자: 네, 밥 먹고 혈압약도 챙겨 먹었어요. 몸도 괜찮습니다.\n[00:00:30] 담당자: 다행입니다 어르신. 다음 정기 연락 때 다시 전화드리겠습니다.',
+            '도움': '[00:00:05] 담당자: 여보세요, 복지관입니다. 어르신 오늘 컨디션 어떠세요?\n[00:00:18] 대상자: 어제부터 허리가 너무 아프고 어지러워서 병원에 가야 할 것 같아요. 도움 좀 요청할게요.\n[00:00:30] 담당자: 알겠습니다 어르신. 오늘 바로 방문 확인 진행하겠습니다.',
+            '미응답': '[00:00:05] 담당자: 정기 안부 확인 발신 연결 시도\n[00:00:30] 시스템: 연결음만 울리고 통화 연결이 되지 않아 부재중(미응답)으로 확인됨.',
+            '오류': '[00:00:04] 담당자: 여보세요, 복지관입니다. 제 목소리 잘 들리시나요?\n[00:00:19] 대상자: 여보세요? 소리가 끊기고 잘 안 들려요...\n[00:00:30] 시스템: 통화 품질 불량으로 연결 오류가 발생했습니다.'
+        };
+
         function applySampleCall(type) {
             const transcriptEl = document.getElementById('voice-transcript-input');
             if (!transcriptEl) return;
-            const samples = {
-                '응답': '여보세요. 오늘 아침 식사 잘 하셨어요? 네, 밥 먹고 약도 챙겨 먹었어요. 몸도 괜찮습니다.',
-                '도움': '여보세요. 어제부터 허리가 너무 아프고 어지러워서 병원에 가야 할 것 같아요. 도움 좀 요청할게요.',
-                '미응답': '연결음만 울리고 통화 연결이 되지 않아 부재중으로 확인됨.',
-                '오류': '여보세요? 소리가 끊기고 잘 안 들려서 통화 연결 오류가 발생했습니다.'
-            };
-            transcriptEl.value = samples[type] || samples['응답'];
+            transcriptEl.value = TWO_PARTY_SAMPLES[type] || TWO_PARTY_SAMPLES['응답'];
             processVoiceTranscriptAuto();
         }
+
+        let voiceRecStartTime = 0;
+        let voiceRecTurnCount = 0;
 
         function toggleVoiceRecording() {
             const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -2713,15 +2973,15 @@ ${needActionList}`;
                 if (speechRecognition) {
                     try { speechRecognition.stop(); } catch (e) {}
                 }
-                if (label) label.innerText = '통화 녹음 시작';
-                if (btn) btn.className = 'w-full py-2.5 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-sm font-bold transition flex items-center justify-center gap-2 shadow-sm';
+                if (label) label.innerText = '실시간 녹음';
+                if (btn) btn.className = 'w-full py-2 px-3.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-sm font-bold transition flex items-center justify-center gap-1.5 shadow-sm';
                 if (indicator) indicator.innerText = '녹음 완료';
                 processVoiceTranscriptAuto();
                 return;
             }
 
             if (!SpeechRec) {
-                showLumiAlert('이 브라우저에서는 실시간 마이크 인식을 지원하지 않습니다. 상단의 예시 음성 버튼이나 텍스트 입력으로 자동 요약·상태 분류를 바로 체험해 보세요.', '음성 안내');
+                showLumiAlert('이 브라우저에서는 실시간 마이크 인식을 지원하지 않아 2인 대화 타임스탬프 예시를 불러옵니다.', '음성 안내');
                 applySampleCall('응답');
                 return;
             }
@@ -2732,39 +2992,51 @@ ${needActionList}`;
             speechRecognition.continuous = true;
 
             isRecordingVoice = true;
-            if (label) label.innerText = '녹음 중지 (완료)';
-            if (btn) btn.className = 'w-full py-2.5 px-4 rounded-xl bg-gray-900 hover:bg-gray-800 text-white text-sm font-bold transition flex items-center justify-center gap-2 shadow-sm';
-            if (indicator) indicator.innerText = '말씀하시는 중...';
+            voiceRecStartTime = Date.now();
+            voiceRecTurnCount = 0;
+
+            if (label) label.innerText = '녹음 중지';
+            if (btn) btn.className = 'w-full py-2 px-3.5 rounded-xl bg-gray-900 hover:bg-gray-800 text-white text-sm font-bold transition flex items-center justify-center gap-1.5 shadow-sm';
+            if (indicator) indicator.innerText = '녹음 중...';
 
             const transcriptEl = document.getElementById('voice-transcript-input');
-            const baseText = transcriptEl ? transcriptEl.value.trim() : '';
+            const committedLines = transcriptEl && transcriptEl.value.trim() ? [transcriptEl.value.trim()] : [];
 
             speechRecognition.onresult = (event) => {
-                let finalChunk = '';
                 let interimChunk = '';
                 for (let i = event.resultIndex; i < event.results.length; i++) {
-                    const txt = event.results[i][0].transcript;
-                    if (event.results[i].isFinal) finalChunk += txt + ' ';
-                    else interimChunk += txt;
+                    const txt = event.results[i][0].transcript.trim();
+                    if (!txt) continue;
+                    if (event.results[i].isFinal) {
+                        const elapsedSec = Math.max(1, Math.floor((Date.now() - voiceRecStartTime) / 1000));
+                        const speaker = voiceRecTurnCount % 2 === 0 ? '담당자' : '대상자';
+                        voiceRecTurnCount++;
+                        committedLines.push(`[${formatTimestampSeconds(elapsedSec)}] ${speaker}: ${txt}`);
+                    } else {
+                        interimChunk = txt;
+                    }
                 }
                 if (transcriptEl) {
-                    transcriptEl.value = `${baseText ? baseText + ' ' : ''}${finalChunk}${interimChunk}`.trim();
+                    const elapsedNow = Math.max(1, Math.floor((Date.now() - voiceRecStartTime) / 1000));
+                    const nextSpeaker = voiceRecTurnCount % 2 === 0 ? '담당자' : '대상자';
+                    const previewLine = interimChunk ? `[${formatTimestampSeconds(elapsedNow)}] ${nextSpeaker}: ${interimChunk}` : '';
+                    transcriptEl.value = [...committedLines, previewLine].filter(Boolean).join('\n');
                     processVoiceTranscriptAuto();
                 }
             };
 
             speechRecognition.onerror = () => {
                 isRecordingVoice = false;
-                if (label) label.innerText = '통화 녹음 시작';
-                if (btn) btn.className = 'w-full py-2.5 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-sm font-bold transition flex items-center justify-center gap-2 shadow-sm';
-                if (indicator) indicator.innerText = '음성 입력 대기';
+                if (label) label.innerText = '실시간 녹음';
+                if (btn) btn.className = 'w-full py-2 px-3.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-sm font-bold transition flex items-center justify-center gap-1.5 shadow-sm';
+                if (indicator) indicator.innerText = '대기 중';
             };
 
             speechRecognition.onend = () => {
                 if (isRecordingVoice) {
                     isRecordingVoice = false;
-                    if (label) label.innerText = '통화 녹음 시작';
-                    if (btn) btn.className = 'w-full py-2.5 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-sm font-bold transition flex items-center justify-center gap-2 shadow-sm';
+                    if (label) label.innerText = '실시간 녹음';
+                    if (btn) btn.className = 'w-full py-2 px-3.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-sm font-bold transition flex items-center justify-center gap-1.5 shadow-sm';
                     if (indicator) indicator.innerText = '녹음 완료';
                     processVoiceTranscriptAuto();
                 }
@@ -2806,22 +3078,28 @@ ${needActionList}`;
                 target_name,
                 result_status: finalStatus,
                 memo: finalMemo,
+                transcript: rawText,
                 manager_name: managerProfile.name,
                 followup_status
             };
 
             if (supabaseClient) {
-                const { error } = await supabaseClient.from('contact_logs').insert([newRecord]);
-                if (!error) {
-                    fetchAllData();
-                } else {
-                    currentLogs.unshift(newRecord);
-                    persistAccountState();
-                    renderAllSections();
-                }
+                const { error } = await supabaseClient.from('contact_logs').insert([{
+                    target_id,
+                    target_name,
+                    result_status: finalStatus,
+                    memo: finalMemo,
+                    manager_name: managerProfile.name,
+                    followup_status
+                }]);
+                currentLogs.unshift(newRecord);
+                persistAccountState();
+                flashLogsAutoSaveBadge();
+                renderAllSections();
             } else {
                 currentLogs.unshift(newRecord);
                 persistAccountState();
+                flashLogsAutoSaveBadge();
                 renderAllSections();
             }
 
@@ -2841,12 +3119,7 @@ ${needActionList}`;
         let isGovCallActive = false;
         let govCallDirection = '발신';
 
-        const GOV_CALL_SCRIPTS = {
-            '응답': '여보세요, 부산 남구 복지관입니다. 오늘 아침 식사 잘 하셨어요? 네, 밥 먹고 혈압약도 챙겨 먹었어요. 몸도 괜찮습니다.',
-            '도움': '여보세요, 복지관입니다. 어르신 오늘 컨디션 어떠세요? 어제부터 허리가 너무 아프고 어지러워서 병원에 가야 할 것 같아요. 도움 좀 요청할게요.',
-            '미응답': '연결음만 울리고 통화 연결이 되지 않아 부재중으로 확인됨.',
-            '오류': '여보세요? 소리가 끊기고 잘 안 들려서 통화 연결 오류가 발생했습니다.'
-        };
+        const GOV_CALL_SCRIPTS = TWO_PARTY_SAMPLES;
 
         function toggleGovPhoneWidget(forceState) {
             const widget = document.getElementById('gov-phone-widget');
@@ -2883,7 +3156,7 @@ ${needActionList}`;
             const scSel = document.getElementById('gov-phone-scenario-select');
             const capEl = document.getElementById('gov-phone-live-caption');
             if (!scSel || !capEl) return;
-            capEl.innerText = `“${GOV_CALL_SCRIPTS[scSel.value] || GOV_CALL_SCRIPTS['응답']}”`;
+            capEl.innerText = GOV_CALL_SCRIPTS[scSel.value] || GOV_CALL_SCRIPTS['응답'];
         }
 
         function startGovPhoneCall(direction) {
@@ -2926,7 +3199,7 @@ ${needActionList}`;
             const inBtn = document.getElementById('gov-phone-incoming-btn');
             const hangupBtn = document.getElementById('gov-phone-hangup-btn');
 
-            const durationStr = timerEl ? timerEl.innerText : '00:12';
+            const durationStr = timerEl ? timerEl.innerText : '00:30';
             if (stateLabel) stateLabel.innerText = '통화 종료 · LUMI 기록 반영 완료';
             if (callBtn) callBtn.classList.remove('hidden');
             if (inBtn) inBtn.classList.remove('hidden');
@@ -2960,26 +3233,26 @@ ${needActionList}`;
                 target_name,
                 result_status: autoResult.status,
                 memo: memoWithPhoneMeta,
+                transcript: rawTranscript,
                 manager_name: managerProfile.name,
                 followup_status
             };
 
             if (supabaseClient) {
-                const { error } = await supabaseClient.from('contact_logs').insert([newRecord]);
-                if (!error) {
-                    await fetchAllData();
-                } else {
-                    currentLogs.unshift(newRecord);
-                    persistAccountState();
-                    renderAllSections();
-                }
-            } else {
-                currentLogs.unshift(newRecord);
-                persistAccountState();
-                renderAllSections();
+                await supabaseClient.from('contact_logs').insert([{
+                    target_id,
+                    target_name,
+                    result_status: autoResult.status,
+                    memo: memoWithPhoneMeta,
+                    manager_name: managerProfile.name,
+                    followup_status
+                }]);
             }
+            currentLogs.unshift(newRecord);
+            persistAccountState();
+            flashLogsAutoSaveBadge();
+            renderAllSections();
 
-            // 안부 확인 기록 탭 입력창에도 최신 통화 내역 동기화
             const voiceSel = document.getElementById('voice-target-select');
             if (voiceSel) {
                 const matchOpt = Array.from(voiceSel.options).find(o => o.value.startsWith(target_id + '|'));
@@ -3029,10 +3302,9 @@ ${needActionList}`;
                 const val = `${matched.target.target_id}|${matched.target.name}|${ph}`;
                 voiceSel.value = val;
                 syncVoiceTargetFields();
-                matchedLabel = `${matched.target.name} (${matched.target.target_id} · ${ph})`;
+                matchedLabel = `${matched.target.name} (${matched.target.target_id})`;
             }
 
-            // 파일명 키워드에 따라 가상 STT 대화문 추출
             let scenarioKey = '응답';
             if (file.name.includes('도움') || file.name.includes('통증') || file.name.includes('병원') || file.name.includes('0002')) {
                 scenarioKey = '도움';
@@ -3043,7 +3315,7 @@ ${needActionList}`;
             }
 
             if (statusBox) {
-                statusBox.innerHTML = `<span class="text-emerald-700 font-bold">첨부 완료: ${file.name}</span> → 매칭 대상: <strong>${matchedLabel}</strong>`;
+                statusBox.innerHTML = `<span class="text-emerald-700 font-bold">${file.name}</span> → <strong>${matchedLabel}</strong>`;
             }
             if (transcriptEl) {
                 transcriptEl.value = GOV_CALL_SCRIPTS[scenarioKey];
@@ -3065,7 +3337,7 @@ ${needActionList}`;
             }
             const statusBox = document.getElementById('audio-file-status');
             if (statusBox) {
-                statusBox.innerHTML = `<span class="text-amber-800 font-bold">녹취 서버 수신: ${fakeFileName}</span> → 번호 자동 매칭: <strong>${t.name} (${ph})</strong>`;
+                statusBox.innerHTML = `<span class="text-amber-800 font-bold">수신: ${fakeFileName}</span> → <strong>${t.name}</strong>`;
             }
             const transcriptEl = document.getElementById('voice-transcript-input');
             if (transcriptEl) {
@@ -3074,7 +3346,6 @@ ${needActionList}`;
             }
         }
 
-        // 페이지 로드 시 최근 로그인 계정 목록 초기화 (자동 복원은 대시보드 버튼 또는 로그인 시 실행)
         window.addEventListener('DOMContentLoaded', () => {
             renderRecentAccounts();
             const savedActiveId = localStorage.getItem(ACTIVE_USER_KEY);
