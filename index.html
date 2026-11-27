@@ -355,7 +355,7 @@
                                             <span class="text-[11px] font-mono text-[#78716C]">3</span>
                                         </div>
                                         <p class="text-xs text-[#57534E] mt-1 leading-relaxed">
-                                            아침 식사 및 혈압약 복용 완료, 컨디션 양호하심
+                                            아침 식사 및 혈압약 복용 완료, 컨디션 양호하였음
                                         </p>
                                     </div>
                                     <span class="shrink-0 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-700">
@@ -824,7 +824,7 @@
                                 <p class="text-sm opacity-70 mt-0.5">안부 확인 대상자 명단과 정기 연락 시간을 간편하게 관리합니다.</p>
                             </div>
                             <div class="flex items-center gap-2">
-                                <input id="target-search-input" oninput="debouncedRenderTargets()" type="text" placeholder="이름·번호 검색" class="w-44 px-3.5 py-2 rounded-xl border border-[#E6E1D8] bg-white/90 text-sm text-gray-800 focus:outline-none focus:border-amber-500">
+                                <input id="target-search-input" oninput="debouncedRenderTargets()" type="text" placeholder="이름·번호·주소 검색" class="w-44 px-3.5 py-2 rounded-xl border border-[#E6E1D8] bg-white/90 text-sm text-gray-800 focus:outline-none focus:border-amber-500">
                                 <button onclick="openManageModal()" class="accent-btn px-4 py-2 rounded-xl bg-[#B45309] text-white text-sm font-bold hover:opacity-90 transition flex items-center gap-1.5 shrink-0">
                                     <i data-lucide="user-plus" class="w-4 h-4"></i>
                                     인원 추가·삭제
@@ -840,6 +840,7 @@
                                             <th class="py-3.5 px-5">관리번호</th>
                                             <th class="py-3.5 px-5">성명</th>
                                             <th class="py-3.5 px-5">연락처</th>
+                                            <th class="py-3.5 px-5">거주지 주소</th>
                                             <th class="py-3.5 px-5">정기 연락 일정</th>
                                             <th class="py-3.5 px-5">상태</th>
                                             <th class="py-3.5 px-5 text-right">안부 기록</th>
@@ -1198,6 +1199,12 @@
                         <input id="new-target-phone" type="text" placeholder="010-0000-0000" class="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-amber-500">
                     </div>
                 </div>
+                <div>
+                    <div class="flex items-center justify-between mb-1">
+                        <label for="new-target-address" class="block font-bold text-gray-700 text-xs">거주지 주소 <span class="font-normal text-gray-400">(도움 요청 시 인근 병원·시설 추천 기준)</span></label>
+                    </div>
+                    <input id="new-target-address" type="text" placeholder="예: 창원시 성산구 창이대로 881번길 8, 206동 104호" class="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-amber-500">
+                </div>
                 <input id="new-target-manager" type="hidden" value="김복지">
 
                 <!-- 요일 및 아이폰 시계 스타일 시간 선택기 (1칸씩 정밀 이동) -->
@@ -1551,7 +1558,7 @@
                 target_id: '2',
                 target_name: '대상자 B',
                 result_status: '도움 요청',
-                memo: '허리 통증 호소, 방문 확인 요청',
+                memo: '어제부터 허리 통증과 어지러움이 심해 병원 방문이 필요하다며 도움을 요청하였음',
                 transcript: '[00:00:04] 담당자: 여보세요, 복지관입니다. 어르신 오늘 컨디션 어떠세요?\n[00:00:15] 대상자: 어제부터 허리가 너무 아프고 어지러워서 병원에 가야 할 것 같아요. 도움 좀 요청할게요.\n[00:00:30] 담당자: 알겠습니다 어르신. 오늘 중으로 담당자가 방문 확인 도와드리겠습니다.',
                 manager_name: '김복지',
                 followup_status: '미처리 (확인 대기)'
@@ -1561,7 +1568,7 @@
                 target_id: '1',
                 target_name: '대상자 A',
                 result_status: '미응답',
-                memo: '1차 연락 미응답/재연락 검토',
+                memo: '1차 정기 안부 연락에 응답이 없어 부재중으로 확인되어 재연락이 필요하였음',
                 transcript: '[00:00:05] 담당자: 안부 확인 정기 발신 연결 시도\n[00:00:30] 시스템: 연결음 지속 후 부재중 (통화 응답 없음)',
                 manager_name: '김복지',
                 followup_status: '재연락 필요'
@@ -1571,7 +1578,7 @@
                 target_id: '4',
                 target_name: '대상자 D',
                 result_status: '연결 오류',
-                memo: '통신사 착신 전환 오류',
+                memo: '수신 불량으로 소리가 끊겨 통화가 종료되어 재연락 확인이 필요하였음',
                 transcript: '[00:00:04] 담당자: 여보세요, 복지관입니다. 잘 들리시나요?\n[00:00:18] 대상자: 여보세요? 소리가 자꾸 끊기고 안 들려요...\n[00:00:30] 시스템: 수신 불량으로 통화 연결 종료',
                 manager_name: '김복지',
                 followup_status: '재연락 필요'
@@ -1581,7 +1588,7 @@
                 target_id: '3',
                 target_name: '대상자 C',
                 result_status: '응답 완료',
-                memo: '아침 식사 완료, 특이사항 없음',
+                memo: '아침 식사와 혈압약 복용을 마쳤으며 몸 상태도 괜찮다고 응답하였음',
                 transcript: '[00:00:04] 담당자: 여보세요, 복지관입니다. 오늘 아침 식사는 잘 하셨어요?\n[00:00:16] 대상자: 네, 밥 먹고 혈압약도 챙겨 먹었어요. 몸도 괜찮습니다.\n[00:00:30] 담당자: 다행입니다 어르신. 다음 정기 연락 때 다시 전화드리겠습니다.',
                 manager_name: '김복지',
                 followup_status: '완료'
@@ -1589,10 +1596,10 @@
         ];
 
         const DEFAULT_TARGETS = [
-            { target_id: '1', name: '대상자 A', phone: '010-2341-5678', contact_schedule: '매주 월·수·금 오전 09:30', manager_name: '김복지', status: '완료' },
-            { target_id: '2', name: '대상자 B', phone: '010-3892-1104', contact_schedule: '매일 오전 10:00 (집중 관리)', manager_name: '김복지', status: '완료' },
-            { target_id: '3', name: '대상자 C', phone: '010-5120-8843', contact_schedule: '매주 화·목 오전 10:30', manager_name: '김복지', status: '완료' },
-            { target_id: '4', name: '대상자 D', phone: '010-7745-3910', contact_schedule: '매주 월·목 오후 14:00', manager_name: '김복지', status: '완료' }
+            { target_id: '1', name: '대상자 A', phone: '010-2341-5678', address: '부산광역시 남구 수영로 266번길 36, 102동 405호', contact_schedule: '매주 월·수·금 오전 09:30', manager_name: '김복지', status: '완료' },
+            { target_id: '2', name: '대상자 B', phone: '010-3892-1104', address: '부산광역시 남구 못골로 87, 201동 302호', contact_schedule: '매일 오전 10:00 (집중 관리)', manager_name: '김복지', status: '완료' },
+            { target_id: '3', name: '대상자 C', phone: '010-5120-8843', address: '창원시 성산구 창이대로 881번길 8, 206동 104호', contact_schedule: '매주 화·목 오전 10:30', manager_name: '김복지', status: '완료' },
+            { target_id: '4', name: '대상자 D', phone: '010-7745-3910', address: '부산광역시 남구 유엔평화로 12, 304동 801호', contact_schedule: '매주 월·목 오후 14:00', manager_name: '김복지', status: '완료' }
         ];
 
         function getTargetPhone(target, idx = 0) {
@@ -2021,6 +2028,65 @@
             return `<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-bold bg-emerald-100 text-emerald-700">완료</span>`;
         }
 
+        function getTargetByIdOrName(targetId, targetName) {
+            const idKey = (targetId || '').trim().toUpperCase();
+            if (idKey) {
+                const byId = currentTargets.find(t => (t.target_id || '').trim().toUpperCase() === idKey);
+                if (byId) return byId;
+            }
+            const nameKey = (targetName || '').trim();
+            if (nameKey) {
+                const byName = currentTargets.find(t => (t.name || '').trim() === nameKey);
+                if (byName) return byName;
+            }
+            return null;
+        }
+
+        function getTargetAddress(targetId, targetName) {
+            const matched = getTargetByIdOrName(targetId, targetName);
+            return (matched && matched.address ? matched.address : '').trim();
+        }
+
+        function copyTextToClipboard(text, successMsg = '주소가 클립보드에 복사되었습니다.') {
+            const val = (text || '').trim();
+            if (!val) {
+                showLumiAlert('복사할 주소 정보가 없습니다.', '안내');
+                return;
+            }
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(val).then(() => {
+                    showLumiAlert(successMsg + '\n' + val, '복사 완료');
+                }).catch(() => {
+                    showLumiAlert(val, '주소 확인');
+                });
+            } else {
+                const ta = document.createElement('textarea');
+                ta.value = val;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                showLumiAlert(successMsg + '\n' + val, '복사 완료');
+            }
+        }
+
+        async function editTargetAddressInline(targetId) {
+            const idx = currentTargets.findIndex(t => (t.target_id || '').trim().toUpperCase() === (targetId || '').trim().toUpperCase());
+            if (idx === -1) return;
+            const target = currentTargets[idx];
+            const currentAddr = target.address || '';
+            const nextAddr = window.prompt(`[${target.name}] 거주지 주소를 입력하거나 수정해 주세요.\n(예: 창원시 성산구 창이대로 881번길 8, 206동 104호)`, currentAddr);
+            if (nextAddr === null) return;
+            target.address = nextAddr.trim();
+            persistAccountState();
+            if (supabaseClient && target.target_id) {
+                try {
+                    await supabaseClient.from('targets').update({ address: target.address }).eq('target_id', target.target_id);
+                } catch (e) {}
+            }
+            renderAllSections();
+        }
+
         function renderTargetsTable() {
             const tbody = document.getElementById('targets-table-body');
             const keyword = (document.getElementById('target-search-input')?.value || '').trim().toLowerCase();
@@ -2029,24 +2095,40 @@
             const filtered = currentTargets.filter((t, i) =>
                 (t.target_id || '').toLowerCase().includes(keyword) ||
                 (t.name || '').toLowerCase().includes(keyword) ||
-                getTargetPhone(t, i).includes(keyword)
+                getTargetPhone(t, i).includes(keyword) ||
+                (t.address || '').toLowerCase().includes(keyword)
             );
 
             if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="py-8 px-5 text-center opacity-60 text-sm">표시할 대상자가 없습니다.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="py-8 px-5 text-center opacity-60 text-sm">표시할 대상자가 없습니다.</td></tr>`;
                 return;
             }
 
             tbody.innerHTML = filtered.map((t, idx) => {
                 const phoneStr = getTargetPhone(t, idx);
+                const addrStr = (t.address || '').trim();
+                const addrCellHtml = addrStr
+                    ? `<div class="flex items-center gap-1.5 max-w-[230px]" title="${escapeHtml(addrStr)}">
+                           <i data-lucide="map-pin" class="w-3.5 h-3.5 text-amber-700 shrink-0"></i>
+                           <span class="truncate text-xs text-gray-700">${escapeHtml(addrStr)}</span>
+                           <button type="button" onclick="editTargetAddressInline('${escapeHtml(t.target_id)}')" title="주소 수정" class="p-1 rounded hover:bg-amber-100/80 text-gray-400 hover:text-amber-800 shrink-0 transition">
+                               <i data-lucide="pencil" class="w-3 h-3"></i>
+                           </button>
+                       </div>`
+                    : `<button type="button" onclick="editTargetAddressInline('${escapeHtml(t.target_id)}')" class="inline-flex items-center gap-1 px-2 py-1 rounded-lg border border-dashed border-amber-300 bg-amber-50/50 hover:bg-amber-100/70 text-amber-800 text-xs font-medium transition">
+                           <i data-lucide="plus" class="w-3 h-3"></i>
+                           주소 등록
+                       </button>`;
+
                 return `
                     <tr class="hover:bg-black/5 transition">
-                        <td class="py-3.5 px-5 font-mono text-xs opacity-75">${t.target_id}</td>
-                        <td class="py-3.5 px-5 font-bold text-sm">${t.name}</td>
-                        <td class="py-3.5 px-5 font-mono text-xs opacity-80">${phoneStr}</td>
-                        <td class="py-3.5 px-5 opacity-85 text-sm">${t.contact_schedule || '-'}</td>
-                        <td class="py-3.5 px-5">${getTargetStatusBadge(t)}</td>
-                        <td class="py-3.5 px-5 text-right">
+                        <td class="py-3.5 px-5 font-mono text-xs opacity-75 whitespace-nowrap">${t.target_id}</td>
+                        <td class="py-3.5 px-5 font-bold text-sm whitespace-nowrap">${t.name}</td>
+                        <td class="py-3.5 px-5 font-mono text-xs opacity-80 whitespace-nowrap">${phoneStr}</td>
+                        <td class="py-3.5 px-5">${addrCellHtml}</td>
+                        <td class="py-3.5 px-5 opacity-85 text-sm whitespace-nowrap">${t.contact_schedule || '-'}</td>
+                        <td class="py-3.5 px-5 whitespace-nowrap">${getTargetStatusBadge(t)}</td>
+                        <td class="py-3.5 px-5 text-right whitespace-nowrap">
                             <div class="inline-flex items-center gap-1.5">
                                 <button onclick="dialTargetOnGovPhone('${t.target_id}')" class="px-2.5 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-bold transition inline-flex items-center gap-1">
                                     <i data-lucide="phone-outgoing" class="w-3.5 h-3.5"></i>
@@ -2080,13 +2162,15 @@
 
             box.innerHTML = currentTargets.map((t, idx) => {
                 const ph = getTargetPhone(t, idx);
+                const addr = (t.address || '').trim();
                 const isErr = t.status === '오류' || !validateTargetEntry(t);
                 return `
                     <div class="px-5 py-3 flex flex-wrap items-center justify-between gap-2 hover:bg-black/[0.02] transition">
-                        <div class="flex items-center gap-2.5 min-w-0">
+                        <div class="flex flex-wrap items-center gap-2 min-w-0">
                             <span class="font-mono text-xs opacity-70 shrink-0">#${escapeHtml(t.target_id)}</span>
                             <span class="font-bold text-sm truncate">${escapeHtml(t.name)}</span>
                             <span class="text-xs opacity-70">정기 일정(${escapeHtml(t.contact_schedule || '미지정')}) 등록 완료</span>
+                            ${addr ? `<span class="text-xs text-amber-800 bg-amber-50 border border-amber-200/80 px-2 py-0.5 rounded-md truncate max-w-[260px]" title="${escapeHtml(addr)}">📍 ${escapeHtml(addr)}</span>` : ''}
                         </div>
                         <div class="flex items-center gap-2 text-xs">
                             <span class="font-mono opacity-65">${escapeHtml(ph)}</span>
@@ -2454,6 +2538,23 @@
                                 <div class="shrink-0">${getBadgeHtml(item.result_status)}</div>
                             </div>
                             <p class="text-[15px] font-bold text-gray-900 break-words leading-relaxed mb-2.5 group-hover:text-amber-900 transition">${item.memo || '특이사항 메모 없음'}</p>
+                            ${(() => {
+                                const tAddr = getTargetAddress(item.target_id, item.target_name);
+                                const isHelp = item.result_status === '도움 요청';
+                                if (!tAddr && !isHelp) return '';
+                                return `
+                                    <div class="mb-2.5 p-2.5 rounded-xl bg-stone-50 border border-stone-200/80 flex flex-wrap items-center justify-between gap-2 text-xs" onclick="event.stopPropagation()">
+                                        <div class="flex items-center gap-1.5 min-w-0 text-gray-700">
+                                            <i data-lucide="map-pin" class="w-3.5 h-3.5 text-amber-700 shrink-0"></i>
+                                            <span class="truncate">${tAddr ? escapeHtml(tAddr) : '거주지 주소 미등록'}</span>
+                                        </div>
+                                        <div class="flex items-center gap-1.5 shrink-0">
+                                            ${tAddr ? `<button type="button" onclick="copyTextToClipboard('${escapeHtml(tAddr).replace(/'/g, "\'")}', '대상자 거주지 주소가 복사되었습니다.')" class="px-2 py-1 rounded-lg bg-white border border-gray-200 hover:bg-gray-100 text-gray-700 font-bold text-[11px] transition">주소 복사</button>` : ''}
+                                            ${isHelp ? `<button type="button" onclick="openTranscriptDetailModal('${logKey}')" class="px-2 py-1 rounded-lg bg-rose-50 border border-rose-200 hover:bg-rose-100 text-rose-700 font-bold text-[11px] transition">인근 병원·시설 추천</button>` : ''}
+                                        </div>
+                                    </div>
+                                `;
+                            })()}
                             <div class="text-xs opacity-65">기록자: ${item.manager_name || managerProfile.name}</div>
                         </div>
                         <div class="pt-3 border-t border-[#E6E1D8] flex flex-wrap items-center justify-between gap-2">
@@ -2688,6 +2789,7 @@ ${completedFollowupList}` : ''}`;
             const target_id = document.getElementById('new-target-id').value.trim();
             const name = document.getElementById('new-target-name').value.trim();
             const phone = (document.getElementById('new-target-phone')?.value || '').trim() || `010-4820-${String(currentTargets.length + 1).padStart(4, '0')}`;
+            const address = (document.getElementById('new-target-address')?.value || '').trim();
             const contact_schedule = document.getElementById('new-target-schedule').value.trim();
             const manager_name = (document.getElementById('new-target-manager')?.value || managerProfile.name).trim();
 
@@ -2720,6 +2822,7 @@ ${completedFollowupList}` : ''}`;
                 target_id: target_id || '(미입력)',
                 name: name || '(미입력)',
                 phone,
+                address,
                 contact_schedule: contact_schedule || '(일정 오류)',
                 manager_name: manager_name || managerProfile.name,
                 status,
@@ -2730,11 +2833,24 @@ ${completedFollowupList}` : ''}`;
                 const dbPayload = {
                     target_id: newTarget.target_id,
                     name: newTarget.name,
+                    address: newTarget.address,
                     contact_schedule: newTarget.contact_schedule,
                     manager_name: newTarget.manager_name,
                     status: '완료'
                 };
-                const { error } = await supabaseClient.from('targets').upsert(dbPayload);
+                let { error } = await supabaseClient.from('targets').upsert(dbPayload);
+                if (error && error.message && error.message.includes('address')) {
+                    // DB 스키마에 address 컬럼이 아직 없는 경우 기본 컬럼으로 폴백 저장 (로컬 스토리지에는 주소 유지)
+                    const fallbackPayload = {
+                        target_id: newTarget.target_id,
+                        name: newTarget.name,
+                        contact_schedule: newTarget.contact_schedule,
+                        manager_name: newTarget.manager_name,
+                        status: '완료'
+                    };
+                    const retryRes = await supabaseClient.from('targets').upsert(fallbackPayload);
+                    error = retryRes.error;
+                }
                 if (error) {
                     newTarget.status = '오류';
                     newTarget.error_reason = error.message;
@@ -3210,6 +3326,7 @@ ${completedFollowupList}` : ''}`;
             document.getElementById('new-target-id').value = String(nextPlainNum);
             document.getElementById('new-target-name').value = '';
             if (document.getElementById('new-target-phone')) document.getElementById('new-target-phone').value = `010-4820-${nextPhoneSuffix}`;
+            if (document.getElementById('new-target-address')) document.getElementById('new-target-address').value = '';
             document.getElementById('new-target-manager').value = managerProfile.name;
 
             // 요일 및 아이폰 스타일 시간 휠 초기화 (기본: 매주 월·수·금 오전 10:00)
@@ -3287,6 +3404,118 @@ ${completedFollowupList}` : ''}`;
             }).join('');
         }
 
+        function buildLocationAssistHtml(item) {
+            const targetObj = getTargetByIdOrName(item.target_id, item.target_name);
+            const addr = (targetObj && targetObj.address ? targetObj.address : '').trim();
+            const isHelp = item.result_status === '도움 요청';
+            if (!addr && !isHelp) return '';
+
+            const contextText = `${item.memo || ''} ${item.transcript || ''}`;
+            let needCategory = '종합 진료 · 방문 확인';
+            let facilityTypes = ['인근 종합병원·응급실', '가까운 내과·정형외과 의원', '관할 행정복지센터·보건소 방문간호팀'];
+
+            if (/치아|어금니|틀니|치과|못 씹/.test(contextText)) {
+                needCategory = '치과 진료 · 구강 검진 연계';
+                facilityTypes = ['인근 치과의원 (틀니·보철 진료)', '보건소 구강보건실·무료 틀니 지원 창구', '병원 안심동행 서비스 센터'];
+            } else if (/피부|발진|가려|반점/.test(contextText)) {
+                needCategory = '피부과 진료 · 방문간호 연계';
+                facilityTypes = ['인근 피부과의원', '관할 보건소 방문간호팀', '인근 내과·가정의학과의원'];
+            } else if (/허리|무릎|접질|낙상|관절|보행기/.test(contextText)) {
+                needCategory = '정형외과 · 재활·보조기기 연계';
+                facilityTypes = ['인근 정형외과·통증의학과의원', '지역 종합병원 응급·외래센터', '지자체 보조기기센터·병원동행 서비스'];
+            } else if (/가슴|숨|호흡|어지러|혈압|응급/.test(contextText)) {
+                needCategory = '긴급 순환기·내과 진료 및 응급 대응';
+                facilityTypes = ['인근 종합병원 응급의료센터 (24시간)', '인근 심장·내과의원', '관할 119 안전센터 및 보건소 방문간호팀'];
+            } else if (/보일러|형광등|전등|수리|생수|쌀|청소|쓰레기|난방|이불/.test(contextText)) {
+                needCategory = '주거환경 개선 · 긴급 생필품 지원';
+                facilityTypes = ['관할 동 행정복지센터 (긴급복지·주거지원팀)', '지역 종합사회복지관 생활지원팀', '지자체 주거복지센터·관리사무소'];
+            } else if (/우울|외로|불면|말벗|상담/.test(contextText)) {
+                needCategory = '정서 지원 · 정신건강 상담 연계';
+                facilityTypes = ['관할 정신건강복지센터·노인상담센터', '지역 종합사회복지관 사례관리팀', '인근 신경정신과·가정의학과의원'];
+            }
+
+            // 주소에서 시·구·동/도로명 핵심 지역 키워드 추출
+            const regionMatch = addr.match(/([가-힣]+(?:특별시|광역시|특별자치시|도|시)\s*[가-힣]+(?:구|군|시)?(?:\s*[가-힣0-9]+(?:동|읍|면|대로|로|길))?)/);
+            const regionLabel = regionMatch ? regionMatch[1] : (addr || '거주지 미등록');
+            const encodedAddr = encodeURIComponent(addr || '복지관');
+            const encodedHospitalQuery = encodeURIComponent((regionLabel !== '거주지 미등록' ? regionLabel + ' ' : '') + '병원');
+            const encodedWelfareQuery = encodeURIComponent((regionLabel !== '거주지 미등록' ? regionLabel + ' ' : '') + '행정복지센터 보건소');
+
+            const escapedAddrJs = escapeHtml(addr).replace(/'/g, "\'");
+
+            return `
+                <div class="p-3.5 rounded-xl bg-rose-50/60 border border-rose-200/80 space-y-2.5">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <div class="flex items-center gap-1.5 text-xs font-bold text-rose-900">
+                            <i data-lucide="map-pin" class="w-4 h-4 text-rose-600"></i>
+                            <span>대상자 거주지 기준 인근 병원 · 복지시설 연계</span>
+                        </div>
+                        <span class="px-2 py-0.5 rounded-md text-[11px] font-bold bg-white text-rose-700 border border-rose-200">${escapeHtml(needCategory)}</span>
+                    </div>
+
+                    <div class="p-2.5 rounded-lg bg-white border border-rose-100 flex flex-wrap items-center justify-between gap-2">
+                        <div class="text-xs text-gray-800 min-w-0">
+                            <span class="text-gray-400 mr-1.5">등록 주소:</span>
+                            <strong class="font-bold text-gray-900 break-all">${addr ? escapeHtml(addr) : '주소 미등록 (인원 관리에서 등록 가능)'}</strong>
+                        </div>
+                        <div class="flex items-center gap-1.5 shrink-0">
+                            ${addr ? `<button type="button" onclick="copyTextToClipboard('${escapedAddrJs}', '대상자 거주지 주소가 복사되었습니다.')" class="px-2.5 py-1 rounded-lg bg-stone-100 hover:bg-stone-200 text-gray-800 text-[11px] font-bold transition">주소 복사</button>` : ''}
+                            <button type="button" onclick="editTargetAddressInline('${escapeHtml(item.target_id)}'); openTranscriptDetailModal(document.getElementById('detail-log-key').value);" class="px-2.5 py-1 rounded-lg border border-amber-200 bg-amber-50 hover:bg-amber-100 text-amber-800 text-[11px] font-bold transition">${addr ? '주소 수정' : '주소 등록'}</button>
+                        </div>
+                    </div>
+
+                    ${isHelp ? `
+                        <div class="space-y-1.5">
+                            <div class="text-[11px] font-bold text-gray-600">추천 연계 기관 (${escapeHtml(regionLabel)} 주변 우선):</div>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                ${facilityTypes.map((ft, idx) => `
+                                    <div class="p-2.5 rounded-lg bg-white border border-stone-200/90 text-xs">
+                                        <div class="text-[10px] font-bold text-amber-700 mb-0.5">추천 ${idx + 1}순위</div>
+                                        <div class="font-bold text-gray-900 leading-snug">${escapeHtml(ft)}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2 pt-1">
+                            <a href="https://map.naver.com/p/search/${encodedHospitalQuery}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition">
+                                <i data-lucide="hospital" class="w-3.5 h-3.5"></i>
+                                인근 병원 지도 검색
+                            </a>
+                            <a href="https://map.naver.com/p/search/${encodedWelfareQuery}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-900 text-white text-xs font-bold transition">
+                                <i data-lucide="building-2" class="w-3.5 h-3.5"></i>
+                                관할 복지센터·보건소 찾기
+                            </a>
+                            ${addr ? `<a href="https://map.naver.com/p/search/${encodedAddr}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 text-xs font-bold transition">
+                                <i data-lucide="navigation" class="w-3.5 h-3.5"></i>
+                                거주지 위치 지도 보기
+                            </a>` : ''}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        function refreshDetailLocationBox() {
+            const logKey = document.getElementById('detail-log-key')?.value;
+            const idx = findLogIndexByKey(logKey);
+            const box = document.getElementById('detail-location-assist-box');
+            if (!box || idx === -1) return;
+            const previewItem = {
+                ...currentLogs[idx],
+                result_status: document.getElementById('detail-result-status')?.value || currentLogs[idx].result_status,
+                memo: document.getElementById('detail-special-memo')?.value || currentLogs[idx].memo
+            };
+            const htmlStr = buildLocationAssistHtml(previewItem);
+            if (htmlStr) {
+                box.innerHTML = htmlStr;
+                box.classList.remove('hidden');
+                lucide.createIcons({ root: box });
+            } else {
+                box.innerHTML = '';
+                box.classList.add('hidden');
+            }
+        }
+
         function openTranscriptDetailModal(logKey) {
             const idx = findLogIndexByKey(logKey);
             if (idx === -1) return;
@@ -3298,6 +3527,12 @@ ${completedFollowupList}` : ''}`;
             document.getElementById('detail-special-memo').value = item.memo || '';
             document.getElementById('detail-result-status').value = item.result_status || '응답 완료';
             document.getElementById('detail-followup-status').value = item.followup_status || '완료';
+
+            const statusSel = document.getElementById('detail-result-status');
+            if (statusSel) {
+                statusSel.onchange = refreshDetailLocationBox;
+            }
+            refreshDetailLocationBox();
 
             const bodyEl = document.getElementById('detail-transcript-body');
             bodyEl.innerHTML = formatTranscriptLinesHtml(item.transcript, item.memo, item);
@@ -4172,9 +4407,12 @@ ${completedFollowupList}` : ''}`;
             <div class="py-4 space-y-4 overflow-y-auto flex-1 text-sm">
                 <!-- 특이사항 (볼드 강조 + 바로 수정 가능) -->
                 <div class="p-3.5 rounded-xl bg-amber-50/70 border border-amber-200/80">
-                    <label for="detail-special-memo" class="block text-xs font-bold text-amber-900 mb-1.5">특이사항 / 핵심 요약 (수정 가능)</label>
+                    <label for="detail-special-memo" class="block text-xs font-bold text-amber-900 mb-1.5">특이사항 / 핵심 요약 (수정 가능 · 담당자 기록체)</label>
                     <input id="detail-special-memo" type="text" class="w-full px-3 py-2 rounded-lg border border-amber-200 bg-white font-bold text-gray-900 text-sm focus:outline-none focus:border-amber-500">
                 </div>
+
+                <!-- 대상자 거주지 및 도움 요청 시 인근 병원·시설 추천 영역 -->
+                <div id="detail-location-assist-box" class="hidden"></div>
 
                 <!-- 안부 결과 및 후속 조치 상태 즉시 변경 -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
